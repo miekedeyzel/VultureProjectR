@@ -12,6 +12,7 @@ format:
 
 ### Load Libraries
 ```{r}
+
 library(tidyverse)
 library(lubridate)
 library(janitor)
@@ -21,17 +22,24 @@ library(stringr)
 library(tibble)
 library(dplyr)
 library(knitr)
+library(ggplot2)
+library(GGally)
+
+
 ```
 
 ## Load Data
 ```{r}
+
 vultures <- read.csv("~/Desktop/Vulture Project/Data/93_24 cleaned.csv")
 WeatherData <- read.csv("~/Desktop/Vulture Project/Data/Weather.csv")
+
 ```
 
 ## Cleaning Breeding Data
 
 ```{r}
+
 vultures.clean <- vultures |>
   clean_names() |>                               # ringing_date, laying_date
   rename_with(~ gsub("_", ".", .x)) |>           # ringing.date, laying.date
@@ -49,8 +57,56 @@ vultures.clean <- vultures |>
 
 
 ```
+## Explore data 
+### Data structure 
+```{r}
+
+glimpse(vultures.clean)
+summary(vultures.clean)
+colSums(is.na(vultures.clean))
+
+```
+
+### Active nests per year (Sampling effort)
+```{r}
+active.nests.raw <- vultures.clean |>
+mutate(year = year(ringing.date)) |>
+group_by(year) |>
+summarise(active_nests = n(), .groups = "drop")
+
+ggplot(active.nests.raw, aes(x = year, y = active_nests)) +
+geom_col(fill = "#89c5d6", alpha = 0.85) +
+labs(x = "Year", y = "Number of active nests") +
+theme_bw() + theme(panel.grid = element_blank())
+```
+### Succsess proportions
+
+```{r}
+failed.nests.raw <- vultures.clean |>
+mutate(year = year(ringing.date)) |>
+group_by(year) |>
+summarise(
+active_nests = n(),
+success_nests = sum(!is.na(laying.date)),
+success_prop = success_nests / active_nests,
+.groups = "drop"
+)
+
+ggplot(failed.nests.raw, aes(x = success_prop)) +
+geom_histogram(bins = 15, fill = "#89c5d6") +
+labs(x = "Breeding success proportion", y = "Count") +
+theme_bw() + theme(panel.grid = element_blank())
+```
+
 
 ## Weather Data Summaries 
+
+```{r}
+summary(weather_yearly)
+colSums(is.na(weather_yearly))
+
+```
+ 
 
 ### Annual Weather Summaries 
 
@@ -104,6 +160,53 @@ hail      = I_HAIL
 ) |>
 arrange(date)
 
+```
+
+### Weather variable correlation 
+```{r}
+weather_yearly |>
+  dplyr::select(mean_temp, max_temp, min_temp, total_rain, max_rain,
+                rain_days, mean_wind, max_wind, hail_days)
+
+```
+
+```{r}
+# Calculate correlation matrix
+cor_mat <- weather_yearly |>
+  dplyr::select(mean_temp, max_temp, min_temp, total_rain, max_rain,
+                rain_days, mean_wind, max_wind, hail_days) |>
+  cor(use = "pairwise.complete.obs")
+
+# Convert to long format for plotting
+cor_df <- as.data.frame(cor_mat) |>
+  tibble::rownames_to_column("var1") |>
+  pivot_longer(-var1, names_to = "var2", values_to = "cor")
+
+# Plot heatmap
+ggplot(cor_df, aes(x = var1, y = var2, fill = cor)) +
+  geom_tile() +
+  scale_fill_gradient2(
+    low = "#b2182b", mid = "white", high = "#2166ac",
+    midpoint = 0, limits = c(-1, 1)
+  ) +
+  labs(x = "", y = "", fill = "Correlation") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank()
+  )
+
+```
+### Just to look at the variables across years for trends.
+
+```{r}
+weather_yearly |>
+pivot_longer(-YEAR) |>
+ggplot(aes(x = YEAR, y = value)) +
+geom_line(colour = "#89c5d6") +
+facet_wrap(~ name, scales = "free_y") +
+labs(x = "Year", y = "Value") +
+theme_bw() + theme(panel.grid = element_blank())
 ```
 
 ## Objective 1: Breeding Effort 
@@ -290,6 +393,10 @@ ggplot(effort_weather, aes(x = z_max_temp, y = active_nests)) +
 
 ```
 
+### Check fro autocorrelation
+```{r}
+acf(active.nests$active_nests)
+```
 
 ## Objective 2: Breeding Success 
 
@@ -432,7 +539,6 @@ ggplot(success.nests, aes(x = year, y = success_prop)) +
 
 
 ```
-
 
 
 
