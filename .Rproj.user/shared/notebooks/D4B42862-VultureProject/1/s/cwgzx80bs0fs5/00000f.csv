@@ -1,0 +1,4 @@
+"0","timing_weather_60 <- timing_df %>%"
+"0","  mutate(window_60 = map(laying.date, summarise_60, weather = weather_df)) %>%"
+"0","  unnest(window_60)"
+"0",""

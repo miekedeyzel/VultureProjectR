@@ -1,0 +1,7 @@
+"0","timing_weather <- timing_weather |>"
+"0","  mutate("
+"0","    z_mean_temp = scale(mean_temp),"
+"0","    z_max_temp  = scale(max_temp),"
+"0","    z_min_temp  = scale(min_temp)"
+"0","  )"
+"0",""

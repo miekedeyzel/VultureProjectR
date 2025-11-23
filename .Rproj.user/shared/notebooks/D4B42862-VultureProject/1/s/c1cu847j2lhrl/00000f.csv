@@ -1,0 +1,3 @@
+"0","ggplot(data.frame(fit=fitted(m_wind_only), obs=effort_weather$active_nests),"
+"0","       aes(fit, obs)) + geom_point() + geom_smooth(method=""lm"", se=FALSE)"
+"0",""

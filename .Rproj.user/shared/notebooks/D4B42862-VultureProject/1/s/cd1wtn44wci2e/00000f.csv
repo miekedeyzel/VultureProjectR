@@ -1,0 +1,8 @@
+"0","timing_weather <- timing_df |>"
+"0","  left_join(weather_yearly, by = c(""year"" = ""YEAR"")) |>"
+"0","  mutate("
+"0","    z_total_rain = scale(total_rain),"
+"0","    z_max_rain   = scale(max_rain),"
+"0","    z_rain_days  = scale(rain_days)"
+"0","  )"
+"0",""

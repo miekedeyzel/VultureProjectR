@@ -1,0 +1,2 @@
+"0","vultures <- read.csv(""~/Desktop/Vulture Project/Data/93_24 cleaned.csv"")"
+"0","WeatherData <- read.csv(""~/Desktop/Vulture Project/Data/Weather.csv"")"

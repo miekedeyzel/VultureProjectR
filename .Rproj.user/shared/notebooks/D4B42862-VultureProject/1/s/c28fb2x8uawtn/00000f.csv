@@ -1,0 +1,7 @@
+"0","success_df <- success_df |>"
+"0","  mutate("
+"0","    z_mean_wind = scale(mean_wind),"
+"0","    z_max_wind  = scale(max_wind),"
+"0","    z_hail_days = scale(hail_days)"
+"0","  )"
+"0",""

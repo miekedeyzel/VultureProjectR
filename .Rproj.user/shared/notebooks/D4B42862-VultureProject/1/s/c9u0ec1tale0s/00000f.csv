@@ -1,0 +1,8 @@
+"0","m_success_rain <- glm("
+"0","  cbind(success_nests, failed_nests) ~ "
+"0","    z_total_rain + z_max_rain + z_rain_days,"
+"0","  family = quasibinomial,"
+"0","  data = success_df"
+"0",")"
+"2","Error in eval(mf, parent.frame()) : object 'success_df' not found
+"

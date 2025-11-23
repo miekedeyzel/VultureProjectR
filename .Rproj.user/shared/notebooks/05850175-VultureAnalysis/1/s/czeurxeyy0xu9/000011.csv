@@ -1,0 +1,8 @@
+"0","active.nests <- vultures.clean |>"
+"0","mutate(year = year(ringing.date)) |>"
+"0","group_by(year) |>"
+"0","summarise(active_nests = n(), .groups = ""drop"")"
+"0",""
+"0","effort_weather <- active.nests |>"
+"0","left_join(weather_yearly, by = c(""year"" = ""YEAR""))"
+"0",""

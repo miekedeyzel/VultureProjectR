@@ -1,0 +1,644 @@
+---
+title: "The Effects of Climate Change on the Breeding Success and Timing of African White-backed Vultures"
+author: "Mieke Deyzel"
+output: html_document
+format:
+  html:
+    embed-resources: true
+---
+::: {.panel-tabset}
+
+### For GitHub
+```{r}
+install.packages("usethis")
+
+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
+```
+
+
+## Clean Data
+
+### Load Libraries
+```{r}
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(MASS)
+library(patchwork)
+library(stringr)
+```
+
+## Load Data
+```{r}
+vultures <- read.csv("~/Desktop/Vulture Project/Data/93_24 cleaned.csv")
+WeatherData <- read.csv("~/Desktop/Vulture Project/Data/Weather.csv")
+```
+
+## Cleaning Breeding Data
+
+```{r}
+vultures.clean <- vultures |>
+  clean_names() |>                               # ringing_date, laying_date
+  rename_with(~ gsub("_", ".", .x)) |>           # ringing.date, laying.date
+  mutate(
+    ringing.date = ringing.date |> as.character() |> str_trim(),
+    ringing.date = if_else(ringing.date %in% c("", "NA", "?"),
+                           NA_character_, ringing.date),
+    ringing.date = ymd(gsub("/", "-", ringing.date)),
+    
+    laying.date  = laying.date |> as.character() |> str_trim(),
+    laying.date  = if_else(laying.date %in% c("", "NA", "?"),
+                           NA_character_, laying.date),
+    laying.date  = ymd(gsub("/", "-", laying.date))
+  )
+
+
+```
+
+## Weather Data Summaries 
+
+### Annual Weather Summaries 
+
+```{r}
+weather_yearly <- WeatherData |>
+filter(YEAR >= 1992, YEAR <= 2024) |>
+group_by(YEAR) |>
+summarise(
+mean_temp  = mean(TEMP, na.rm = TRUE),
+max_temp   = max(MAX, na.rm = TRUE),
+min_temp   = max(MIN, na.rm = TRUE),
+total_rain = sum(PRCP, na.rm = TRUE),
+max_rain   = max(PRCP, na.rm = TRUE),
+rain_days  = sum(PRCP > 0, na.rm = TRUE),
+mean_wind  = mean(WDSP, na.rm = TRUE),
+max_wind   = max(MXSPD, na.rm = TRUE),
+hail_days  = sum(I_HAIL, na.rm = TRUE),
+.groups = "drop"
+)
+
+```
+
+### Lagged Weather Summaries 
+
+```{r}
+weather_yearly_lag <- weather_yearly |>
+arrange(YEAR) |>
+mutate(
+across(
+c(mean_temp, max_temp, min_temp, total_rain, max_rain,
+rain_days, mean_wind, max_wind, hail_days),
+~ lag(.x, 1), .names = "lag_{.col}"
+)
+)
+
+```
+
+### Daily Weather Summaries 
+```{r}
+weather_df <- WeatherData |>
+mutate(
+date      = make_date(YEAR, MONTH, DAY),
+mean_temp = parse_number(as.character(TEMP)),
+max_temp  = parse_number(as.character(MAX)),
+min_temp  = parse_number(as.character(MIN)),
+mean_wind = parse_number(as.character(WDSP)),
+max_wind  = parse_number(as.character(MXSPD)),
+rain      = parse_number(as.character(PRCP)),
+rain_day  = as.integer(replace_na(rain, 0) > 0),
+hail      = I_HAIL
+) |>
+arrange(date)
+
+```
+
+## Objective 1 
+
+### Effort Data 
+
+```{r}
+active.nests <- vultures.clean |>
+mutate(year = year(ringing.date)) |>
+group_by(year) |>
+summarise(active_nests = n(), .groups = "drop")
+
+effort_weather <- active.nests |>
+left_join(weather_yearly, by = c("year" = "YEAR"))
+
+```
+
+
+### Year only Model 
+```{r}
+m_year <- glm.nb(active_nests ~ year, data = active.nests)
+summary(m_year)
+
+```
+
+### Rainfall 
+
+```{r}
+effort_weather <- effort_weather |>
+mutate(
+z_total_rain = scale(total_rain),
+z_max_rain   = scale(max_rain),
+z_rain_days  = scale(rain_days)
+)
+
+m_rain_only <- glm.nb(
+active_nests ~ z_total_rain + z_max_rain + z_rain_days,
+data = effort_weather
+)
+summary(m_rain_only)
+
+```
+
+### Temperature 
+
+```{r}
+effort_weather <- effort_weather |>
+mutate(
+z_mean_temp = scale(mean_temp),
+z_max_temp  = scale(max_temp),
+z_min_temp  = scale(min_temp)
+)
+
+# Max Temp 
+
+max_temp <- glm.nb(
+active_nests ~ z_max_temp,
+data = effort_weather
+)
+summary(max_temp)
+
+# Min Temp 
+
+min_temp <- glm.nb(
+  active_nests ~ z_min_temp,
+  data = effort_weather
+)
+summary(min_temp)
+
+# Mean temp 
+
+mean_temp <- glm.nb(
+  active_nests ~ z_mean_temp,
+  data = effort_weather
+)
+summary(mean_temp)
+
+```
+
+### Wind 
+
+```{r}
+effort_weather <- effort_weather |>
+mutate(
+z_mean_wind = scale(mean_wind),
+z_max_wind  = scale(max_wind)
+)
+
+m_wind_only <- glm.nb(
+active_nests ~ z_mean_wind + z_max_wind,
+data = effort_weather
+)
+summary(m_wind_only)
+
+```
+
+### Hail 
+
+```{r}
+effort_weather <- effort_weather |>
+mutate(z_hail_days = scale(hail_days))
+
+m_hail_only <- glm.nb(
+active_nests ~ z_hail_days,
+data = effort_weather
+)
+summary(m_hail_only)
+
+```
+
+### Active nests across years 
+
+```{r}
+
+active.nests <- vultures.clean |>
+  mutate(year = lubridate::year(ringing.date)) |>
+  group_by(year) |>
+  summarise(active_nests = n(), .groups = "drop")
+
+# Refit the model just to be safe
+m_year <- MASS::glm.nb(active_nests ~ year, data = active.nests)
+
+# Add predictions with explicit newdata = active.nests
+active.nests_plot <- active.nests |>
+  mutate(pred_year = predict(m_year, newdata = active.nests, type = "response"))
+
+ggplot(active.nests_plot, aes(x = year, y = active_nests)) +
+  geom_col(fill = "#89c5d6", alpha = 0.85) +
+  geom_line(aes(y = pred_year), linewidth = 1.1, colour = "black") +
+  labs(
+    x = "Year",
+    y = "Number of active nests"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+
+### Effect of annual max temperature on effort
+ 
+```{r}
+effort_weather <- active.nests |>
+  left_join(weather_yearly, by = c("year" = "YEAR")) |>
+  mutate(
+    z_total_rain = as.numeric(scale(total_rain)),
+    z_max_rain   = as.numeric(scale(max_rain)),
+    z_rain_days  = as.numeric(scale(rain_days)),
+    z_mean_temp  = as.numeric(scale(mean_temp)),
+    z_max_temp   = as.numeric(scale(max_temp)),
+    z_min_temp   = as.numeric(scale(min_temp)),
+    z_mean_wind  = as.numeric(scale(mean_wind)),
+    z_max_wind   = as.numeric(scale(max_wind)),
+    z_hail_days  = as.numeric(scale(hail_days))
+  )
+
+m_eff_maxtemp <- MASS::glm.nb(
+  active_nests ~ z_max_temp,
+  data = effort_weather
+)
+summary(m_eff_maxtemp)
+
+new_eff_temp <- tibble(
+  z_max_temp = seq(min(effort_weather$z_max_temp, na.rm = TRUE),
+                   max(effort_weather$z_max_temp, na.rm = TRUE),
+                   length.out = 100)
+)
+
+new_eff_temp <- new_eff_temp |>
+  mutate(pred_nests = predict(m_eff_maxtemp,
+                              newdata = new_eff_temp,
+                              type = "response"))
+
+ggplot(effort_weather, aes(x = z_max_temp, y = active_nests)) +
+  geom_point(alpha = 0.7) +
+  geom_line(data = new_eff_temp,
+            aes(x = z_max_temp, y = pred_nests),
+            linewidth = 1.1) +
+  labs(
+    x = "Annual maximum temperature (scaled)",
+    y = "Number of active nests"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+
+
+## Objective 2 
+
+### Success Dataframe 
+```{r}
+failed.nests <- vultures.clean |>
+mutate(year = year(ringing.date)) |>
+group_by(year) |>
+summarise(
+active_nests  = n(),
+success_nests = sum(!is.na(laying.date)),
+failed_nests  = active_nests - success_nests,
+success_prop  = success_nests / active_nests,
+.groups = "drop"
+)
+
+```
+
+### Year only model 
+
+```{r}
+m_success_year <- glm(
+cbind(success_nests, failed_nests) ~ year,
+family = quasibinomial,
+data = failed.nests
+)
+summary(m_success_year)
+
+```
+
+### Rainfall 
+
+```{r}
+success_df <- failed.nests |>
+left_join(weather_yearly, by = c("year" = "YEAR")) |>
+mutate(
+z_total_rain = scale(total_rain),
+z_max_rain   = scale(max_rain),
+z_rain_days  = scale(rain_days)
+)
+
+m_success_rain <- glm(
+cbind(success_nests, failed_nests) ~
+z_total_rain + z_max_rain + z_rain_days,
+family = quasibinomial,
+data = success_df
+)
+summary(m_success_rain)
+
+```
+
+### Temperature 
+
+
+```{r}
+success_df <- success_df |>
+mutate(
+z_mean_temp = scale(mean_temp),
+z_max_temp  = scale(max_temp),
+z_min_temp  = scale(min_temp)
+)
+
+# Min temp 
+
+m_success_minT <- glm(
+cbind(success_nests, failed_nests) ~ z_min_temp,
+family = quasibinomial, data = success_df
+)
+summary(m_success_minT)
+
+# Max temp 
+m_success_maxT <- glm(
+cbind(success_nests, failed_nests) ~ z_max_temp,
+family = quasibinomial, data = success_df
+)
+summary(m_success_maxT)
+
+# Mean temp 
+
+m_success_meanT <- glm(
+cbind(success_nests, failed_nests) ~ z_mean_temp,
+family = quasibinomial, data = success_df
+)
+summary(m_success_meanT)
+
+```
+### Wind 
+
+```{r}
+success_df <- success_df |>
+mutate(
+z_mean_wind = scale(mean_wind),
+z_max_wind  = scale(max_wind)
+)
+
+m_success_wind <- glm(
+cbind(success_nests, failed_nests) ~ z_mean_wind + z_max_wind,
+family = quasibinomial, data = success_df
+)
+summary(m_success_wind)
+
+```
+
+### Hail 
+
+```{r}
+success_df <- success_df |>
+mutate(z_hail_days = scale(hail_days))
+
+m_success_hail <- glm(
+cbind(success_nests, failed_nests) ~ z_hail_days,
+family = quasibinomial, data = success_df
+)
+summary(m_success_hail)
+
+```
+
+### Breeding success over time + fitted trend
+
+```{r}
+failed.nests <- failed.nests |>
+  mutate(pred_success = predict(m_success_year, type = "response"))
+
+ggplot(failed.nests, aes(x = year, y = success_prop)) +
+  geom_point(colour = "#89c5d6") +
+  geom_line(colour = "#89c5d6") +
+  geom_line(aes(y = pred_success), colour = "black", linewidth = 1.1) +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Year",
+    y = "Breeding success (proportion)"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+
+
+
+## Objective 3
+### 60 day prelaying period 
+
+```{r}
+timing_df <- vultures.clean |>
+  filter(!is.na(laying.date)) |>
+  mutate(
+    year    = lubridate::year(laying.date),
+    lay_DOY = lubridate::yday(laying.date)
+  )
+
+
+summarise_60 <- function(lay_date, weather) {
+w <- weather |> filter(date > (lay_date - days(60)), date <= lay_date)
+
+tibble(
+mean_temp_60  = mean(w$mean_temp, na.rm = TRUE),
+max_temp_60   = mean(w$max_temp, na.rm = TRUE),
+min_temp_60   = mean(w$min_temp, na.rm = TRUE),
+total_rain_60 = sum(w$rain, na.rm = TRUE),
+rain_days_60  = sum(w$rain_day, na.rm = TRUE),
+mean_wind_60  = mean(w$mean_wind, na.rm = TRUE),
+max_wind_60   = mean(w$max_wind, na.rm = TRUE),
+hail_days_60  = sum(w$hail, na.rm = TRUE)
+)
+}
+
+timing_weather_60 <- timing_df |>
+mutate(win60 = purrr::map(laying.date, summarise_60, weather = weather_df)) |>
+unnest(win60)
+
+```
+
+### Temperature model 
+
+```{r}
+m_timing_temp_60 <- lm(
+lay_DOY ~ mean_temp_60 + max_temp_60 + min_temp_60,
+data = timing_weather_60
+)
+summary(m_timing_temp_60)
+
+```
+
+
+### Rainfall 
+
+```{r}
+m_timing_rain_60 <- lm(
+lay_DOY ~ total_rain_60 + rain_days_60,
+data = timing_weather_60
+)
+summary(m_timing_rain_60)
+
+```
+
+### Wind 
+
+```{r}
+m_timing_wind_60 <- lm(
+lay_DOY ~ mean_wind_60 + max_wind_60,
+data = timing_weather_60
+)
+summary(m_timing_wind_60)
+
+```
+
+### Hail 
+```{r}
+m_timing_hail_60 <- lm(
+lay_DOY ~ hail_days_60,
+data = timing_weather_60
+)
+summary(m_timing_hail_60)
+
+```
+
+## Significant results summary 
+
+```{r}
+library(tibble)
+library(dplyr)
+library(knitr)
+
+sig_summary_new <- tribble(
+  ~Objective,            ~Response,                     ~Time_window,          ~Predictor,        ~Estimate, ~Direction,      ~p_value,      ~Interpretation,
+  # Objective 1 – Effort
+  "1. Breeding effort",  "Active nests (NB GLM)",       "Annual (year)",       "Year",            0.02866,   "Positive (↑)",  "< 0.001",    "Number of active nests increased over time, consistent with population recovery.",
+  "1. Breeding effort",  "Active nests (NB GLM)",       "Annual climate",      "Max temperature", 0.10583,   "Positive (↑)",  "0.031",      "Years with higher annual maximum temperatures had more active nests.",
+  "1. Breeding effort",  "Active nests (NB GLM)",       "Annual climate",      "Hail days",       0.09695,   "Positive (↑)",  "0.049",      "Years with more hail days had slightly more active nests.",
+  
+  # Objective 2 – Success
+  "2. Breeding success", "Success proportion (quasi)",  "Annual (year)",       "Year",           -0.02251,   "Negative (↓)",  "0.0039",     "Breeding success declined through time; later years had a lower proportion of successful nests.",
+  
+  # Objective 3 – Timing (60-day pre-lay window)
+  "3. Breeding timing",  "Laying date DOY (LM)",        "60-day pre-lay",      "Mean temp (60d)",  2.63,     "Positive (↑)",  "3.5e-05",    "Higher mean temperature in the 60 days before laying was associated with later laying dates.",
+  "3. Breeding timing",  "Laying date DOY (LM)",        "60-day pre-lay",      "Max temp (60d)",  -3.03,     "Negative (↓)",  "< 0.001",    "Higher maximum temperatures in the 60 days before laying were associated with earlier laying.",
+  "3. Breeding timing",  "Laying date DOY (LM)",        "60-day pre-lay",      "Min temp (60d)",  -5.57,     "Negative (↓)",  "< 0.001",    "Warmer minimum temperatures in the 60 days before laying were associated with earlier laying.",
+  
+  "3. Breeding timing",  "Laying date DOY (LM)",        "60-day pre-lay",      "Rainy days (60d)", -1.37,    "Negative (↓)",  "< 0.001",    "More rainy days in the 60 days before laying were associated with earlier laying.",
+  
+  "3. Breeding timing",  "Laying date DOY (LM)",        "60-day pre-lay",      "Mean wind (60d)",  3.80,     "Positive (↑)",  "0.024",      "Higher mean wind speeds over 60 days were associated with later laying.",
+  "3. Breeding timing",  "Laying date DOY (LM)",        "60-day pre-lay",      "Max wind (60d)",  -4.37,     "Negative (↓)",  "0.0014",     "Stronger maximum winds over 60 days were associated with earlier laying.",
+  
+  "3. Breeding timing",  "Laying date DOY (LM)",        "60-day pre-lay",      "Hail days (60d)", -4.73,     "Negative (↓)",  "8.1e-08",    "More hail days in the 60 days before laying were associated with earlier laying."
+)
+
+kable(sig_summary_new, align = "l")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+:::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

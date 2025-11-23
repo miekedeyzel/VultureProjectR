@@ -1,0 +1,32 @@
+{
+    "id": "9C199991",
+    "path": "~/Desktop/Vulture Project/VultureProjectR/VultureProject.qmd",
+    "project_path": "VultureProject.qmd",
+    "type": "quarto_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1757428284627.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "rmdVisualMode": "false",
+        "rmdVisualWrapConfigured": "true",
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "10,0",
+        "scrollLine": "0",
+        "docOutlineVisible": "1",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "2:0"
+    },
+    "folds": "128|6|146|0|\n148|6|168|0|\n170|25|183|3|\n172|6|183|0|\n184|19|202|0|\n185|6|201|0|\n203|45|335|0|\n205|6|234|0|\n235|6|256|0|\n258|6|280|0|\n282|6|305|0|\n307|27|335|0|\n308|6|333|0|\n336|45|443|0|\n338|6|353|0|\n355|6|378|0|\n380|6|396|0|\n398|6|420|0|\n400|45|411|0|\n422|6|442|0|\n444|49|476|0|\n446|6|474|0|\n",
+    "lastKnownWriteTime": 1763121870,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1763359763907,
+    "read_only": false,
+    "read_only_alternatives": []
+}
