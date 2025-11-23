@@ -8,13 +8,12 @@ format:
 ---
 ::: {.panel-tabset}
 
-### For GitHub
+### For GitHub hello
 ```{r}
-install.packages("usethis")
-
-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
+helloooo 
+#token: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
+  
 ```
-
 
 ## Clean Data
 
