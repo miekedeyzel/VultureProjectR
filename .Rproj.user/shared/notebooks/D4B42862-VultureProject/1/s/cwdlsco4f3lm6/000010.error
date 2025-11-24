@@ -1,1 +1,0 @@
-{"frames":[{"func":"mutate(success_df, z_mean_temp = scale(mean_temp), z_max_temp = scale(max_temp), \n    z_min_temp = scale(min_temp))","file":"","line_number":0,"end_line_number":0,"character_number":0,"end_character_number":0}],"message":"Error: object 'success_df' not found\n"}

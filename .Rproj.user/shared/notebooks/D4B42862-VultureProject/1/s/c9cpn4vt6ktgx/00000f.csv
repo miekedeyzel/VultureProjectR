@@ -1,8 +1,0 @@
-"0",""
-"0","timing_df <- vultures.clean |>"
-"0","  filter(!is.na(laying.date)) |>"
-"0","  mutate("
-"0","    year    = year(laying.date),"
-"0","    lay_DOY = yday(laying.date)"
-"0","  )"
-"0",""

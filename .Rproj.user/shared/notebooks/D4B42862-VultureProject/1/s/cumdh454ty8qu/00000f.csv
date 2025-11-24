@@ -1,8 +1,0 @@
-"0","ggplot(timing_df, aes(year, lay_DOY)) +"
-"0","  geom_point(alpha = 0.6) +"
-"0","  geom_smooth(method = ""lm"", se = TRUE, colour = ""#89c5d6"") +"
-"0","  labs(title = ""Annual laying dates of African White-backed Vultures (1993–2024)"","
-"0","       x = ""Year"", y = ""Laying date (day of year)"") +"
-"0","  theme_bw() +"
-"0","  theme(panel.grid = element_blank())"
-"0",""
