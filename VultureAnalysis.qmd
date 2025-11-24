@@ -28,7 +28,7 @@ library(GGally)
 
 ```
 
-## Load Data
+### Load Data
 ```{r}
 
 vultures <- read.csv("~/Desktop/Vulture Project/Data/93_24 cleaned.csv")
@@ -36,7 +36,7 @@ WeatherData <- read.csv("~/Desktop/Vulture Project/Data/Weather.csv")
 
 ```
 
-## Cleaning Breeding Data
+### Cleaning Breeding Data
 
 ```{r}
 
@@ -100,14 +100,6 @@ theme_bw() + theme(panel.grid = element_blank())
 
 
 ## Weather Data Summaries 
-
-```{r}
-summary(weather_yearly)
-colSums(is.na(weather_yearly))
-
-```
- 
-
 ### Annual Weather Summaries 
 
 ```{r}
@@ -128,6 +120,15 @@ hail_days  = sum(I_HAIL, na.rm = TRUE),
 )
 
 ```
+
+```{r}
+
+summary(weather_yearly)
+colSums(is.na(weather_yearly))
+
+```
+
+
 
 ### Lagged Weather Summaries 
 
