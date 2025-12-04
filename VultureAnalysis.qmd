@@ -8,7 +8,13 @@ format:
 ---
 ::: {.panel-tabset}
 
-## Clean Data
+## Packages 
+
+```{r}
+#remotes::install_github("ropensci/rnoaa")
+#remotes::install_github("ropensci/chirps")
+#install.packages("GSODR")
+```
 
 ### Load Libraries
 ```{r}
@@ -23,10 +29,14 @@ library(tibble)
 library(dplyr)
 library(knitr)
 library(ggplot2)
-library(GGally) 
+library(GGally)
 library(tidyr)
+library(chirps)
+library(GSODR)
 
 ```
+
+### Overdispersion Check 
 
 ```{r}
 check_overdispersion <- function(model) {
@@ -34,22 +44,131 @@ check_overdispersion <- function(model) {
   disp <- sum(rp^2) / model$df.residual
   disp
 }
+```
+
+## Load Data
+```{r}
+vultures    <- read.csv("~/Desktop/Vulture Project/Data/93_24 cleaned.csv")
+# WeatherData <- read.csv("~/Desktop/Vulture Project/Data/Weather.csv")
+```
+
+### Weather Data 
+
+```{r}
+library(rnoaa)
+library(tidyverse)
+library(lubridate)
+
+
+kim_station <- "684380-99999"
+
+weather_raw <- get_GSOD(
+  station = kim_station,
+  years   = 1993:2024
+)
+
+
 
 ```
 
-### Load Data
 ```{r}
-
-vultures <- read.csv("~/Desktop/Vulture Project/Data/93_24 cleaned.csv")
-WeatherData <- read.csv("~/Desktop/Vulture Project/Data/Weather.csv")
+WeatherData <- weather_raw |>
+  transmute(
+    YEAR,
+    MONTH,
+    DAY,
+    TEMP,
+    MAX,
+    MIN,
+    PRCP,
+    WDSP,
+    MXSPD,
+    I_HAIL
+  ) |>
+  arrange(YEAR, MONTH, DAY)
 
 ```
 
-
-### Cleaning Breeding Data
+### CHIRPS Rainfall for 2004 
 
 ```{r}
+# coordinates  (24.81 E, 28.62 S)
 
+lonlat <- data.frame(
+lon = 24.81,
+lat = -28.62
+)
+
+kimberley_chirps_2004 <- get_chirps(
+object   = lonlat,
+dates    = c("2004-01-01", "2004-12-31"),
+server   = "ClimateSERV",
+as.matrix = FALSE
+)
+
+glimpse(kimberley_chirps_2004)
+
+```
+
+### CHIRPS Rainfall for 2004 (Dronfield / Kimberley)
+
+```{r}
+daily_chirps_2004 <- tibble(
+date    = as.Date(kimberley_chirps_2004$date),
+rain_mm = as.numeric(kimberley_chirps_2004$chirps)
+)
+
+head(daily_chirps_2004) 
+summary(daily_chirps_2004$rain_mm)
+
+annual_chirps_2004 <- daily_chirps_2004 |>
+mutate(YEAR = year(date)) |>
+group_by(YEAR) |>
+summarise(
+total_rain_2004 = sum(rain_mm, na.rm = TRUE),
+max_rain_2004   = max(rain_mm, na.rm = TRUE),
+rain_days_2004  = sum(rain_mm > 0, na.rm = TRUE),
+.groups = "drop"
+)
+
+annual_chirps_2004
+
+```
+
+```{r}
+total_rain_2004 <- annual_chirps_2004$total_rain_2004
+max_rain_2004   <- annual_chirps_2004$max_rain_2004
+rain_days_2004  <- annual_chirps_2004$rain_days_2004
+
+total_rain_2004
+max_rain_2004
+rain_days_2004
+
+```
+### Weather Data 
+
+```{r}
+WeatherData_clean <- WeatherData |>
+  filter(
+    YEAR >= 1993,
+    YEAR <= 2024
+  ) |>
+  mutate(
+    date = make_date(YEAR, MONTH, DAY)
+  ) |>
+  # add CHIRPS daily rainfall into 2004 
+  left_join(daily_chirps_2004, by = "date") |>
+  mutate(
+    PRCP = if_else(YEAR == 2004 & !is.na(rain_mm), rain_mm, PRCP)
+  ) |>
+  dplyr::select(-rain_mm) 
+
+
+```
+
+## Clean breeding data 
+
+```{r}
 vultures.clean <- vultures |>
   clean_names() |>                               # ringing_date, laying_date
   rename_with(~ gsub("_", ".", .x)) |>           # ringing.date, laying.dater
@@ -64,22 +183,18 @@ vultures.clean <- vultures |>
                            NA_character_, laying.date),
     laying.date  = ymd(gsub("/", "-", laying.date))
   )
-
-
 ```
 
-## Explore data 
-### Data structure 
+## Explore Data 
 
 ```{r}
-
 glimpse(vultures.clean)
 summary(vultures.clean)
 colSums(is.na(vultures.clean))
 
 ```
 
-### Active nests per year (Sampling effort)
+### Active Nests per year 
 
 ```{r}
 active.nests.raw <- vultures.clean |>
@@ -90,45 +205,39 @@ summarise(active_nests = n(), .groups = "drop")
 ggplot(active.nests.raw, aes(x = year, y = active_nests)) +
 geom_col(fill = "#89c5d6", alpha = 0.85) +
 labs(x = "Year", y = "Number of active nests") +
-theme_bw() + theme(panel.grid = element_blank())
+theme_bw() +
+theme(panel.grid = element_blank())
+
 ```
-### Succsess proportions
+
+### Success proportion
 
 ```{r}
 failed.nests.raw <- vultures.clean |>
 mutate(year = year(ringing.date)) |>
 group_by(year) |>
 summarise(
-active_nests = n(),
+active_nests  = n(),
 success_nests = sum(!is.na(laying.date)),
-success_prop = success_nests / active_nests,
-.groups = "drop"
+success_prop  = success_nests / active_nests,
+.groups       = "drop"
 )
 
 ggplot(failed.nests.raw, aes(x = success_prop)) +
 geom_histogram(bins = 15, fill = "#89c5d6") +
 labs(x = "Breeding success proportion", y = "Count") +
-theme_bw() + theme(panel.grid = element_blank())
-```
-
-### Weather Data 
-```{r}
-WeatherData_clean <- WeatherData |>
-  dplyr::filter(
-    YEAR >= 1993,
-    YEAR <= 2024,
-  )
+theme_bw() +
+theme(panel.grid = element_blank())
 
 ```
 
 
-### Annual weather summaries
+### Annual Weather Summaries 
 
 ```{r}
 weather_yearly <- WeatherData_clean |>
-dplyr::filter(YEAR >= 1992, YEAR <= 2024) |>
-dplyr::group_by(YEAR) |>
-dplyr::summarise(
+group_by(YEAR) |>
+summarise(
 mean_temp  = mean(TEMP, na.rm = TRUE),
 max_temp   = max(MAX, na.rm = TRUE),
 min_temp   = min(MIN, na.rm = TRUE),
@@ -141,13 +250,14 @@ hail_days  = sum(I_HAIL, na.rm = TRUE),
 .groups    = "drop"
 )
 
-summary(weather_yearly)
-colSums(is.na(weather_yearly))
+# Check the corrected 2004 rainfall
+
+weather_yearly[weather_yearly$YEAR == 2004,
+c("YEAR", "total_rain", "max_rain", "rain_days")]
 
 ```
 
-
-### Plot annual rainfal
+### Plot Annual Rainfall
 
 ```{r}
 ggplot(weather_yearly, aes(x = YEAR, y = total_rain)) +
@@ -158,267 +268,186 @@ labs(x = "Year", y = "Total annual rainfall (mm)")
 
 ```
 
-Checking the issue in 2004 
+### Rain over time 
 
 ```{r}
-WeatherData |>
-  dplyr::filter(YEAR == 2004) |>
-  dplyr::select(YEARMODA, PRCP) |>
-  head(50) 
+library(grid) 
 
+rain_yearly <- weather_yearly
 
-summary(WeatherData$PRCP[WeatherData$YEAR == 2004])
-
-```
-
-```{r}
-rain_2004 <- WeatherData |>
-  dplyr::filter(YEAR == 2004)
-
-nrow(rain_2004)
-
-dplyr::slice_head(rain_2004, n = 10) |> dplyr::select(YEARMODA, PRCP)
-dplyr::slice_tail(rain_2004, n = 10) |> dplyr::select(YEARMODA, PRCP)
-
-# rainfall in 2004
-summary(rain_2004$PRCP)
-sum_2004 <- sum(rain_2004$PRCP, na.rm = TRUE)
-sum_2004
-
-```
-
-```{r}
-check_rain <- WeatherData |>
-  dplyr::filter(YEAR != 2004)
-
-summary(check_rain$PRCP)
-
-quantile(check_rain$PRCP, c(.5, .9, .95, .99), na.rm = TRUE)
-quantile(rain_2004$PRCP,  c(.5, .9, .95, .99), na.rm = TRUE)
-
-```
-
-I think that the units for 2004 might be inconsistent, some rainfall events are super inflated like 149mm, should possibly be 14.9mm? 
-I think its best to exclude 2004 from the analysis
-
-### Excluding 2004 
-```{r}
-
-WeatherData_clean <- WeatherData |>
-  dplyr::filter(YEAR != 2004)
-
-```
-
-```{r}
-
-weather_yearly <- WeatherData_clean |>
-  dplyr::filter(YEAR >= 1993, YEAR <= 2024) |> 
-  dplyr::group_by(YEAR) |>
-  dplyr::summarise(
-    mean_temp  = mean(TEMP, na.rm = TRUE),
-    max_temp   = max(MAX, na.rm = TRUE),
-    min_temp   = min(MIN, na.rm = TRUE),
-    total_rain = sum(PRCP, na.rm = TRUE),
-    max_rain   = max(PRCP, na.rm = TRUE),
-    rain_days  = sum(PRCP > 0, na.rm = TRUE),
-    mean_wind  = mean(WDSP, na.rm = TRUE),
-    max_wind   = max(MXSPD, na.rm = TRUE),
-    hail_days  = sum(I_HAIL, na.rm = TRUE),
-    .groups = "drop"
-  )
-
-```
-
-```{r}
-rain_yearly <- weather_yearly |> dplyr::filter(YEAR != 2004)
-```
-
-
-```{r}
-ggplot(weather_yearly, aes(YEAR, total_rain)) +
-  geom_line() +
-  geom_point() +
-  theme_bw() +
-  labs(x = "Year", y = "Total annual rainfall (mm)")
-
-```
-```{r}
 rain_long <- rain_yearly |>
-  tidyr::pivot_longer(
-    cols = c(total_rain, max_rain, rain_days),
-    names_to = "metric",
-    values_to = "value"
-  ) |>
-  dplyr::mutate(
-    metric = factor(
-      metric,
-      levels = c("total_rain", "max_rain", "rain_days")
-    ),
-    metric_label = dplyr::case_when(
-      metric == "total_rain" ~ "Total annual rainfall (mm)",
-      metric == "max_rain"   ~ "Max daily rainfall (mm)",
-      metric == "rain_days"  ~ "Number of rainy days (> 0 mm)"
-    ),
-    metric_label = factor(
-      metric_label,
-      levels = c(
-        "Total annual rainfall (mm)",
-        "Max daily rainfall (mm)",
-        "Number of rainy days (> 0 mm)"
-      )
-    )
-  )
+pivot_longer(
+cols = c(total_rain, max_rain, rain_days),
+names_to = "metric",
+values_to = "value"
+) |>
+mutate(
+metric = factor(
+metric,
+levels = c("total_rain", "max_rain", "rain_days")
+),
+metric_label = case_when(
+metric == "total_rain" ~ "Total annual rainfall (mm)",
+metric == "max_rain"   ~ "Max daily rainfall (mm)",
+metric == "rain_days"  ~ "Number of rainy days (> 0 mm)"
+),
+metric_label = factor(
+metric_label,
+levels = c(
+"Total annual rainfall (mm)",
+"Max daily rainfall (mm)",
+"Number of rainy days (> 0 mm)"
+)
+)
+)
 
 ggplot(rain_long, aes(x = YEAR, y = value)) +
-  geom_line(linewidth = 0.7) +
-  geom_point(size = 1.3) +
-  facet_wrap(~ metric_label, ncol = 1, scales = "free_y") +
-  theme_classic() +
-  labs(
-    x = "Year",
-    y = NULL
-  ) +
-  theme(
-    strip.text = element_text(size = 9, face = "bold"),
-    axis.title.x = element_text(size = 10),
-    axis.text = element_text(size = 8),
-    panel.spacing = unit(0.7, "lines")
-  )
+geom_line(linewidth = 0.7) +
+geom_point(size = 1.3) +
+facet_wrap(~ metric_label, ncol = 1, scales = "free_y") +
+theme_classic() +
+labs(
+x = "Year",
+y = NULL
+) +
+theme(
+strip.text    = element_text(size = 9, face = "bold"),
+axis.title.x  = element_text(size = 10),
+axis.text     = element_text(size = 8),
+panel.spacing = unit(0.7, "lines")
+)
 
 ```
 
-### Check min temperature 
-### Yearly
+### Check min temp 
+
 ```{r}
+# Yearly 
+
 ggplot(weather_yearly, aes(x = YEAR, y = min_temp)) +
-  geom_line() +
-  geom_point() +
-  theme_bw() +
-  labs(x = "Year", y = "Annual minimum temperature")
+geom_line() +
+geom_point() +
+theme_bw() +
+labs(x = "Year", y = "Annual minimum temperature (°C)")
 
 ```
 
-### Daily
 ```{r}
+# Daily 
+
 weather_daily <- WeatherData_clean |>
-  dplyr::group_by(YEAR, MONTH, DAY) |>
-  dplyr::summarise(
-    mean_temp  = mean(TEMP, na.rm = TRUE),
-    max_temp   = max(MAX,  na.rm = TRUE),
-    min_temp   = min(MIN,  na.rm = TRUE),
-    total_rain = sum(PRCP, na.rm = TRUE),
-    max_rain   = max(PRCP, na.rm = TRUE),
-    rain_days  = sum(PRCP > 0, na.rm = TRUE),
-    mean_wind  = mean(WDSP, na.rm = TRUE),
-    max_wind   = max(MXSPD, na.rm = TRUE),
-    hail_days  = sum(I_HAIL, na.rm = TRUE),
-    .groups    = "drop"
-  )
-```
+group_by(YEAR, MONTH, DAY) |>
+summarise(
+mean_temp  = mean(TEMP, na.rm = TRUE),
+max_temp   = max(MAX,  na.rm = TRUE),
+min_temp   = min(MIN,  na.rm = TRUE),
+total_rain = sum(PRCP, na.rm = TRUE),
+max_rain   = max(PRCP, na.rm = TRUE),
+rain_days  = sum(PRCP > 0, na.rm = TRUE),
+mean_wind  = mean(WDSP, na.rm = TRUE),
+max_wind   = max(MXSPD, na.rm = TRUE),
+hail_days  = sum(I_HAIL, na.rm = TRUE),
+.groups    = "drop"
+)
 
-```{r}
 temp_daily <- weather_daily |>
-  dplyr::mutate(
-    min_temp = ifelse(is.infinite(min_temp), NA_real_, min_temp),
-    max_temp = ifelse(is.infinite(max_temp), NA_real_, max_temp)
-  )
+mutate(
+min_temp = ifelse(is.infinite(min_temp), NA_real_, min_temp),
+max_temp = ifelse(is.infinite(max_temp), NA_real_, max_temp)
+)
+
 summary(temp_daily$min_temp)
 summary(temp_daily$max_temp)
 
+
 ```
 
-### Look at daily temps (For lagged effects too its nb
+### Yearly temp summaries 
 
 ```{r}
 weather_yearly_temp <- weather_daily |>
-  dplyr::filter(YEAR >= 1993, YEAR <= 2024) |> 
-  dplyr::group_by(YEAR) |>
-  dplyr::summarise(
-    mean_temp = mean(mean_temp, na.rm = TRUE),
-    max_temp  = max(max_temp, na.rm = TRUE),
-    min_temp  = min(min_temp, na.rm = TRUE),
-    .groups = "drop"
-  )
-```
+filter(YEAR >= 1993, YEAR <= 2024) |>
+group_by(YEAR) |>
+summarise(
+mean_temp = mean(mean_temp, na.rm = TRUE),
+max_temp  = max(max_temp, na.rm = TRUE),
+min_temp  = min(min_temp, na.rm = TRUE),
+.groups   = "drop"
+)
 
-
-```{r}
 summary(weather_yearly_temp$min_temp)
 summary(weather_yearly_temp$max_temp)
+
 ```
 
-### Min temps over time 
+### Temps over time 
+
 ```{r}
 min_temp <- ggplot(weather_yearly_temp, aes(YEAR, min_temp)) +
-  geom_line() +
-  geom_point() +
-  theme_bw() +
-  labs(x = "Year", y = "Annual minimum temperature (°C)")
-```
+geom_line() +
+geom_point() +
+theme_bw() +
+labs(x = "Year", y = "Annual minimum temperature (°C)")
 
-
-### Max temps over time 
-```{r}
 max_temp <- ggplot(weather_yearly_temp, aes(x = YEAR, y = max_temp)) +
-  geom_line() +
-  geom_point() +
-  theme_bw() +
-  labs(
-    x = "Year",
-    y = "Annual maximum temperature (°C)",
-    title = "Annual Maximum Temperature (1993–2024)"
-  )
-```
+geom_line() +
+geom_point() +
+theme_bw() +
+labs(
+x = "Year",
+y = "Annual maximum temperature (°C)",
+title = "Annual Maximum Temperature (1993–2024)"
+)
 
-
-### Mean temps over time 
-```{r}
 mean_temp <- ggplot(weather_yearly_temp, aes(x = YEAR, y = mean_temp)) +
-  geom_line() +
-  geom_point() +
-  theme_bw() +
-  labs(
-    x = "Year",
-    y = "Annual mean temperature (°C)",
-    title = "Annual Mean Temperature (1993–2024)"
-  )
+geom_line() +
+geom_point() +
+theme_bw() +
+labs(
+x = "Year",
+y = "Annual mean temperature (°C)",
+title = "Annual Mean Temperature (1993–2024)"
+)
+
 ```
 
 ```{r}
 temp_yearly_long <- weather_yearly_temp |>
-  pivot_longer(
-    cols = c(max_temp, min_temp, mean_temp),
-    names_to = "type",
-    values_to = "value"
-  ) |>
-  mutate(
-    type = factor(type,
-                   levels = c("max_temp", "min_temp", "mean_temp"),  
-      labels = c("Annual Maximum Temperature (°C)",
-                 "Annual Minimum Temperature (°C)",
-                 "Annual Mean Temperature (°C)"))
-  )
+pivot_longer(
+cols = c(max_temp, min_temp, mean_temp),
+names_to = "type",
+values_to = "value"
+) |>
+mutate(
+type = factor(
+type,
+levels = c("max_temp", "min_temp", "mean_temp"),
+labels = c("Annual Maximum Temperature (°C)",
+"Annual Minimum Temperature (°C)",
+"Annual Mean Temperature (°C)")
+)
+)
 
 ggplot(temp_yearly_long, aes(x = YEAR, y = value)) +
-  geom_line(size = 0.7) +
-  geom_point(size = 1.5) +
-  facet_wrap(~ type, scales = "free_y", ncol = 1) +
-  theme_classic(base_size = 11) +
-  theme(
-    strip.text = element_text(size = 10, face = "bold"),
-    axis.title = element_text(size = 9),
-    axis.text = element_text(size = 8),
-    panel.spacing = unit(0.8, "lines")
-  ) +
-  labs(
-    x = "Year",
-    y = "",
-    title = "Annual Temperature Trends (1993–2024)"
-  )
+geom_line(size = 0.7) +
+geom_point(size = 1.5) +
+facet_wrap(~ type, scales = "free_y", ncol = 1) +
+theme_classic(base_size = 11) +
+theme(
+strip.text   = element_text(size = 10, face = "bold"),
+axis.title   = element_text(size = 9),
+axis.text    = element_text(size = 8),
+panel.spacing = unit(0.8, "lines")
+) +
+labs(
+x = "Year",
+y = "",
+title = "Annual Temperature Trends (1993–2024)"
+)
+
 ```
 
-
-### Lagged Weather Summaries 
+### Lagged Weather summaries 
 
 ```{r}
 weather_yearly_lag <- weather_yearly |>
@@ -430,62 +459,65 @@ rain_days, mean_wind, max_wind, hail_days),
 ~ lag(.x, 1), .names = "lag_{.col}"
 )
 )
+
 ```
 
-### Daily Weather Summaries 
-
+### Daily weather with lagged variables 
 ```{r}
 weather_lag <- WeatherData_clean |>
-  dplyr::mutate(
-    date      = lubridate::make_date(YEAR, MONTH, DAY),
-    mean_temp = readr::parse_number(as.character(TEMP)),
-    max_temp  = readr::parse_number(as.character(MAX)),
-    min_temp  = readr::parse_number(as.character(MIN)),
-    mean_wind = readr::parse_number(as.character(WDSP)),
-    max_wind  = readr::parse_number(as.character(MXSPD)),
-    rain      = readr::parse_number(as.character(PRCP)),
-    rain_day  = as.integer(replace_na(rain, 0) > 0),
-    hail      = I_HAIL
-  ) |>
-  dplyr::arrange(date)
+mutate(
+mean_temp = readr::parse_number(as.character(TEMP)),
+max_temp  = readr::parse_number(as.character(MAX)),
+min_temp  = readr::parse_number(as.character(MIN)),
+mean_wind = readr::parse_number(as.character(WDSP)),
+max_wind  = readr::parse_number(as.character(MXSPD)),
+rain      = readr::parse_number(as.character(PRCP)),
+rain_day  = as.integer(replace_na(rain, 0) > 0),
+hail      = I_HAIL
+) |>
+arrange(date)
+
 ```
 
-### Weather variable correlation 
+### Check for weather correlation 
 
 ```{r}
 weather_yearly |>
-  dplyr::select(mean_temp, max_temp, min_temp, total_rain, max_rain,
-                rain_days, mean_wind, max_wind, hail_days)
-```
+  dplyr::select(
+    mean_temp, max_temp, min_temp,
+    total_rain, max_rain, rain_days,
+    mean_wind, max_wind, hail_days
+  )
 
+
+```
 
 ```{r}
-# Correlation matrix
 cor_mat <- weather_yearly |>
-  dplyr::select(mean_temp, max_temp, min_temp, total_rain, max_rain,
-                rain_days, mean_wind, max_wind, hail_days) |>
-  cor(use = "pairwise.complete.obs")
+dplyr::select(mean_temp, max_temp, min_temp, total_rain, max_rain,
+rain_days, mean_wind, max_wind, hail_days) |>
+cor(use = "pairwise.complete.obs")
 
 cor_df <- as.data.frame(cor_mat) |>
-  tibble::rownames_to_column("var1") |>
-  pivot_longer(-var1, names_to = "var2", values_to = "cor")
-
+rownames_to_column("var1") |>
+pivot_longer(-var1, names_to = "var2", values_to = "cor")
 
 ggplot(cor_df, aes(x = var1, y = var2, fill = cor)) +
-  geom_tile() +
-  scale_fill_gradient2(
-    low = "#b2182b", mid = "white", high = "#2166ac",
-    midpoint = 0, limits = c(-1, 1)
-  ) +
-  labs(x = "", y = "", fill = "Correlation") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid = element_blank()
-  )
+geom_tile() +
+scale_fill_gradient2(
+low = "#b2182b", mid = "white", high = "#2166ac",
+midpoint = 0, limits = c(-1, 1)
+) +
+labs(x = "", y = "", fill = "Correlation") +
+theme_bw() +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1),
+panel.grid  = element_blank()
+)
+
 ```
 
-### Just to look at the variables across years for trends.
+### All weather across years
 
 ```{r}
 weather_yearly |>
@@ -494,24 +526,17 @@ ggplot(aes(x = YEAR, y = value)) +
 geom_line(colour = "#89c5d6") +
 facet_wrap(~ name, scales = "free_y") +
 labs(x = "Year", y = "Value") +
-theme_bw() + theme(panel.grid = element_blank())
+theme_bw() +
+theme(panel.grid = element_blank())
 
 ```
 
-```{r}
-check_overdispersion <- function(model) {
-  rp <- residuals(model, type = "pearson")
-  disp <- sum(rp^2) / model$df.residual
-  disp
-}
-```
 
-
-## Objective 1: Breeding Effort 
-
-### Effort Data 
+## Objective 1
 
 ```{r}
+# Effort Data 
+
 active.nests <- vultures.clean |>
 mutate(year = year(ringing.date)) |>
 group_by(year) |>
@@ -519,23 +544,27 @@ summarise(active_nests = n(), .groups = "drop")
 
 effort_weather <- active.nests |>
 left_join(weather_yearly, by = c("year" = "YEAR"))
+
 ```
 
 
-### Year only Model 
+### Year only model 
+
 ```{r}
 m_year <- glm.nb(active_nests ~ year, data = active.nests)
 summary(m_year)
 check_overdispersion(m_year)
+
 ```
 
-### Check autocorr
+### Autocorrelation in residuals
 
 ```{r}
 res_effort <- residuals(m_year, type = "pearson")
 
 acf(res_effort,
-    main = "ACF of residuals: breeding effort (active nests)")
+main = "ACF of residuals: breeding effort (active nests)")
+
 ```
 
 ### Rainfall 
@@ -553,9 +582,10 @@ active_nests ~ z_total_rain + z_max_rain + z_rain_days,
 data = effort_weather
 )
 summary(m_rain_only)
+
 ```
 
-### Temperature 
+### Temp 
 
 ```{r}
 effort_weather <- effort_weather |>
@@ -565,29 +595,24 @@ z_max_temp  = scale(max_temp),
 z_min_temp  = scale(min_temp)
 )
 
-# Max Temp 
-
-max_temp <- glm.nb(
+max_temp_mod <- glm.nb(
 active_nests ~ z_max_temp,
 data = effort_weather
 )
-summary(max_temp)
+summary(max_temp_mod)
 
-# Min Temp 
-
-min_temp <- glm.nb(
-  active_nests ~ z_min_temp,
-  data = effort_weather
+min_temp_mod <- glm.nb(
+active_nests ~ z_min_temp,
+data = effort_weather
 )
-summary(min_temp)
+summary(min_temp_mod)
 
-# Mean temp 
-
-mean_temp <- glm.nb(
-  active_nests ~ z_mean_temp,
-  data = effort_weather
+mean_temp_mod <- glm.nb(
+active_nests ~ z_mean_temp,
+data = effort_weather
 )
-summary(mean_temp)
+summary(mean_temp_mod)
+
 ```
 
 ### Wind 
@@ -604,6 +629,7 @@ active_nests ~ z_mean_wind + z_max_wind,
 data = effort_weather
 )
 summary(m_wind_only)
+
 ```
 
 ### Hail 
@@ -617,345 +643,238 @@ active_nests ~ z_hail_days,
 data = effort_weather
 )
 summary(m_hail_only)
+
 ```
+
 
 ### Active nests across years 
 
 ```{r}
 active.nests <- vultures.clean |>
-  mutate(year = lubridate::year(ringing.date)) |>
-  group_by(year) |>
-  summarise(active_nests = n(), .groups = "drop")
+mutate(year = year(ringing.date)) |>
+group_by(year) |>
+summarise(active_nests = n(), .groups = "drop")
 
-m_year <- MASS::glm.nb(active_nests ~ year, data = active.nests)
+m_year <- glm.nb(active_nests ~ year, data = active.nests)
 
 active.nests_plot <- active.nests |>
-  mutate(pred_year = predict(m_year, newdata = active.nests, type = "response"))
+mutate(pred_year = predict(m_year, newdata = active.nests, type = "response"))
 
 ggplot(active.nests_plot, aes(x = year, y = active_nests)) +
-  geom_col(fill = "#89c5d6", alpha = 0.85) +
-  geom_line(aes(y = pred_year), linewidth = 1.1, colour = "black") +
-  labs(
-    x = "Year",
-    y = "Number of active nests"
-  ) +
-  theme_bw() +
-  theme(panel.grid = element_blank())
+geom_col(fill = "#89c5d6", alpha = 0.85) +
+geom_line(aes(y = pred_year), linewidth = 1.1, colour = "black") +
+labs(
+x = "Year",
+y = "Number of active nests"
+) +
+theme_bw() +
+theme(panel.grid = element_blank())
+
 ```
 
-### Effect of annual max temperature on effort
- 
+### Effects of max temp on effort
+
 ```{r}
 effort_weather <- active.nests |>
-  left_join(weather_yearly, by = c("year" = "YEAR")) |>
-  mutate(
-    z_total_rain = as.numeric(scale(total_rain)),
-    z_max_rain   = as.numeric(scale(max_rain)),
-    z_rain_days  = as.numeric(scale(rain_days)),
-    z_mean_temp  = as.numeric(scale(mean_temp)),
-    z_max_temp   = as.numeric(scale(max_temp)),
-    z_min_temp   = as.numeric(scale(min_temp)),
-    z_mean_wind  = as.numeric(scale(mean_wind)),
-    z_max_wind   = as.numeric(scale(max_wind)),
-    z_hail_days  = as.numeric(scale(hail_days))
-  )
+left_join(weather_yearly, by = c("year" = "YEAR")) |>
+mutate(
+z_total_rain = as.numeric(scale(total_rain)),
+z_max_rain   = as.numeric(scale(max_rain)),
+z_rain_days  = as.numeric(scale(rain_days)),
+z_mean_temp  = as.numeric(scale(mean_temp)),
+z_max_temp   = as.numeric(scale(max_temp)),
+z_min_temp   = as.numeric(scale(min_temp)),
+z_mean_wind  = as.numeric(scale(mean_wind)),
+z_max_wind   = as.numeric(scale(max_wind)),
+z_hail_days  = as.numeric(scale(hail_days))
+)
 
-m_eff_maxtemp <- MASS::glm.nb(
-  active_nests ~ z_max_temp,
-  data = effort_weather
+m_eff_maxtemp <- glm.nb(
+active_nests ~ z_max_temp,
+data = effort_weather
 )
 summary(m_eff_maxtemp)
 
 new_eff_temp <- tibble(
-  z_max_temp = seq(min(effort_weather$z_max_temp, na.rm = TRUE),
-                   max(effort_weather$z_max_temp, na.rm = TRUE),
-                   length.out = 100)
+z_max_temp = seq(
+min(effort_weather$z_max_temp, na.rm = TRUE),
+max(effort_weather$z_max_temp, na.rm = TRUE),
+length.out = 100
+)
+) |>
+mutate(
+pred_nests = predict(
+m_eff_maxtemp,
+newdata = cur_data(),
+type = "response"
+)
 )
 
-new_eff_temp <- new_eff_temp |>
-  mutate(pred_nests = predict(m_eff_maxtemp,
-                              newdata = new_eff_temp,
-                              type = "response"))
-
 ggplot(effort_weather, aes(x = z_max_temp, y = active_nests)) +
-  geom_point(alpha = 0.7) +
-  geom_line(data = new_eff_temp,
-            aes(x = z_max_temp, y = pred_nests),
-            linewidth = 1.1) +
-  labs(
-    x = "Annual maximum temperature (scaled)",
-    y = "Number of active nests"
-  ) +
-  theme_bw() +
-  theme(panel.grid = element_blank())
+geom_point(alpha = 0.7) +
+geom_line(
+data = new_eff_temp,
+aes(x = z_max_temp, y = pred_nests),
+linewidth = 1.1
+) +
+labs(
+x = "Annual maximum temperature (scaled)",
+y = "Number of active nests"
+) +
+theme_bw() +
+theme(panel.grid = element_blank())
+
 ```
 
-### Check fro autocorrelation
+
+
 ```{r}
 acf(active.nests$active_nests)
+
 ```
 
-## Objective 2: Breeding Success 
+## Objective 2
+### Success DF 
 
-### Success Dataframe 
 ```{r}
 failed.nests <- vultures.clean |>
-  mutate(year = year(ringing.date)) |>
-  filter(!is.na(year)) |>
-  group_by(year) |>
-  summarise(
-    active_nests  = n(),
-    success_nests = sum(!is.na(laying.date)),
-    failed_nests  = active_nests - success_nests,
-    success_prop  = success_nests / active_nests,
-    .groups = "drop"
-  ) |>
-  filter(active_nests > 0)
+mutate(year = year(ringing.date)) |>
+filter(!is.na(year)) |>
+group_by(year) |>
+summarise(
+active_nests  = n(),
+success_nests = sum(!is.na(laying.date)),
+failed_nests  = active_nests - success_nests,
+success_prop  = success_nests / active_nests,
+.groups       = "drop"
+) |>
+filter(active_nests > 0)
+
 ```
 
 ### Year only model 
 
 ```{r}
-m_success_year <- glm(
-  cbind(success_nests, failed_nests) ~ year,
-  family = quasibinomial,
-  data   = failed.nests
-)
-summary(m_success_year)
-```
-
-### Rainfall 
-
-```{r}
-success_df <- failed.nests |>
-  left_join(weather_yearly, by = c("year" = "YEAR")) |>
-  mutate(
-    z_total_rain = as.numeric(scale(total_rain)),
-    z_max_rain   = as.numeric(scale(max_rain)),
-    z_rain_days  = as.numeric(scale(rain_days))
-  )
-
-
-m_success_rain <- glm(
-  cbind(success_nests, failed_nests) ~
-    z_total_rain + z_max_rain + z_rain_days,
-  family = quasibinomial,
-  data   = success_df
-)
-summary(m_success_rain)
-```
-
-### Temperature 
-
-```{r}
-success_df <- success_df |>
-  mutate(
-    z_mean_temp = scale(mean_temp),
-    z_max_temp  = scale(max_temp),
-    z_min_temp  = scale(min_temp)
-  )
-
-# Min temp 
-m_success_minT <- glm(
-  cbind(success_nests, failed_nests) ~ z_min_temp,
-  family = quasibinomial,
-  data   = success_df
-)
-summary(m_success_minT)
-
-# Max temp 
-m_success_maxT <- glm(
-  cbind(success_nests, failed_nests) ~ z_max_temp,
-  family = quasibinomial,
-  data   = success_df
-)
-summary(m_success_maxT)
-
-# Mean temp 
-m_success_meanT <- glm(
-  cbind(success_nests, failed_nests) ~ z_mean_temp,
-  family = quasibinomial,
-  data   = success_df
-)
-summary(m_success_meanT)
-```
-
-### Wind 
-
-```{r}
-success_df <- success_df |>
-  mutate(
-    z_mean_wind = scale(mean_wind),
-    z_max_wind  = scale(max_wind)
-  )
-
-m_success_wind <- glm(
-  cbind(success_nests, failed_nests) ~ z_mean_wind + z_max_wind,
-  family = quasibinomial,
-  data   = success_df
-)
-summary(m_success_wind)
-```
-
-### Hail 
-
-```{r}
-success_df <- success_df |>
-  mutate(z_hail_days = scale(hail_days))
-
-m_success_hail <- glm(
-  cbind(success_nests, failed_nests) ~ z_hail_days,
-  family = quasibinomial,
-  data   = success_df
-)
-summary(m_success_hail)
-```
-
-### Breeding success over time
-
-```{r}
-success.nests <- failed.nests |>
-  mutate(pred_success = fitted(m_success_year))
-
-ggplot(success.nests, aes(x = year, y = success_prop)) +
-  geom_point(colour = "#89c5d6") +
-  geom_line(colour = "#89c5d6") +
-  geom_line(aes(y = pred_success), colour = "black", linewidth = 1.1) +
-  scale_y_continuous(limits = c(0, 1)) +
-  labs(
-    x = "Year",
-    y = "Breeding success (proportion)"
-  ) +
-  theme_bw() +
-  theme(panel.grid = element_blank())
-```
-
-### Check Binomial 
-
-## Year Only 
-
-```{r}
 success_year <- glm(
-  cbind(success_nests, failed_nests) ~ year,
-  family = binomial,
-  data   = failed.nests
+cbind(success_nests, failed_nests) ~ year,
+family = binomial,
+data   = failed.nests
 )
 summary(success_year)
-
 check_overdispersion(success_year)
+
 ```
 
-### Rain
+### Rain 
 
 ```{r}
 success_df <- failed.nests |>
-  left_join(weather_yearly, by = c("year" = "YEAR")) |>
-  mutate(
-    z_total_rain = as.numeric(scale(total_rain)),
-    z_max_rain   = as.numeric(scale(max_rain)),
-    z_rain_days  = as.numeric(scale(rain_days))
-  )
+left_join(weather_yearly, by = c("year" = "YEAR")) |>
+mutate(
+z_total_rain = as.numeric(scale(total_rain)),
+z_max_rain   = as.numeric(scale(max_rain)),
+z_rain_days  = as.numeric(scale(rain_days))
+)
 
 success_rain <- glm(
-  cbind(success_nests, failed_nests) ~
-    z_total_rain + z_max_rain + z_rain_days,
-  family = binomial,
-  data   = success_df
+cbind(success_nests, failed_nests) ~
+z_total_rain + z_max_rain + z_rain_days,
+family = binomial,
+data   = success_df
 )
 summary(success_rain)
-
 check_overdispersion(success_rain)
+
 ```
 
-### Temp
+### Temp 
 
 ```{r}
 success_df <- success_df |>
-  mutate(
-    z_mean_temp = as.numeric(scale(mean_temp)),
-    z_max_temp  = as.numeric(scale(max_temp)),
-    z_min_temp  = as.numeric(scale(min_temp))
-  )
+mutate(
+z_mean_temp = as.numeric(scale(mean_temp)),
+z_max_temp  = as.numeric(scale(max_temp)),
+z_min_temp  = as.numeric(scale(min_temp))
+)
 
-# Min temp
 success_minT <- glm(
-  cbind(success_nests, failed_nests) ~ z_min_temp,
-  family = binomial,
-  data   = success_df
+cbind(success_nests, failed_nests) ~ z_min_temp,
+family = binomial,
+data   = success_df
 )
 summary(success_minT)
 check_overdispersion(success_minT)
 
-# Max temp
 success_maxT <- glm(
-  cbind(success_nests, failed_nests) ~ z_max_temp,
-  family = binomial,
-  data   = success_df
+cbind(success_nests, failed_nests) ~ z_max_temp,
+family = binomial,
+data   = success_df
 )
 summary(success_maxT)
 check_overdispersion(success_maxT)
 
-# Mean temp
 success_meanT <- glm(
-  cbind(success_nests, failed_nests) ~ z_mean_temp,
-  family = binomial,
-  data   = success_df
+cbind(success_nests, failed_nests) ~ z_mean_temp,
+family = binomial,
+data   = success_df
 )
 summary(success_meanT)
 check_overdispersion(success_meanT)
+
 ```
-### Wind 
+
+### WInd 
 
 ```{r}
 success_df <- success_df |>
-  mutate(
-    z_mean_wind = as.numeric(scale(mean_wind)),
-    z_max_wind  = as.numeric(scale(max_wind))
-  )
+mutate(
+z_mean_wind = as.numeric(scale(mean_wind)),
+z_max_wind  = as.numeric(scale(max_wind))
+)
 
 m_success_wind <- glm(
-  cbind(success_nests, failed_nests) ~ z_mean_wind + z_max_wind,
-  family = binomial,
-  data   = success_df
+cbind(success_nests, failed_nests) ~ z_mean_wind + z_max_wind,
+family = binomial,
+data   = success_df
 )
 summary(m_success_wind)
 check_overdispersion(m_success_wind)
-```
 
+```
 
 ### Hail 
 
 ```{r}
 success_df <- success_df |>
-  mutate(
-    z_hail_days = as.numeric(scale(hail_days))
-  )
+mutate(
+z_hail_days = as.numeric(scale(hail_days))
+)
 
 m_success_hail <- glm(
-  cbind(success_nests, failed_nests) ~ z_hail_days,
-  family = binomial,
-  data   = success_df
+cbind(success_nests, failed_nests) ~ z_hail_days,
+family = binomial,
+data   = success_df
 )
 summary(m_success_hail)
 check_overdispersion(m_success_hail)
+
 ```
 
+## Objective 3
 
-## Objective 3: Breeding Timing 
-
-### 60 day prelaying period 
+### 60 day pre laying period 
 
 ```{r}
 timing_df <- vultures.clean |>
-  filter(!is.na(laying.date)) |>
-  mutate(
-    year    = lubridate::year(laying.date),
-    lay_DOY = lubridate::yday(laying.date)
-  )
-
+filter(!is.na(laying.date)) |>
+mutate(
+year    = year(laying.date),
+lay_DOY = yday(laying.date)
+)
 
 summarise_60 <- function(lay_date, weather) {
-w <- weather |> filter(date > (lay_date - days(60)), date <= lay_date)
+w <- weather |>
+filter(date > (lay_date - days(60)), date <= lay_date)
 
 tibble(
 mean_temp_60  = mean(w$mean_temp, na.rm = TRUE),
@@ -972,9 +891,10 @@ hail_days_60  = sum(w$hail, na.rm = TRUE)
 timing_weather_60 <- timing_df |>
 mutate(win60 = purrr::map(laying.date, summarise_60, weather = weather_lag)) |>
 unnest(win60)
+
 ```
 
-### Temperature model 
+### Temp 
 
 ```{r}
 m_timing_temp_60 <- lm(
@@ -982,10 +902,11 @@ lay_DOY ~ mean_temp_60 + max_temp_60 + min_temp_60,
 data = timing_weather_60
 )
 summary(m_timing_temp_60)
+
 ```
 
 
-### Rainfall 
+### Rain 
 
 ```{r}
 m_timing_rain_60 <- lm(
@@ -993,70 +914,64 @@ lay_DOY ~ total_rain_60 + rain_days_60,
 data = timing_weather_60
 )
 summary(m_timing_rain_60)
-```
 
-### Wind 
-
-```{r}
-m_timing_wind_60 <- lm(
-lay_DOY ~ mean_wind_60 + max_wind_60,
-data = timing_weather_60
-)
-summary(m_timing_wind_60)
 ```
 
 ### Hail 
+
 ```{r}
-m_timing_hail_60 <- lm(
-lay_DOY ~ hail_days_60,
+m_timing_rain_60 <- lm(
+lay_DOY ~ total_rain_60 + rain_days_60,
 data = timing_weather_60
 )
-summary(m_timing_hail_60)
+summary(m_timing_rain_60)
+
 ```
 
+### Test 
 
+```{r}
+plot(failed.nests$year, failed.nests$success_prop)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 
 
 
 
 :::
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
