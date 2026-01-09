@@ -13,6 +13,8 @@ format:
 
 ## Introduction 
 
+### Introduction
+
 Climate change and weather variability 
 
 Climate change is widely projected to alter ecological systems by increasing the variability in weather patterns and the occurrence of extreme events across the globe. Events such as severe droughts, heat stress and flooding are predicted to become more frequent, leading to significant pressure on ecological systems. Many studies on the effects of climate change on environmental systems focus on shifts in mean climatic conditions, such as long-term change in precipitation, with less attention given to how increased variability may be driving ecological disruptions (Thornton *et al.* 2014). Although this emphasis has improved the understanding of mean climate trends, evidence suggests that interannual variation in climatic conditions plays a crucial role in the ecological response (Maxwell *et al.* 2018). Annual fluctuations in climatic conditions increase the unpredictability of environmental responses and often result in some years being more favourable than others, influencing the availability of important resources such as food, which can cause physiological stress to individuals, populations, and whole ecosystems. This results in substantial variation in the fitness and survival rates of species across multiple years, depending on the environmental conditions (Vázquez *et al.*2015, Berzins *et al.* 2020). Therefore, annual variability in climate is an often-overlooked driver of ecological response to environmental change, emphasising its importance in assessing the impacts of climate change on natural systems. 
