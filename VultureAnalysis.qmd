@@ -33,6 +33,9 @@ library(GGally)
 library(tidyr)
 library(chirps)
 library(GSODR)
+library(tibble)
+library(knitr)
+
 
 ```
 
@@ -937,6 +940,97 @@ plot(failed.nests$year, failed.nests$success_prop)
 ```
 
 
+
+## Candidate model set
+
+```{r}
+
+objective1_table <- tribble(
+  ~`Hypothesis / justification`, ~Model,
+
+  # ---- Temperature ----
+  "**Temp**", NA,
+  "Warmer years increase energetic cost of adult birds, reducing likelihood to breed.",
+  "active_nests ~ mean_temp",
+
+  "Extreme heat events cause thermal stress, reducing breeding effort (active cooling is energetically costly and may reduce adult condition).",
+  "active_nests ~ max_temp",
+
+  "Cold extremes increase thermoregulatory demand (often increasing time spent foraging), reducing effort put into breeding.",
+  "active_nests ~ min_temp",
+
+  # ---- Rain ----
+  "**Rain**", NA,
+  "High rainfall reduces foraging efficiency and adult condition, reducing breeding effort.",
+  "active_nests ~ total_rain",
+
+  "Prolonged rainfall conditions reduce breeding effort by limiting foraging opportunity (fewer or weaker thermals for soaring).",
+  "active_nests ~ rain_days",
+
+  "Intense rainfall events decrease foraging efficiency and nest attendance, reducing breeding effort.",
+  "active_nests ~ max_rain",
+
+  "Previous year’s rainfall influences food availability and adult condition, affecting breeding effort in the following year.",
+  "active_nests ~ lag_total_rain",
+
+  # ---- Wind ----
+  "**Wind**", NA,
+  "Persistent windy conditions increase the cost of flying, limiting foraging and the energy available for reproduction, reducing breeding effort.",
+  "active_nests ~ mean_wind",
+
+  "Extreme winds increase nest damage risk, reducing the likelihood that adults will attempt breeding. (WBV often reuse nests from previous years) ",
+  "active_nests ~ max_wind",
+
+  # ---- Hail ----
+  "**Hail**", NA,
+  "Severe storm events increase disturbance and nest damage risk, reducing breeding effort.",
+  "active_nests ~ hail_days",
+
+  # ---- Joint Effects ----
+  "**Joint effects**", NA,
+  "Cold stress combined with prolonged wet conditions jointly limit breeding effort.",
+  "active_nests ~ min_temp + total_rain",
+
+  "Cold stress combined with intense rainfall events reduces breeding effort.",
+  "active_nests ~ min_temp + max_rain",
+
+  "Cold extremes combined with extreme wind increase energetic costs and breeding risk, reducing breeding effort.",
+  "active_nests ~ min_temp + max_wind",
+
+  "Severe storm exposure combined with extreme wind increases nest disturbance, reducing breeding effort.",
+  "active_nests ~ hail_days + max_wind",
+
+  "Reduced thermals for soaring combined with high flight costs limit breeding effort.",
+  "active_nests ~ max_rain + max_wind",
+  
+  "Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging.",
+  "active_nests ~ max_temp + rain_days",
+
+  # ---- Interactive Effects ----
+  "**Interactive effects**", NA,
+  "The negative effect of cold extremes on breeding effort is increased in persistently wet years.",
+  "active_nests ~ min_temp * rain_days",
+
+  "Cold-related energetic stress is amplified in windy years due to increased heat loss and flight costs.",
+  "active_nests ~ min_temp * mean_wind",
+
+  "Adult condition resulting from the previous year interacts with current-year heat stress to influence breeding effort.",
+  "active_nests ~ lag_total_rain * max_temp"
+)
+
+objective1_table_clean <- objective1_table |>
+  dplyr::mutate(Model = ifelse(is.na(Model), "", Model))
+
+kable(
+  objective1_table_clean,
+  align = c("l", "l"),
+  caption = "Objective 1 candidate model set for breeding effort (active nests)."
+)
+
+
+
+
+```
 
 
 :::
