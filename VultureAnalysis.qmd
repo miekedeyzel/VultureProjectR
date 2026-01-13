@@ -14,6 +14,8 @@ format:
 #remotes::install_github("ropensci/rnoaa")
 #remotes::install_github("ropensci/chirps")
 #install.packages("GSODR")
+install.packages("AICcmodavg")
+
 ```
 
 ### Load Libraries
@@ -35,6 +37,7 @@ library(chirps)
 library(GSODR)
 library(tibble)
 library(knitr)
+library(AICcmodavg)
 
 
 ```
@@ -1032,6 +1035,105 @@ kable(
 
 ```
 
+```{r}
+active.nests <- vultures.clean |>
+  mutate(year = year(ringing.date)) |>
+  group_by(year) |>
+  summarise(active_nests = n(), .groups = "drop")
+
+```
+
+```{r}
+effort_weather <- active.nests |>
+  left_join(weather_yearly_lag, by = c("year" = "YEAR")) |>
+  filter(!is.na(lag_total_rain))  
+
+```
+
+### Single predictor models
+
+```{r}
+ m_mean_temp      <- glm.nb(active_nests ~ mean_temp,      data = effort_weather)
+m_max_temp       <- glm.nb(active_nests ~ max_temp,       data = effort_weather)
+m_min_temp       <- glm.nb(active_nests ~ min_temp,       data = effort_weather)
+
+m_total_rain     <- glm.nb(active_nests ~ total_rain,     data = effort_weather)
+m_rain_days      <- glm.nb(active_nests ~ rain_days,      data = effort_weather)
+m_max_rain       <- glm.nb(active_nests ~ max_rain,       data = effort_weather)
+
+m_lag_total_rain <- glm.nb(active_nests ~ lag_total_rain, data = effort_weather)
+
+m_mean_wind      <- glm.nb(active_nests ~ mean_wind,      data = effort_weather)
+m_max_wind       <- glm.nb(active_nests ~ max_wind,       data = effort_weather)
+
+m_hail_days      <- glm.nb(active_nests ~ hail_days,      data = effort_weather)
+
+```
+
+### Joint effect models
+
+```{r}
+m_cold_wet_amt   <- glm.nb(active_nests ~ min_temp + total_rain, data = effort_weather)
+m_cold_storm    <- glm.nb(active_nests ~ min_temp + max_rain,   data = effort_weather)
+m_cold_wind     <- glm.nb(active_nests ~ min_temp + max_wind,   data = effort_weather)
+
+m_hail_wind     <- glm.nb(active_nests ~ hail_days + max_wind,  data = effort_weather)
+m_rain_wind     <- glm.nb(active_nests ~ max_rain + max_wind,   data = effort_weather)
+
+m_heat_wet_days <- glm.nb(active_nests ~ max_temp + rain_days,  data = effort_weather)
+
+```
+
+### Interacting effect models
+
+```{r}
+m_int_cold_wet  <- glm.nb(active_nests ~ min_temp * rain_days,     data = effort_weather)
+m_int_cold_wind <- glm.nb(active_nests ~ min_temp * mean_wind,     data = effort_weather)
+m_int_lag_heat  <- glm.nb(active_nests ~ lag_total_rain * max_temp,data = effort_weather)
+
+```
+
+```{r}
+cand_effort <- list(
+  mean_temp       = m_mean_temp,
+  max_temp        = m_max_temp,
+  min_temp        = m_min_temp,
+
+  total_rain      = m_total_rain,
+  rain_days       = m_rain_days,
+  max_rain        = m_max_rain,
+  lag_total_rain  = m_lag_total_rain,
+
+  mean_wind       = m_mean_wind,
+  max_wind        = m_max_wind,
+  hail_days       = m_hail_days,
+
+  minT_totalR     = m_cold_wet_amt,
+  minT_maxR       = m_cold_storm,
+  minT_maxW       = m_cold_wind,
+  hail_maxW       = m_hail_wind,
+  maxR_maxW       = m_rain_wind,
+  maxT_rainDays   = m_heat_wet_days,
+
+  minT_x_rainDays = m_int_cold_wet,
+  minT_x_meanWind = m_int_cold_wind,
+  lagR_x_maxT     = m_int_lag_heat
+)
+
+```
+
+
+### AIC Output 
+
+```{r}
+aic_effort <- aictab(
+  cand.set = cand_effort,
+  modnames = names(cand_effort)
+)
+
+aic_effort
+
+```
 
 :::
 
