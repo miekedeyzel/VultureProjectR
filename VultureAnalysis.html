@@ -3115,7 +3115,8 @@ vertical-align: -.125em;
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#remotes::install_github(&quot;ropensci/rnoaa&quot;)</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#remotes::install_github(&quot;ropensci/chirps&quot;)</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages(&quot;GSODR&quot;)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages(&quot;GSODR&quot;)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages(&quot;AICcmodavg&quot;)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="load-libraries" class="level3">
 <h3 class="anchored" data-anchor-id="load-libraries">Load Libraries</h3>
@@ -3171,7 +3172,8 @@ The following object is masked from &#39;package:MASS&#39;:
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(chirps)</span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GSODR)</span>
 <span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tibble)</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AICcmodavg)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="overdispersion-check" class="level3">
@@ -3205,7 +3207,7 @@ The following object is masked from &#39;package:MASS&#39;:
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a> </span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>kim_station <span class="ot">&lt;-</span> <span class="st">&quot;684380-99999&quot;</span></span>
 <span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>weather_raw <span class="ot">&lt;-</span> <span class="fu">get_GSOD</span>(</span>
@@ -4768,7 +4770,7 @@ F-statistic: 251.7 on 2 and 1457 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb136-9"><a href="#cb136-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Extreme heat events cause thermal stress, reducing breeding effort (active cooling is energetically costly and may reduce adult condition).&quot;</span>,</span>
 <span id="cb136-10"><a href="#cb136-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ max_temp&quot;</span>,</span>
 <span id="cb136-11"><a href="#cb136-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-12"><a href="#cb136-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold extremes increase thermoregulatory demand (often increasing time spent foraging), reducing effort put into breeding.&quot;</span>,</span>
+<span id="cb136-12"><a href="#cb136-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold extremes increase thermoregulatory demand (often increasing time spent foraging), reducing effort put into breeding&quot;</span>,</span>
 <span id="cb136-13"><a href="#cb136-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ min_temp&quot;</span>,</span>
 <span id="cb136-14"><a href="#cb136-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb136-15"><a href="#cb136-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ---- Rain ----</span></span>
@@ -4776,7 +4778,7 @@ F-statistic: 251.7 on 2 and 1457 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb136-17"><a href="#cb136-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;High rainfall reduces foraging efficiency and adult condition, reducing breeding effort.&quot;</span>,</span>
 <span id="cb136-18"><a href="#cb136-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ total_rain&quot;</span>,</span>
 <span id="cb136-19"><a href="#cb136-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-20"><a href="#cb136-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Prolonged rainfall conditions reduce breeding effort by limiting foraging opportunity (fewer or weaker thermals for soaring).&quot;</span>,</span>
+<span id="cb136-20"><a href="#cb136-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Prolonged rainfall conditions reduce breeding effort by limiting foraging opportunity (fewer or weaker thermals for soaring)&quot;</span>,</span>
 <span id="cb136-21"><a href="#cb136-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ rain_days&quot;</span>,</span>
 <span id="cb136-22"><a href="#cb136-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb136-23"><a href="#cb136-23" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Intense rainfall events decrease foraging efficiency and nest attendance, reducing breeding effort.&quot;</span>,</span>
@@ -4787,60 +4789,63 @@ F-statistic: 251.7 on 2 and 1457 DF,  p-value: &lt; 2.2e-16</code></pre>
 <span id="cb136-28"><a href="#cb136-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb136-29"><a href="#cb136-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ---- Wind ----</span></span>
 <span id="cb136-30"><a href="#cb136-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;**Wind**&quot;</span>, <span class="cn">NA</span>,</span>
-<span id="cb136-31"><a href="#cb136-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Persistent windy conditions increase the cost of flying, limiting foraging and the energy available for reproduction, reducing breeding effort.&quot;</span>,</span>
+<span id="cb136-31"><a href="#cb136-31" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Persistent windy conditions increase the cost of flying, limiting foraging and the energy available for reproduction, reducing breeding effort&quot;</span>,</span>
 <span id="cb136-32"><a href="#cb136-32" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ mean_wind&quot;</span>,</span>
 <span id="cb136-33"><a href="#cb136-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-34"><a href="#cb136-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Extreme winds increase nest damage risk, reducing the likelihood that adults will attempt breeding. (WBV often reuse nests from previous years) &quot;</span>,</span>
+<span id="cb136-34"><a href="#cb136-34" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Extreme winds increase nest damage risk, reducing the likelihood that adults will attempt breeding (WBV often reuse nests from previous years) &quot;</span>,</span>
 <span id="cb136-35"><a href="#cb136-35" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ max_wind&quot;</span>,</span>
 <span id="cb136-36"><a href="#cb136-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb136-37"><a href="#cb136-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ---- Hail ----</span></span>
 <span id="cb136-38"><a href="#cb136-38" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;**Hail**&quot;</span>, <span class="cn">NA</span>,</span>
-<span id="cb136-39"><a href="#cb136-39" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Severe storm events increase disturbance and nest damage risk, reducing breeding effort.&quot;</span>,</span>
+<span id="cb136-39"><a href="#cb136-39" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Severe storm events increase disturbance and nest damage risk, reducing breeding effort&quot;</span>,</span>
 <span id="cb136-40"><a href="#cb136-40" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ hail_days&quot;</span>,</span>
 <span id="cb136-41"><a href="#cb136-41" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb136-42"><a href="#cb136-42" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ---- Joint Effects ----</span></span>
 <span id="cb136-43"><a href="#cb136-43" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;**Joint effects**&quot;</span>, <span class="cn">NA</span>,</span>
-<span id="cb136-44"><a href="#cb136-44" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold stress combined with prolonged wet conditions jointly limit breeding effort.&quot;</span>,</span>
+<span id="cb136-44"><a href="#cb136-44" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold stress combined with prolonged wet conditions jointly limit breeding effort&quot;</span>,</span>
 <span id="cb136-45"><a href="#cb136-45" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ min_temp + total_rain&quot;</span>,</span>
 <span id="cb136-46"><a href="#cb136-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-47"><a href="#cb136-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold stress combined with intense rainfall events reduces breeding effort.&quot;</span>,</span>
+<span id="cb136-47"><a href="#cb136-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold stress combined with intense rainfall events reduces breeding effort&quot;</span>,</span>
 <span id="cb136-48"><a href="#cb136-48" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ min_temp + max_rain&quot;</span>,</span>
 <span id="cb136-49"><a href="#cb136-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-50"><a href="#cb136-50" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold extremes combined with extreme wind increase energetic costs and breeding risk, reducing breeding effort.&quot;</span>,</span>
+<span id="cb136-50"><a href="#cb136-50" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold extremes combined with extreme wind increase energetic costs and breeding risk, reducing breeding effort&quot;</span>,</span>
 <span id="cb136-51"><a href="#cb136-51" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ min_temp + max_wind&quot;</span>,</span>
 <span id="cb136-52"><a href="#cb136-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-53"><a href="#cb136-53" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Severe storm exposure combined with extreme wind increases nest disturbance, reducing breeding effort.&quot;</span>,</span>
+<span id="cb136-53"><a href="#cb136-53" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Severe storm exposure combined with extreme wind increases nest disturbance, reducing breeding effort&quot;</span>,</span>
 <span id="cb136-54"><a href="#cb136-54" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ hail_days + max_wind&quot;</span>,</span>
 <span id="cb136-55"><a href="#cb136-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-56"><a href="#cb136-56" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Reduced thermals for soaring combined with high flight costs limit breeding effort.&quot;</span>,</span>
+<span id="cb136-56"><a href="#cb136-56" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Reduced thermals for soaring combined with high flight costs limit breeding effort&quot;</span>,</span>
 <span id="cb136-57"><a href="#cb136-57" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ max_rain + max_wind&quot;</span>,</span>
 <span id="cb136-58"><a href="#cb136-58" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb136-59"><a href="#cb136-59" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging.&quot;</span>,</span>
+<span id="cb136-59"><a href="#cb136-59" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging&quot;</span>,</span>
 <span id="cb136-60"><a href="#cb136-60" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ max_temp + rain_days&quot;</span>,</span>
-<span id="cb136-61"><a href="#cb136-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-62"><a href="#cb136-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ---- Interactive Effects ----</span></span>
-<span id="cb136-63"><a href="#cb136-63" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;**Interactive effects**&quot;</span>, <span class="cn">NA</span>,</span>
-<span id="cb136-64"><a href="#cb136-64" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;The negative effect of cold extremes on breeding effort is increased in persistently wet years.&quot;</span>,</span>
-<span id="cb136-65"><a href="#cb136-65" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ min_temp * rain_days&quot;</span>,</span>
-<span id="cb136-66"><a href="#cb136-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-67"><a href="#cb136-67" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold-related energetic stress is amplified in windy years due to increased heat loss and flight costs.&quot;</span>,</span>
-<span id="cb136-68"><a href="#cb136-68" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ min_temp * mean_wind&quot;</span>,</span>
+<span id="cb136-61"><a href="#cb136-61" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb136-62"><a href="#cb136-62" aria-hidden="true" tabindex="-1"></a> <span class="st">&quot; High annual rainfall and frequent hail events each impose energetic and disturbance costs that reduce breeding effort.&quot;</span>,</span>
+<span id="cb136-63"><a href="#cb136-63" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;active_nests ~ hail_days + rain_days&quot;</span>,</span>
+<span id="cb136-64"><a href="#cb136-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb136-65"><a href="#cb136-65" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ---- Interactive Effects ----</span></span>
+<span id="cb136-66"><a href="#cb136-66" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;**Interactive effects**&quot;</span>, <span class="cn">NA</span>,</span>
+<span id="cb136-67"><a href="#cb136-67" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;The negative effect of cold extremes on breeding effort is increased in persistently wet years.&quot;</span>,</span>
+<span id="cb136-68"><a href="#cb136-68" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ min_temp * rain_days&quot;</span>,</span>
 <span id="cb136-69"><a href="#cb136-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-70"><a href="#cb136-70" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Adult condition resulting from the previous year interacts with current-year heat stress to influence breeding effort.&quot;</span>,</span>
-<span id="cb136-71"><a href="#cb136-71" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ lag_total_rain * max_temp&quot;</span></span>
-<span id="cb136-72"><a href="#cb136-72" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb136-73"><a href="#cb136-73" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-74"><a href="#cb136-74" aria-hidden="true" tabindex="-1"></a>objective1_table_clean <span class="ot">&lt;-</span> objective1_table <span class="sc">|&gt;</span></span>
-<span id="cb136-75"><a href="#cb136-75" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Model =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Model), <span class="st">&quot;&quot;</span>, Model))</span>
+<span id="cb136-70"><a href="#cb136-70" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Cold-related energetic stress is amplified in windy years due to increased heat loss and flight costs&quot;</span>,</span>
+<span id="cb136-71"><a href="#cb136-71" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ min_temp * mean_wind&quot;</span>,</span>
+<span id="cb136-72"><a href="#cb136-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb136-73"><a href="#cb136-73" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Adult condition resulting from the previous year interacts with current-year heat stress to influence breeding effort&quot;</span>,</span>
+<span id="cb136-74"><a href="#cb136-74" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;active_nests ~ lag_total_rain * max_temp&quot;</span></span>
+<span id="cb136-75"><a href="#cb136-75" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb136-76"><a href="#cb136-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb136-77"><a href="#cb136-77" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
-<span id="cb136-78"><a href="#cb136-78" aria-hidden="true" tabindex="-1"></a>  objective1_table_clean,</span>
-<span id="cb136-79"><a href="#cb136-79" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="fu">c</span>(<span class="st">&quot;l&quot;</span>, <span class="st">&quot;l&quot;</span>),</span>
-<span id="cb136-80"><a href="#cb136-80" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Objective 1 candidate model set for breeding effort (active nests).&quot;</span></span>
-<span id="cb136-81"><a href="#cb136-81" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb136-77"><a href="#cb136-77" aria-hidden="true" tabindex="-1"></a>objective1_table_clean <span class="ot">&lt;-</span> objective1_table <span class="sc">|&gt;</span></span>
+<span id="cb136-78"><a href="#cb136-78" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">Model =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(Model), <span class="st">&quot;&quot;</span>, Model))</span>
+<span id="cb136-79"><a href="#cb136-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb136-80"><a href="#cb136-80" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(</span>
+<span id="cb136-81"><a href="#cb136-81" aria-hidden="true" tabindex="-1"></a>  objective1_table_clean,</span>
+<span id="cb136-82"><a href="#cb136-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">align =</span> <span class="fu">c</span>(<span class="st">&quot;l&quot;</span>, <span class="st">&quot;l&quot;</span>),</span>
+<span id="cb136-83"><a href="#cb136-83" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Objective 1 candidate model set for breeding effort (active nests)&quot;</span></span>
+<span id="cb136-84"><a href="#cb136-84" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
-<caption>Objective 1 candidate model set for breeding effort (active nests).</caption>
+<caption>Objective 1 candidate model set for breeding effort (active nests)</caption>
 <colgroup>
 <col style="width: 77%">
 <col style="width: 22%">
@@ -4865,7 +4870,7 @@ F-statistic: 251.7 on 2 and 1457 DF,  p-value: &lt; 2.2e-16</code></pre>
 <td style="text-align: left;">active_nests ~ max_temp</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Cold extremes increase thermoregulatory demand (often increasing time spent foraging), reducing effort put into breeding.</td>
+<td style="text-align: left;">Cold extremes increase thermoregulatory demand (often increasing time spent foraging), reducing effort put into breeding</td>
 <td style="text-align: left;">active_nests ~ min_temp</td>
 </tr>
 <tr class="odd">
@@ -4877,7 +4882,7 @@ F-statistic: 251.7 on 2 and 1457 DF,  p-value: &lt; 2.2e-16</code></pre>
 <td style="text-align: left;">active_nests ~ total_rain</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Prolonged rainfall conditions reduce breeding effort by limiting foraging opportunity (fewer or weaker thermals for soaring).</td>
+<td style="text-align: left;">Prolonged rainfall conditions reduce breeding effort by limiting foraging opportunity (fewer or weaker thermals for soaring)</td>
 <td style="text-align: left;">active_nests ~ rain_days</td>
 </tr>
 <tr class="even">
@@ -4893,11 +4898,11 @@ F-statistic: 251.7 on 2 and 1457 DF,  p-value: &lt; 2.2e-16</code></pre>
 <td style="text-align: left;"></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Persistent windy conditions increase the cost of flying, limiting foraging and the energy available for reproduction, reducing breeding effort.</td>
+<td style="text-align: left;">Persistent windy conditions increase the cost of flying, limiting foraging and the energy available for reproduction, reducing breeding effort</td>
 <td style="text-align: left;">active_nests ~ mean_wind</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Extreme winds increase nest damage risk, reducing the likelihood that adults will attempt breeding. (WBV often reuse nests from previous years)</td>
+<td style="text-align: left;">Extreme winds increase nest damage risk, reducing the likelihood that adults will attempt breeding (WBV often reuse nests from previous years)</td>
 <td style="text-align: left;">active_nests ~ max_wind</td>
 </tr>
 <tr class="odd">
@@ -4905,7 +4910,7 @@ F-statistic: 251.7 on 2 and 1457 DF,  p-value: &lt; 2.2e-16</code></pre>
 <td style="text-align: left;"></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Severe storm events increase disturbance and nest damage risk, reducing breeding effort.</td>
+<td style="text-align: left;">Severe storm events increase disturbance and nest damage risk, reducing breeding effort</td>
 <td style="text-align: left;">active_nests ~ hail_days</td>
 </tr>
 <tr class="odd">
@@ -4913,49 +4918,174 @@ F-statistic: 251.7 on 2 and 1457 DF,  p-value: &lt; 2.2e-16</code></pre>
 <td style="text-align: left;"></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Cold stress combined with prolonged wet conditions jointly limit breeding effort.</td>
+<td style="text-align: left;">Cold stress combined with prolonged wet conditions jointly limit breeding effort</td>
 <td style="text-align: left;">active_nests ~ min_temp + total_rain</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Cold stress combined with intense rainfall events reduces breeding effort.</td>
+<td style="text-align: left;">Cold stress combined with intense rainfall events reduces breeding effort</td>
 <td style="text-align: left;">active_nests ~ min_temp + max_rain</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Cold extremes combined with extreme wind increase energetic costs and breeding risk, reducing breeding effort.</td>
+<td style="text-align: left;">Cold extremes combined with extreme wind increase energetic costs and breeding risk, reducing breeding effort</td>
 <td style="text-align: left;">active_nests ~ min_temp + max_wind</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Severe storm exposure combined with extreme wind increases nest disturbance, reducing breeding effort.</td>
+<td style="text-align: left;">Severe storm exposure combined with extreme wind increases nest disturbance, reducing breeding effort</td>
 <td style="text-align: left;">active_nests ~ hail_days + max_wind</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Reduced thermals for soaring combined with high flight costs limit breeding effort.</td>
+<td style="text-align: left;">Reduced thermals for soaring combined with high flight costs limit breeding effort</td>
 <td style="text-align: left;">active_nests ~ max_rain + max_wind</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging.</td>
+<td style="text-align: left;">Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging</td>
 <td style="text-align: left;">active_nests ~ max_temp + rain_days</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">High annual rainfall and frequent hail events each impose energetic and disturbance costs that reduce breeding effort.</td>
+<td style="text-align: left;">active_nests ~ hail_days + rain_days</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;"><strong>Interactive effects</strong></td>
 <td style="text-align: left;"></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">The negative effect of cold extremes on breeding effort is increased in persistently wet years.</td>
 <td style="text-align: left;">active_nests ~ min_temp * rain_days</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">Cold-related energetic stress is amplified in windy years due to increased heat loss and flight costs.</td>
+<tr class="odd">
+<td style="text-align: left;">Cold-related energetic stress is amplified in windy years due to increased heat loss and flight costs</td>
 <td style="text-align: left;">active_nests ~ min_temp * mean_wind</td>
 </tr>
-<tr class="odd">
-<td style="text-align: left;">Adult condition resulting from the previous year interacts with current-year heat stress to influence breeding effort.</td>
+<tr class="even">
+<td style="text-align: left;">Adult condition resulting from the previous year interacts with current-year heat stress to influence breeding effort</td>
 <td style="text-align: left;">active_nests ~ lag_total_rain * max_temp</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb137"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb137-1"><a href="#cb137-1" aria-hidden="true" tabindex="-1"></a>active.nests <span class="ot">&lt;-</span> vultures.clean <span class="sc">|&gt;</span></span>
+<span id="cb137-2"><a href="#cb137-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">year</span>(ringing.date)) <span class="sc">|&gt;</span></span>
+<span id="cb137-3"><a href="#cb137-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">|&gt;</span></span>
+<span id="cb137-4"><a href="#cb137-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">active_nests =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a>effort_weather <span class="ot">&lt;-</span> active.nests <span class="sc">|&gt;</span></span>
+<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(weather_yearly_lag, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;year&quot;</span> <span class="ot">=</span> <span class="st">&quot;YEAR&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb138-3"><a href="#cb138-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(lag_total_rain))  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="single-predictor-models" class="level3">
+<h3 class="anchored" data-anchor-id="single-predictor-models">Single predictor models</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb139"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb139-1"><a href="#cb139-1" aria-hidden="true" tabindex="-1"></a> m_mean_temp      <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> mean_temp,      <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-2"><a href="#cb139-2" aria-hidden="true" tabindex="-1"></a>m_max_temp       <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> max_temp,       <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-3"><a href="#cb139-3" aria-hidden="true" tabindex="-1"></a>m_min_temp       <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> min_temp,       <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-4"><a href="#cb139-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb139-5"><a href="#cb139-5" aria-hidden="true" tabindex="-1"></a>m_total_rain     <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> total_rain,     <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-6"><a href="#cb139-6" aria-hidden="true" tabindex="-1"></a>m_rain_days      <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> rain_days,      <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-7"><a href="#cb139-7" aria-hidden="true" tabindex="-1"></a>m_max_rain       <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> max_rain,       <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-8"><a href="#cb139-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb139-9"><a href="#cb139-9" aria-hidden="true" tabindex="-1"></a>m_lag_total_rain <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> lag_total_rain, <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-10"><a href="#cb139-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb139-11"><a href="#cb139-11" aria-hidden="true" tabindex="-1"></a>m_mean_wind      <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> mean_wind,      <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-12"><a href="#cb139-12" aria-hidden="true" tabindex="-1"></a>m_max_wind       <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> max_wind,       <span class="at">data =</span> effort_weather)</span>
+<span id="cb139-13"><a href="#cb139-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb139-14"><a href="#cb139-14" aria-hidden="true" tabindex="-1"></a>m_hail_days      <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> hail_days,      <span class="at">data =</span> effort_weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="joint-effect-models" class="level3">
+<h3 class="anchored" data-anchor-id="joint-effect-models">Joint effect models</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a>m_cold_wet_amt   <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> min_temp <span class="sc">+</span> total_rain, <span class="at">data =</span> effort_weather)</span>
+<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a>m_cold_storm    <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> min_temp <span class="sc">+</span> max_rain,   <span class="at">data =</span> effort_weather)</span>
+<span id="cb140-3"><a href="#cb140-3" aria-hidden="true" tabindex="-1"></a>m_cold_wind     <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> min_temp <span class="sc">+</span> max_wind,   <span class="at">data =</span> effort_weather)</span>
+<span id="cb140-4"><a href="#cb140-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb140-5"><a href="#cb140-5" aria-hidden="true" tabindex="-1"></a>m_hail_wind     <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> hail_days <span class="sc">+</span> max_wind,  <span class="at">data =</span> effort_weather)</span>
+<span id="cb140-6"><a href="#cb140-6" aria-hidden="true" tabindex="-1"></a>m_hail_rain     <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> total_rain <span class="sc">+</span> hail_days,     <span class="at">data =</span> effort_weather)</span>
+<span id="cb140-7"><a href="#cb140-7" aria-hidden="true" tabindex="-1"></a>m_rain_wind     <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> max_rain <span class="sc">+</span> max_wind,   <span class="at">data =</span> effort_weather)</span>
+<span id="cb140-8"><a href="#cb140-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb140-9"><a href="#cb140-9" aria-hidden="true" tabindex="-1"></a>m_heat_wet_days <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> max_temp <span class="sc">+</span> rain_days,  <span class="at">data =</span> effort_weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="interacting-effect-models" class="level3">
+<h3 class="anchored" data-anchor-id="interacting-effect-models">Interacting effect models</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb141"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb141-1"><a href="#cb141-1" aria-hidden="true" tabindex="-1"></a>m_int_cold_wet  <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> min_temp <span class="sc">*</span> rain_days,     <span class="at">data =</span> effort_weather)</span>
+<span id="cb141-2"><a href="#cb141-2" aria-hidden="true" tabindex="-1"></a>m_int_rain_hail <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> total_rain <span class="sc">*</span> hail_days,     <span class="at">data =</span> effort_weather)</span>
+<span id="cb141-3"><a href="#cb141-3" aria-hidden="true" tabindex="-1"></a>m_int_cold_wind <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> min_temp <span class="sc">*</span> mean_wind,     <span class="at">data =</span> effort_weather)</span>
+<span id="cb141-4"><a href="#cb141-4" aria-hidden="true" tabindex="-1"></a>m_int_lag_heat  <span class="ot">&lt;-</span> <span class="fu">glm.nb</span>(active_nests <span class="sc">~</span> lag_total_rain <span class="sc">*</span> max_temp,<span class="at">data =</span> effort_weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a>cand_effort <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb142-2"><a href="#cb142-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_temp       =</span> m_mean_temp,</span>
+<span id="cb142-3"><a href="#cb142-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_temp        =</span> m_max_temp,</span>
+<span id="cb142-4"><a href="#cb142-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">min_temp        =</span> m_min_temp,</span>
+<span id="cb142-5"><a href="#cb142-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb142-6"><a href="#cb142-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">total_rain      =</span> m_total_rain,</span>
+<span id="cb142-7"><a href="#cb142-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rain_days       =</span> m_rain_days,</span>
+<span id="cb142-8"><a href="#cb142-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_rain        =</span> m_max_rain,</span>
+<span id="cb142-9"><a href="#cb142-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">lag_total_rain  =</span> m_lag_total_rain,</span>
+<span id="cb142-10"><a href="#cb142-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb142-11"><a href="#cb142-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_wind       =</span> m_mean_wind,</span>
+<span id="cb142-12"><a href="#cb142-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_wind        =</span> m_max_wind,</span>
+<span id="cb142-13"><a href="#cb142-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">hail_days       =</span> m_hail_days,</span>
+<span id="cb142-14"><a href="#cb142-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb142-15"><a href="#cb142-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">minT_totalR     =</span> m_cold_wet_amt,</span>
+<span id="cb142-16"><a href="#cb142-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">minT_maxR       =</span> m_cold_storm,</span>
+<span id="cb142-17"><a href="#cb142-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">minT_maxW       =</span> m_cold_wind,</span>
+<span id="cb142-18"><a href="#cb142-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">hail_maxW       =</span> m_hail_wind,</span>
+<span id="cb142-19"><a href="#cb142-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxR_maxW       =</span> m_rain_wind,</span>
+<span id="cb142-20"><a href="#cb142-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">maxT_rainDays   =</span> m_heat_wet_days,</span>
+<span id="cb142-21"><a href="#cb142-21" aria-hidden="true" tabindex="-1"></a> <span class="at">hail_rain  =</span> m_hail_rain,</span>
+<span id="cb142-22"><a href="#cb142-22" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb142-23"><a href="#cb142-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">minT_x_rainDays =</span> m_int_cold_wet,</span>
+<span id="cb142-24"><a href="#cb142-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">minT_x_meanWind =</span> m_int_cold_wind,</span>
+<span id="cb142-25"><a href="#cb142-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">lagR_x_maxT     =</span> m_int_lag_heat,</span>
+<span id="cb142-26"><a href="#cb142-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb142-27"><a href="#cb142-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">rain_x_hail     =</span> m_int_rain_hail   </span>
+<span id="cb142-28"><a href="#cb142-28" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="aic-output" class="level3">
+<h3 class="anchored" data-anchor-id="aic-output">AIC Output</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb143"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb143-1"><a href="#cb143-1" aria-hidden="true" tabindex="-1"></a>aic_effort <span class="ot">&lt;-</span> <span class="fu">aictab</span>(</span>
+<span id="cb143-2"><a href="#cb143-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">cand.set =</span> cand_effort,</span>
+<span id="cb143-3"><a href="#cb143-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">modnames =</span> <span class="fu">names</span>(cand_effort)</span>
+<span id="cb143-4"><a href="#cb143-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb143-5"><a href="#cb143-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-6"><a href="#cb143-6" aria-hidden="true" tabindex="-1"></a>aic_effort</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Model selection based on AICc:
+
+                K   AICc Delta_AICc AICcWt Cum.Wt      LL
+hail_days       3 283.52       0.00   0.14   0.14 -138.32
+max_temp        3 283.58       0.05   0.14   0.28 -138.34
+hail_maxW       4 284.00       0.48   0.11   0.40 -137.23
+total_rain      3 284.08       0.56   0.11   0.51 -138.60
+hail_rain       4 284.77       1.25   0.08   0.58 -137.62
+max_wind        3 284.83       1.31   0.08   0.66 -138.97
+maxT_rainDays   4 285.43       1.91   0.06   0.71 -137.95
+mean_wind       3 286.04       2.52   0.04   0.75 -139.58
+lag_total_rain  3 286.07       2.55   0.04   0.80 -139.59
+minT_totalR     4 286.73       3.21   0.03   0.82 -138.60
+lagR_x_maxT     5 286.80       3.28   0.03   0.85 -137.20
+maxR_maxW       4 287.00       3.48   0.03   0.88 -138.73
+mean_temp       3 287.43       3.91   0.02   0.90 -140.27
+minT_maxW       4 287.47       3.95   0.02   0.92 -138.97
+max_rain        3 287.54       4.02   0.02   0.94 -140.33
+rain_x_hail     5 287.62       4.10   0.02   0.96 -137.61
+min_temp        3 287.75       4.22   0.02   0.97 -140.43
+rain_days       3 287.79       4.27   0.02   0.99 -140.45
+minT_maxR       4 289.98       6.46   0.01   1.00 -140.22
+minT_x_meanWind 5 291.46       7.94   0.00   1.00 -139.53
+minT_x_rainDays 5 293.09       9.56   0.00   1.00 -140.34</code></pre>
+</div>
+</div>
+</section>
 </div>
 </div>
 </div>

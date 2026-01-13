@@ -14,7 +14,7 @@ format:
 #remotes::install_github("ropensci/rnoaa")
 #remotes::install_github("ropensci/chirps")
 #install.packages("GSODR")
-install.packages("AICcmodavg")
+#install.packages("AICcmodavg")
 
 ```
 
@@ -66,7 +66,7 @@ library(rnoaa)
 library(tidyverse)
 library(lubridate)
 
-
+ 
 kim_station <- "684380-99999"
 
 weather_raw <- get_GSOD(
@@ -523,7 +523,7 @@ panel.grid  = element_blank()
 )
 
 ```
-
+ 
 ### All weather across years
 
 ```{r}
@@ -1143,6 +1143,30 @@ aic_effort <- aictab(
 aic_effort
 
 ``` 
+
+### Top models
+
+```{r}
+top_models_effort <- cand_effort[c(
+  "hail_days",
+  "max_temp",
+  "hail_maxW",
+  "total_rain",
+  "hail_rain",
+  "max_wind",
+  "maxT_rainDays"
+)]
+
+```
+
+### Calculating deviance explained
+
+```{r}
+dev_expl <- function(m) 1 - (deviance(m) / m$null.deviance)
+
+sapply(top_models_effort, dev_expl)
+
+```
 
 :::
 
