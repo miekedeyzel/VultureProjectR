@@ -1024,7 +1024,7 @@ objective1_table_clean <- objective1_table |>
 kable(
   objective1_table_clean,
   align = c("l", "l"),
-  caption = "Objective 1 candidate model set for breeding effort (active nests)."
+  caption = "Objective 1 candidate model set for breeding effort (active nests)"
 )
 
 
