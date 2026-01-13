@@ -9,7 +9,7 @@ format:
 ::: {.panel-tabset}
  
 ## Packages  
-
+ 
 ```{r}
 #remotes::install_github("ropensci/rnoaa")
 #remotes::install_github("ropensci/chirps")
