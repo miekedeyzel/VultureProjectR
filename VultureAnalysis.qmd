@@ -956,7 +956,7 @@ objective1_table <- tribble(
   "Extreme heat events cause thermal stress, reducing breeding effort (active cooling is energetically costly and may reduce adult condition).",
   "active_nests ~ max_temp",
 
-  "Cold extremes increase thermoregulatory demand (often increasing time spent foraging), reducing effort put into breeding.",
+  "Cold extremes increase thermoregulatory demand (often increasing time spent foraging), reducing effort put into breeding",
   "active_nests ~ min_temp",
 
   # ---- Rain ----
@@ -964,7 +964,7 @@ objective1_table <- tribble(
   "High rainfall reduces foraging efficiency and adult condition, reducing breeding effort.",
   "active_nests ~ total_rain",
 
-  "Prolonged rainfall conditions reduce breeding effort by limiting foraging opportunity (fewer or weaker thermals for soaring).",
+  "Prolonged rainfall conditions reduce breeding effort by limiting foraging opportunity (fewer or weaker thermals for soaring)",
   "active_nests ~ rain_days",
 
   "Intense rainfall events decrease foraging efficiency and nest attendance, reducing breeding effort.",
@@ -975,35 +975,35 @@ objective1_table <- tribble(
 
   # ---- Wind ----
   "**Wind**", NA,
-  "Persistent windy conditions increase the cost of flying, limiting foraging and the energy available for reproduction, reducing breeding effort.",
+  "Persistent windy conditions increase the cost of flying, limiting foraging and the energy available for reproduction, reducing breeding effort",
   "active_nests ~ mean_wind",
 
-  "Extreme winds increase nest damage risk, reducing the likelihood that adults will attempt breeding. (WBV often reuse nests from previous years) ",
+  "Extreme winds increase nest damage risk, reducing the likelihood that adults will attempt breeding (WBV often reuse nests from previous years) ",
   "active_nests ~ max_wind",
 
   # ---- Hail ----
   "**Hail**", NA,
-  "Severe storm events increase disturbance and nest damage risk, reducing breeding effort.",
+  "Severe storm events increase disturbance and nest damage risk, reducing breeding effort",
   "active_nests ~ hail_days",
 
   # ---- Joint Effects ----
   "**Joint effects**", NA,
-  "Cold stress combined with prolonged wet conditions jointly limit breeding effort.",
+  "Cold stress combined with prolonged wet conditions jointly limit breeding effort",
   "active_nests ~ min_temp + total_rain",
 
-  "Cold stress combined with intense rainfall events reduces breeding effort.",
+  "Cold stress combined with intense rainfall events reduces breeding effort",
   "active_nests ~ min_temp + max_rain",
 
-  "Cold extremes combined with extreme wind increase energetic costs and breeding risk, reducing breeding effort.",
+  "Cold extremes combined with extreme wind increase energetic costs and breeding risk, reducing breeding effort",
   "active_nests ~ min_temp + max_wind",
 
-  "Severe storm exposure combined with extreme wind increases nest disturbance, reducing breeding effort.",
+  "Severe storm exposure combined with extreme wind increases nest disturbance, reducing breeding effort",
   "active_nests ~ hail_days + max_wind",
 
-  "Reduced thermals for soaring combined with high flight costs limit breeding effort.",
+  "Reduced thermals for soaring combined with high flight costs limit breeding effort",
   "active_nests ~ max_rain + max_wind",
   
-  "Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging.",
+  "Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging",
   "active_nests ~ max_temp + rain_days",
 
   # ---- Interactive Effects ----
@@ -1011,10 +1011,10 @@ objective1_table <- tribble(
   "The negative effect of cold extremes on breeding effort is increased in persistently wet years.",
   "active_nests ~ min_temp * rain_days",
 
-  "Cold-related energetic stress is amplified in windy years due to increased heat loss and flight costs.",
+  "Cold-related energetic stress is amplified in windy years due to increased heat loss and flight costs",
   "active_nests ~ min_temp * mean_wind",
 
-  "Adult condition resulting from the previous year interacts with current-year heat stress to influence breeding effort.",
+  "Adult condition resulting from the previous year interacts with current-year heat stress to influence breeding effort",
   "active_nests ~ lag_total_rain * max_temp"
 )
 
