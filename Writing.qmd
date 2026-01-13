@@ -3,7 +3,7 @@ title: "The Effects of Climate Change on the Breeding Success and Timing of Afri
 author: "Mieke Deyzel"
 output: html_document
 format:
-  html:
+  html: 
     embed-resources: true
 ---
 ::: {.panel-tabset}
