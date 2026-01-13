@@ -1008,6 +1008,9 @@ objective1_table <- tribble(
   
   "Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging",
   "active_nests ~ max_temp + rain_days",
+  
+ " High annual rainfall and frequent hail events each impose energetic and disturbance costs that reduce breeding effort.",
+"active_nests ~ hail_days + rain_days",
 
   # ---- Interactive Effects ----
   "**Interactive effects**", NA,
@@ -1078,6 +1081,7 @@ m_cold_storm    <- glm.nb(active_nests ~ min_temp + max_rain,   data = effort_we
 m_cold_wind     <- glm.nb(active_nests ~ min_temp + max_wind,   data = effort_weather)
 
 m_hail_wind     <- glm.nb(active_nests ~ hail_days + max_wind,  data = effort_weather)
+m_hail_rain     <- glm.nb(active_nests ~ total_rain + hail_days,     data = effort_weather)
 m_rain_wind     <- glm.nb(active_nests ~ max_rain + max_wind,   data = effort_weather)
 
 m_heat_wet_days <- glm.nb(active_nests ~ max_temp + rain_days,  data = effort_weather)
@@ -1088,6 +1092,7 @@ m_heat_wet_days <- glm.nb(active_nests ~ max_temp + rain_days,  data = effort_we
 
 ```{r}
 m_int_cold_wet  <- glm.nb(active_nests ~ min_temp * rain_days,     data = effort_weather)
+m_int_rain_hail <- glm.nb(active_nests ~ total_rain * hail_days,     data = effort_weather)
 m_int_cold_wind <- glm.nb(active_nests ~ min_temp * mean_wind,     data = effort_weather)
 m_int_lag_heat  <- glm.nb(active_nests ~ lag_total_rain * max_temp,data = effort_weather)
 
@@ -1114,11 +1119,15 @@ cand_effort <- list(
   hail_maxW       = m_hail_wind,
   maxR_maxW       = m_rain_wind,
   maxT_rainDays   = m_heat_wet_days,
-
+ hail_rain  = m_hail_rain,
+ 
   minT_x_rainDays = m_int_cold_wet,
   minT_x_meanWind = m_int_cold_wind,
-  lagR_x_maxT     = m_int_lag_heat
+  lagR_x_maxT     = m_int_lag_heat,
+
+  rain_x_hail     = m_int_rain_hail   
 )
+
 
 ```
 
@@ -1133,7 +1142,7 @@ aic_effort <- aictab(
 
 aic_effort
 
-```
+``` 
 
 :::
 
