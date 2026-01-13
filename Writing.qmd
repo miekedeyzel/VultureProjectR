@@ -1,0 +1,77 @@
+---
+title: "The Effects of Climate Change on the Breeding Success and Timing of African White-backed Vultures"
+author: "Mieke Deyzel"
+output: html_document
+format:
+  html:
+    embed-resources: true
+---
+::: {.panel-tabset}
+
+## Introduction 
+
+### Introduction
+
+Climate change and weather variability 
+
+Climate change is widely projected to alter ecological systems by increasing the variability in weather patterns and the occurrence of extreme events across the globe. Events such as severe droughts, heat stress and flooding are predicted to become more frequent, leading to significant pressure on ecological systems. Many studies on the effects of climate change on environmental systems focus on shifts in mean climatic conditions, such as long-term change in precipitation, with less attention given to how increased variability may be driving ecological disruptions (Thornton *et al.* 2014). Although this emphasis has improved the understanding of mean climate trends, evidence suggests that interannual variation in climatic conditions plays a crucial role in the ecological response (Maxwell *et al.* 2018). Annual fluctuations in climatic conditions increase the unpredictability of environmental responses and often result in some years being more favourable than others, influencing the availability of important resources such as food, which can cause physiological stress to individuals, populations, and whole ecosystems. This results in substantial variation in the fitness and survival rates of species across multiple years, depending on the environmental conditions (Vázquez *et al.*2015, Berzins *et al.* 2020). Therefore, annual variability in climate is an often-overlooked driver of ecological response to environmental change, emphasising its importance in assessing the impacts of climate change on natural systems. 
+
+Effects of climatic variation on avian populations
+
+Varying weather patterns, associated with climate change, include the increase in temperatures, fluctuation in rainfall regimes, and more frequent storm events. The way in which organisms and ecosystems respond to these climatic variables is an important component to help predict how climate change could affect biodiversity in the future (Cockrem 2022, Trew and Maclean 2021). In many animal species, the response to climatic variation often involves shifts in the timing of reproduction and migration, together with a change in foraging behaviour, dispersal and habitat selection (Cockrem 2022). TBC (add general ecological consequences of climate change, and end off with narrowing it down to birds) 
+
+  Studying the consequences of changing weather patterns on avian population biology has become a major field of study over the years, with BirdLife International identifying extreme weather events as the biggest threat to bird populations (Jenouvier 2013).  Additionally, predicting the way in which bird populations respond to future climatic changes is of high demand to implement the most effective conservation strategies to mitigate any harmful consequences of climate change (Jenouvier 2013). It has been noted that weather conditions can alter metabolic rates, changes in adult bird body size, and influence the conditions during important activities, such as foraging and courtship, thereby affecting success (Crick 2004). Additionally, weather has an impact on the reproductive success and reproductive phenology of avian populations.
+  
+  Weather conditions during the breeding period have direct consequences on chick survival through possible hyperthermic events or starvation due to conditions limiting foraging efficiency for the adult birds. Alongside the short-term effects of changing weather regimes on bird reproduction, the shift in environmental cues resulting from climate change influences the timing of when populations start to breed, and beyond the change in timing, the overall breeding performance is affected (Crick 2004, Møller *et al.* 2010). Despite variation across species, several studies have found that some species exhibit advanced breeding dates in response to weather conditions. Specifically, some species respond to warmer winters by laying eggs earlier than in colder years (Møller *et al.* 2010). Breeding performance is affected by documented changes in clutch sizes, egg size, and reproductive success, typically measured by whether a fledgling is produced, in response to the warming climate (Møller *et al.* 2010). TBC 
+  
+Weather influences avian breeding success
+  
+The reproductive success of many organisms relies on numerous factors, including food availability, environmental conditions, population dynamics, and, importantly, their response to shifting climatic conditions. Consequently, this led to several studies focusing on how climate change is affecting important reproductive parameters, including reproductive success, timing of reproduction and clutch size, with significant effects found across multiple species (Nielsen and Møller 2006). 
+
+   Conditions such as severe droughts, flooding, heat or cooling events reduce the survival rate and typically result in failed reproduction. In avian populations specifically, precipitation and temperature are known to affect the reproductive success of adult birds and the overall condition of the nestlings (Griebel and Dawson 2019). A study conducted by Dawson and Bortolotti (2000) on the reproductive success of Kestrels found that in the event of inclement weather had significant effects on reproductive success, as nestlings were smaller in size and body mass, making a successful fledgling less probable compared to nestlings during more favourable conditions. The decreased probability of producing a fledgling could be due to either direct or indirect effects. The direct effects include extensive energy expenditure on thermoregulation during cooling events, causing significant chilling of the chicks, and indirect effects include reduced hunting effort and prey delivery to the nest by parent birds (Dawson and Bortolotti 2000). Additionally, significant impacts of inclement weather are seen over periods as short as 3 days, leading to either partial or complete brood failure and decreased fledging success (Dawson and Bortolotti 2000).
+
+  
+Vultures 
+  
+Across the globe, there are 23 vulture species, most of them within the family Accipitridae and the remaining species within the family Cathartidae, and while some species are range restricted, a large number of these species are found across multiple continents (Ogada *et al.* 2012). Vultures are considered to play a vital role in maintaining the health of entire ecosystems through their role as specialised terrestrial scavengers and recycling large amounts of organic waste within an ecosystem (Carucci *et al.* 2022). Vultures can swiftly locate and consume carrion, and by doing so, they create competition for and control other often problematic scavenger populations such as jackals and rodents (Buechley and Sekercioglu 2016). Through their quick disposal of carrion, which acts as a reservoir for harmful diseases, including rabies and anthrax, vultures limit the spread of these pathogens into the ecosystem (Ogada *et al.* 2012). Thus, the absence of vultures, or a large decline in vulture populations, could have significant consequences on the health and, therefore, overall productivity of ecosystems. 
+  
+  Despite their ecological importance, vultures are considered one of the most threatened avian groups across the globe, with rapid declines in populations documented for most of the species (Overveld *et al.*  2020). Threats to vulture populations include pesticide and lead poisoning, powerline collision,  habitat loss, and disturbances during breeding, such as limited food availability and increased sporadic weather events (Ives *et al.* 2022). Vultures are large-bodied birds,  known for high flight speed, increased foraging ranges and the important ability to store energy reserves in the event of scarce food availability (Ogada *et al.* 2012). In addition, vultures are also known for their slow life history strategy, focusing on long-term survival, growth, parental investment and include delayed maturity and low reproductive rates (Perrig *et al.*  2019). These life-history traits make vultures especially vulnerable to reduced reproductive success, which has long-term consequences for future population stability. 
+
+African White-Backed Vultures 
+
+The African white backed vulture (*Gyps africanus*) is the most widespread and common vulture species across Africa, and as tree dwellers, these vultures are typically found in wooded savannah and bushfield areas (Mundy *et al.* 1992). White-backed vultures are classified as critically endangered by the IUCN Redlist because of the rapidly declining population (IUCN 2021). Currently, there are approximately 4000 breeding pairs of white-backed vultures, and they typically nest at the top of small to medium-sized scattered woody trees such as camelthorn in southern Africa (Mundy *et al.* 1992). White-backed vultures are monogamous, and during breeding season, one egg is laid typically between April – July. Thereafter, the egg is expected to hatch after roughly 60 days, which is followed by parental care from both parents for about 6 months after the chick has fledged. Depending on the region, the breeding success of white-backed vultures is highly variable, ranging from 40-90%. 
+
+  Conway *et al.* (2015) predicted that Southern Africa will experience significant shifts in climatic conditions, including increased temperatures and changing rainfall patterns, causing major shifts in climatically suitable habitats for numerous species. In the context of vultures, it has been proposed that climate change could have contributed to the historical loss of Cape vulture colonies, resulting from increased temperatures and shifts in rainfall patterns documented in the region (Phipps *et al.* 2017). Cape vultures nest at high elevations, typically on the edges of cliffs, making them and their nests sensitive to weather extremes such as prolonged periods of sun exposure that cause heat stress, decreasing the overall breeding success of the colonies (Phipps *et al.* 2017). 
+
+To be added somewhere 
+Reductions in breeding success, reproductive investments, or missed breeding seasons, driven by weather fluctuations, often lead to population declines, especially in long-lived species where recruitment depends on the repetition of successful breeding seasons (Andreasson *et al.* 2020)
+Similar to other large-bodied birds, vultures rely on atmospheric thermals for efficient soaring to locate food, which could become constrained when there is an increase in rainfall that suppresses the formation of these thermals (Virani *et al.* 2012). Constraints like these could cause vultures to reduce their breeding activity and therefore alter their population dynamics because food availability is one of the most important factors that cause variation in the reproductive success of avian species, as they often time their breeding to correspond with high food availability (Harriman *et al.* 2017). These effects are typically seen in years that are known for prolonged rainfall events, and the lasting effects of reduced foraging efficiency are reflected throughout the breeding season.  
+Warmer years are noted to have earlier egg laying dates as most bird species aim to correspond laying dates with periods of high food availability (Andreasson *et al.* 2020). 
+
+
+
+
+### Aims and Objectives
+
+By analysing 31 years of breeding phenology data alongside local weather data, this project aims to determine if, and how, weather affects the reproductive timing and success of African White Backed Vultures. To address this, three main objectives were identified:
+
+1.	To assess whether annual weather variation is associated with varying breeding effort of African white-backed vultures, measured in the total number of nests per year. 
+
+We hypothesise that the breeding effort of white-backed vultures will be reduced in years with inclement weather conditions characterised by higher annual temperatures and wind, prolonged rainfall and increased storm events. 
+
+2.	To assess whether annual weather variation is associated with varying annual breeding success in white-backed vultures, measured in the proportion of active nests that produce a fledgling. 
+
+We hypothesise that the breeding success of white-backed vultures will decrease in years of inclement weather conditions characterised by higher annual temperatures and wind, prolonged rainfall and increased storm events, due to lower reproductive investment. 
+
+3.	To assess whether annual weather conditions in the pre-laying period are associated with the breeding timing of white-backed vultures. 
+
+We hypothesise that the breeding timing, measured in laying dates, is influenced by the weather conditions in the 60 days prior to laying periods, which reflects white-backed vulture sensitivity to environmental cues before breeding. 
+
+
+## Methods 
+
+### Site discription 
+
+The breeding data used in this study were collected at Dronfield Nature Reserve, approximately 5km north of Kimberley in the Northern Cape, South Africa. Dronfield is located within a semi-arid region with a dominant vegetation type, the Kimberley Thornveld and has a mean annual rainfall of approximately 400 mm. The Thornveld is known for its open savanna structure with camel thorn trees scattered across the landscape with tall grasses in between. In addition, Dronfield includes numerous areas of semi-open mixed woodland, which, in combination with the savanna structure, supports a long-term breeding population of White-backed Vultures (*Gyps africanus*). The breeding nests of more than 100 white-backed vulture breeding pairs are mainly found within medium to large camel thorn trees found across the reserve. This breeding colony is one of six in the Kimberley area, with few threats while under Dronfield management, other than powerline electrocution remaining a persistent local threat, as eight main powerlines run through the reserves. However, when these vultures leave the reserve, they are faced with numerous surrounding threats, such as food shortage, poisoning, especially lead poisoning associated with hunting activities and drowning in surrounding farmland areas while foraging. Englewood, the neighbouring property to Dronfield, was included in the analysis until 2010 when land use change displaced the vultures to adjacent properties. 
+
+:::
