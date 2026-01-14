@@ -38,6 +38,7 @@ library(GSODR)
 library(tibble)
 library(knitr)
 library(AICcmodavg)
+library(lme4)
 
 
 ```
@@ -1245,9 +1246,7 @@ summary(best_no_year_E)$adj.r.squared
 --------------------------------------------------------------------------------
 
 
-
-### Objective 2
-not yet added year to the models 
+### Objective 2: Breeding success
 
 ```{r}
 objective2_table <- tribble(
@@ -1255,177 +1254,203 @@ objective2_table <- tribble(
 
   # ---- Temperature ----
   "**Temp**", "",
-  "Extreme heat events cause chick heat stress and dehydration, reducing fledging success.",
-  "success ~ max_temp",
+  "Extreme heat events cause chick heat stress and dehydration, reducing fledging success",
+  "success ~ max_temp + (1 | year)",
 
-  "Cold extremes increase thermoregulatory demand in chicks, increasing mortality risk.",
-  "success ~ min_temp",
+  "Cold extremes increase thermoregulatory demand in chicks, increasing mortality risk",
+  "success ~ min_temp + (1 | year)",
 
   # ---- Rain ----
   "**Rain**", "",
-  "Prolonged rainfall reduces adult foraging efficiency, limiting food delivery to chicks and reducing breeding success.",
-  "success ~ rain_days",
+  "Prolonged rainfall reduces adult foraging efficiency, limiting food delivery to chicks and reducing breeding success",
+  "success ~ rain_days + (1 | year)",
 
-  "Intense rainfall events cause acute nest disturbance and chick exposure, reducing breeding success.",
-  "success ~ max_rain",
+  "Intense rainfall events cause acute nest disturbance and chick exposure, reducing breeding success",
+  "success ~ max_rain + (1 | year)",
 
-  "Overall wet years reduce provisioning efficiency across the breeding season, lowering breeding success.",
-  "success ~ total_rain",
+  "Overall wet years reduce provisioning efficiency across the breeding season, lowering breeding success",
+  "success ~ total_rain + (1 | year)",
 
   # ---- Wind ----
   "**Wind**", "",
-  "Extreme winds increase nest exposure and disrupt provisioning, reducing chick survival.",
-  "success ~ max_wind",
+  "Extreme winds increase nest exposure and disrupt provisioning, reducing chick survival",
+  "success ~ max_wind + (1 | year)",
 
   # ---- Hail ----
   "**Hail**", "",
-  "Severe hail events increase nest destruction and chick mortality, reducing breeding success.",
-  "success ~ hail_days",
+  "Severe hail events increase nest destruction and chick mortality, reducing breeding success",
+  "success ~ hail_days + (1 | year)",
 
   # ---- Joint Effects ----
   "**Joint effects**", "",
-  "Severe storm exposure increases nest destruction and chick mortality, reducing breeding success.",
-  "success ~ hail_days + max_wind",
+  "Severe storm exposure increases nest destruction and chick mortality, reducing breeding success",
+  "success ~ hail_days + max_wind + (1 | year)",
 
-  "Prolonged wet conditions combined with storm events increase chick exposure and limit provisioning, reducing breeding success.",
-  "success ~ rain_days + hail_days",
+  "Prolonged wet conditions combined with storm events increase chick exposure and limit provisioning, reducing breeding success",
+  "success ~ rain_days + hail_days + (1 | year)",
 
-  "Heat stress combined with prolonged wet conditions reduces chick thermoregulation and food delivery, lowering breeding success.",
-  "success ~ max_temp + rain_days",
+  "Heat stress combined with prolonged wet conditions reduces chick thermoregulation and food delivery, lowering breeding success",
+  "success ~ max_temp + rain_days + (1 | year)",
 
   # ---- Interactive Effects ----
   "**Interactive effects**", "",
-  "The negative effect of heat stress on breeding success is amplified during persistently wet conditions that limit adult foraging.",
-  "success ~ max_temp * rain_days",
+  "The negative effect of heat stress on breeding success is amplified during persistently wet conditions that limit adult foraging",
+  "success ~ max_temp * rain_days + (1 | year)",
 
-  "Cold stress on chicks is amplified during extreme wind events due to increased exposure and heat loss, reducing breeding success.",
-  "success ~ min_temp * max_wind"
+  "Cold stress on chicks is amplified during extreme wind events due to increased exposure and heat loss, reducing breeding success",
+  "success ~ min_temp * max_wind + (1 | year)"
 )
 
 kable(
   objective2_table,
   align = c("l", "l"),
-  caption = "Objective 2 candidate model set for breeding success (proportion of nests producing a fledgling)."
+  caption = "Objective 2 candidate model set for breeding success. All models are fitted as binomial GLMMs: cbind(success_nests, failed_nests) with a random intercept for year (1 | year)"
 )
 ```
 
-```{r}
-m_succ_maxT   <- glm(cbind(success_nests, failed_nests) ~ z_max_temp,
-                     family = binomial, data = success_df)
-
-m_succ_minT   <- glm(cbind(success_nests, failed_nests) ~ z_min_temp,
-                     family = binomial, data = success_df)
-
-m_succ_rainD  <- glm(cbind(success_nests, failed_nests) ~ z_rain_days,
-                     family = binomial, data = success_df)
-
-m_succ_maxR   <- glm(cbind(success_nests, failed_nests) ~ z_max_rain,
-                     family = binomial, data = success_df)
-
-m_succ_totR   <- glm(cbind(success_nests, failed_nests) ~ z_total_rain,
-                     family = binomial, data = success_df)
-
-m_succ_maxW   <- glm(cbind(success_nests, failed_nests) ~ z_max_wind,
-                     family = binomial, data = success_df)
-
-m_succ_hail   <- glm(cbind(success_nests, failed_nests) ~ z_hail_days,
-                     family = binomial, data = success_df)
-
-```
-
-### Joint Effects
+success ~ 1 + (1 | year)
 
 ```{r}
-m_succ_hailW  <- glm(cbind(success_nests, failed_nests) ~ z_hail_days + z_max_wind,
-                     family = binomial, data = success_df)
+library(lme4)
 
-m_succ_rainH  <- glm(cbind(success_nests, failed_nests) ~ z_rain_days + z_hail_days,
-                     family = binomial, data = success_df)
+success_df <- success_df |> mutate(year = factor(year))
 
-m_succ_heatR  <- glm(cbind(success_nests, failed_nests) ~ z_max_temp + z_rain_days,
-                     family = binomial, data = success_df)
-
-```
-
-### Interactive effects
-
-```{r}
-m_succ_int_heat_rain <- glm(
-  cbind(success_nests, failed_nests) ~ z_max_temp * z_rain_days,
-  family = binomial, data = success_df
+m0 <- glmer(
+  cbind(success_nests, failed_nests) ~ 1 + (1 | year),
+  family = binomial,
+  data = success_df
 )
-
-m_succ_int_cold_wind <- glm(
-  cbind(success_nests, failed_nests) ~ z_min_temp * z_max_wind,
-  family = binomial, data = success_df
-)
-
-```
-
-
-```{r}
-cand_success <- list(
-  max_temp      = m_succ_maxT,
-  min_temp      = m_succ_minT,
-  
-  rain_days     = m_succ_rainD,
-  max_rain      = m_succ_maxR,
-  total_rain    = m_succ_totR,
- 
-   max_wind      = m_succ_maxW,
-  hail_days     = m_succ_hail,
-  hail_maxW     = m_succ_hailW,
-  rain_hail     = m_succ_rainH,
- 
-   maxT_rainD    = m_succ_heatR,
-  int_heatRain  = m_succ_int_heat_rain,
-  int_coldWind  = m_succ_int_cold_wind
-)
-
-```
-
-### AIC models
-
-```{r}
-
-aictab(
-  cand.set  = cand_success,
-  modnames = names(cand_success)
-)
+summary(m0)
 
 ```
 
 ```{r}
-m_succ_minT <- glm(
-  cbind(success_nests, failed_nests) ~ z_min_temp,
+library(lme4)
+
+success_df <- success_df |> dplyr::mutate(year = factor(year))
+
+# Baseline (null) model
+
+m0_success <- glmer(
+  cbind(success_nests, failed_nests) ~ 1 + (1 | year),
   family = binomial,
   data = success_df
 )
 
-m_succ_minT
-```
+# Single predictor models
 
-```{r}
-null_dev <- m_succ_minT$null.deviance
-resid_dev <- m_succ_minT$deviance
-
-dev_explained <- (null_dev - resid_dev) / null_dev
-dev_explained
-
-cat(
-  "Minimum temperature explained",
-  round(dev_explained * 100, 1),
-  "% of the deviance in breeding success.\n"
+m_succ_maxT <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_temp + (1 | year),
+  family = binomial, data = success_df
 )
 
+m_succ_minT <- glmer(
+  cbind(success_nests, failed_nests) ~ z_min_temp + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_rainD <- glmer(
+  cbind(success_nests, failed_nests) ~ z_rain_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_maxR <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_rain + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_totR <- glmer(
+  cbind(success_nests, failed_nests) ~ z_total_rain + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_maxW <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_wind + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_hail <- glmer(
+  cbind(success_nests, failed_nests) ~ z_hail_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+# Joint effects
+
+m_succ_hailW <- glmer(
+  cbind(success_nests, failed_nests) ~ z_hail_days + z_max_wind + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_rainH <- glmer(
+  cbind(success_nests, failed_nests) ~ z_rain_days + z_hail_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_heatR <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_temp + z_rain_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+# Interactions
+
+m_succ_int_heat_rain <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_temp * z_rain_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_int_cold_wind <- glmer(
+  cbind(success_nests, failed_nests) ~ z_min_temp * z_max_wind + (1 | year),
+  family = binomial, data = success_df
+)
 
 ```
+
 ```{r}
-check_overdispersion(m_succ_minT)
+
+# Candidate set + AIC
+
+library(AICcmodavg)
+
+cand_success <- list(
+  null_re      = m0_success,
+
+  max_temp     = m_succ_maxT,
+  min_temp     = m_succ_minT,
+  rain_days    = m_succ_rainD,
+  max_rain     = m_succ_maxR,
+  total_rain   = m_succ_totR,
+  max_wind     = m_succ_maxW,
+  hail_days    = m_succ_hail,
+
+  hail_maxW    = m_succ_hailW,
+  rain_hail    = m_succ_rainH,
+  maxT_rainD   = m_succ_heatR,
+
+  int_heatRain = m_succ_int_heat_rain,
+  int_coldWind = m_succ_int_cold_wind
+)
+
+aic_success <- aictab(
+  cand.set  = cand_success,
+  modnames  = names(cand_success)
+)
+
+aic_success
 
 ```
-overdispersed 
 
+```{r}
+v0 <- as.data.frame(VarCorr(m0_success))$vcov[1]
+v_minT <- as.data.frame(VarCorr(m_succ_minT))$vcov[1]
+
+(v0 - v_minT) / v0
+
+```
+
+
+
+
+--------------------------------------------------------------------------------
 
 ### Objective 3
 
