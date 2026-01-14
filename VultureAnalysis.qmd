@@ -52,6 +52,7 @@ check_overdispersion <- function(model) {
 } 
 ```
 
+
 ## Load Data
 
 ```{r}
@@ -141,6 +142,7 @@ rain_days_2004  = sum(rain_mm > 0, na.rm = TRUE),
 annual_chirps_2004
 
 ```
+
 
 ```{r}
 total_rain_2004 <- annual_chirps_2004$total_rain_2004
@@ -539,6 +541,7 @@ theme(panel.grid = element_blank())
 ```
 
 
+
 ## Objective 1
 
 ```{r}
@@ -573,6 +576,7 @@ acf(res_effort,
 main = "ACF of residuals: breeding effort (active nests)")
 
 ```
+
 
 ### Rainfall 
 
@@ -622,6 +626,7 @@ summary(mean_temp_mod)
 
 ```
 
+
 ### Wind 
 
 ```{r}
@@ -652,6 +657,7 @@ data = effort_weather
 summary(m_hail_only)
 
 ```
+
 
 
 ### Active nests across years 
@@ -944,6 +950,14 @@ plot(failed.nests$year, failed.nests$success_prop)
 
 
 
+
+
+
+
+
+
+--------------------------------------------------------------------------------
+
 ## Candidate model set
 
 ```{r}
@@ -1039,93 +1053,142 @@ kable(
 ```
 
 ```{r}
+# Annual effort: number of active nests per year
 active.nests <- vultures.clean |>
   mutate(year = year(ringing.date)) |>
   group_by(year) |>
   summarise(active_nests = n(), .groups = "drop")
 
+
+# Join to weather, create log effort response
+effort_weather <- active.nests |>
+  left_join(weather_yearly_lag, by = c("year" = "YEAR")) |>
+  filter(!is.na(lag_total_rain)) |>
+  mutate(
+    log_active_nests = log(active_nests)
+  )
+
+```
+
+
+```{r}
+# checking residuals
+par(mfrow = c(1, 2))
 ```
 
 ```{r}
-effort_weather <- active.nests |>
-  left_join(weather_yearly_lag, by = c("year" = "YEAR")) |>
-  filter(!is.na(lag_total_rain))  
+m_null <- lm(log_active_nests ~ 1, data = effort_weather)    
+m_year <- lm(log_active_nests ~ year, data = effort_weather)
 
 ```
+
 
 ### Single predictor models
 
 ```{r}
- m_mean_temp      <- glm.nb(active_nests ~ mean_temp,      data = effort_weather)
-m_max_temp       <- glm.nb(active_nests ~ max_temp,       data = effort_weather)
-m_min_temp       <- glm.nb(active_nests ~ min_temp,       data = effort_weather)
+m_mean_temp <- lm(log_active_nests ~ mean_temp, data = effort_weather)
+m_max_temp <- lm(log_active_nests ~ max_temp, data = effort_weather)
+m_min_temp <- lm(log_active_nests ~ min_temp, data = effort_weather)
 
-m_total_rain     <- glm.nb(active_nests ~ total_rain,     data = effort_weather)
-m_rain_days      <- glm.nb(active_nests ~ rain_days,      data = effort_weather)
-m_max_rain       <- glm.nb(active_nests ~ max_rain,       data = effort_weather)
+m_total_rain <- lm(log_active_nests ~ total_rain, data = effort_weather)
+m_rain_days <- lm(log_active_nests ~ rain_days, data = effort_weather)
+m_max_rain <- lm(log_active_nests ~ max_rain, data = effort_weather)
+m_lag_total_rain <- lm(log_active_nests ~ lag_total_rain, data = effort_weather)
 
-m_lag_total_rain <- glm.nb(active_nests ~ lag_total_rain, data = effort_weather)
+m_mean_wind <- lm(log_active_nests ~ mean_wind, data = effort_weather)
+m_max_wind <- lm(log_active_nests ~ max_wind, data = effort_weather)
+m_hail_days <- lm(log_active_nests ~ hail_days, data = effort_weather)
 
-m_mean_wind      <- glm.nb(active_nests ~ mean_wind,      data = effort_weather)
-m_max_wind       <- glm.nb(active_nests ~ max_wind,       data = effort_weather)
-
-m_hail_days      <- glm.nb(active_nests ~ hail_days,      data = effort_weather)
 
 ```
 
 ### Joint effect models
 
 ```{r}
-m_cold_wet_amt   <- glm.nb(active_nests ~ min_temp + total_rain, data = effort_weather)
-m_cold_storm    <- glm.nb(active_nests ~ min_temp + max_rain,   data = effort_weather)
-m_cold_wind     <- glm.nb(active_nests ~ min_temp + max_wind,   data = effort_weather)
+m_cold_wet_amt <- lm(log_active_nests ~ min_temp + total_rain, data = effort_weather)
+m_cold_storm <- lm(log_active_nests ~ min_temp + max_rain, data = effort_weather)
+m_cold_wind <- lm(log_active_nests ~ min_temp + max_wind, data = effort_weather)
 
-m_hail_wind     <- glm.nb(active_nests ~ hail_days + max_wind,  data = effort_weather)
-m_hail_rain     <- glm.nb(active_nests ~ total_rain + hail_days,     data = effort_weather)
-m_rain_wind     <- glm.nb(active_nests ~ max_rain + max_wind,   data = effort_weather)
+m_hail_wind <- lm(log_active_nests ~ hail_days + max_wind, data = effort_weather)
+m_hail_rain <- lm(log_active_nests ~ total_rain + hail_days, data = effort_weather)
+m_rain_wind <- lm(log_active_nests ~ max_rain + max_wind, data = effort_weather)
 
-m_heat_wet_days <- glm.nb(active_nests ~ max_temp + rain_days,  data = effort_weather)
+m_heat_wet_days <- lm(log_active_nests ~ max_temp + rain_days, data = effort_weather)
 
 ```
 
 ### Interacting effect models
 
 ```{r}
-m_int_cold_wet  <- glm.nb(active_nests ~ min_temp * rain_days,     data = effort_weather)
-m_int_rain_hail <- glm.nb(active_nests ~ total_rain * hail_days,     data = effort_weather)
-m_int_cold_wind <- glm.nb(active_nests ~ min_temp * mean_wind,     data = effort_weather)
-m_int_lag_heat  <- glm.nb(active_nests ~ lag_total_rain * max_temp,data = effort_weather)
+
+m_int_cold_wet   <- lm(log_active_nests ~ min_temp * rain_days,      data = effort_weather)
+m_int_rain_hail  <- lm(log_active_nests ~ total_rain * hail_days,    data = effort_weather)
+m_int_cold_wind  <- lm(log_active_nests ~ min_temp * mean_wind,      data = effort_weather)
+m_int_lag_heat   <- lm(log_active_nests ~ lag_total_rain * max_temp, data = effort_weather)
 
 ```
 
+### Include year
+
 ```{r}
+m_mean_temp_year <- lm(log_active_nests ~ year + mean_temp, data = effort_weather)
+m_max_temp_year <- lm(log_active_nests ~ year + max_temp, data = effort_weather)
+m_min_temp_year <- lm(log_active_nests ~ year + min_temp, data = effort_weather)
+
+m_total_rain_year <- lm(log_active_nests ~ year + total_rain, data = effort_weather)
+m_rain_days_year <- lm(log_active_nests ~ year + rain_days, data = effort_weather)
+m_max_rain_year <- lm(log_active_nests ~ year + max_rain, data = effort_weather)
+m_lag_total_rain_year <- lm(log_active_nests ~ year + lag_total_rain, data = effort_weather)
+
+m_mean_wind_year <- lm(log_active_nests ~ year + mean_wind, data = effort_weather)
+m_max_wind_year <- lm(log_active_nests ~ year + max_wind, data = effort_weather)
+m_hail_days_year <- lm(log_active_nests ~ year + hail_days, data = effort_weather)
+```
+
+```{r}
+
 cand_effort <- list(
-  mean_temp       = m_mean_temp,
-  max_temp        = m_max_temp,
-  min_temp        = m_min_temp,
+null               = m_null,
+year               = m_year,
 
-  total_rain      = m_total_rain,
-  rain_days       = m_rain_days,
-  max_rain        = m_max_rain,
-  lag_total_rain  = m_lag_total_rain,
 
-  mean_wind       = m_mean_wind,
-  max_wind        = m_max_wind,
-  hail_days       = m_hail_days,
+mean_temp          = m_mean_temp,
+max_temp           = m_max_temp,
+min_temp           = m_min_temp,
+total_rain         = m_total_rain,
+rain_days          = m_rain_days,
+max_rain           = m_max_rain,
+lag_total_rain     = m_lag_total_rain,
+mean_wind          = m_mean_wind,
+max_wind           = m_max_wind,
+hail_days          = m_hail_days,
 
-  minT_totalR     = m_cold_wet_amt,
-  minT_maxR       = m_cold_storm,
-  minT_maxW       = m_cold_wind,
-  hail_maxW       = m_hail_wind,
-  maxR_maxW       = m_rain_wind,
-  maxT_rainDays   = m_heat_wet_days,
- hail_rain  = m_hail_rain,
- 
-  minT_x_rainDays = m_int_cold_wet,
-  minT_x_meanWind = m_int_cold_wind,
-  lagR_x_maxT     = m_int_lag_heat,
 
-  rain_x_hail     = m_int_rain_hail   
+minT_totalR        = m_cold_wet_amt,
+minT_maxR          = m_cold_storm,
+minT_maxW          = m_cold_wind,
+hail_maxW          = m_hail_wind,
+hail_rain          = m_hail_rain,
+maxR_maxW          = m_rain_wind,
+maxT_rainDays      = m_heat_wet_days,
+
+
+minT_x_rainDays    = m_int_cold_wet,
+minT_x_meanWind    = m_int_cold_wind,
+lagR_x_maxT        = m_int_lag_heat,
+rain_x_hail        = m_int_rain_hail,
+
+
+mean_temp_year      = m_mean_temp_year,
+max_temp_year       = m_max_temp_year,
+min_temp_year       = m_min_temp_year,
+total_rain_year     = m_total_rain_year,
+rain_days_year      = m_rain_days_year,
+max_rain_year       = m_max_rain_year,
+lag_total_rain_year = m_lag_total_rain_year,
+mean_wind_year      = m_mean_wind_year,
+max_wind_year       = m_max_wind_year,
+hail_days_year      = m_hail_days_year
 )
 
 
@@ -1135,40 +1198,355 @@ cand_effort <- list(
 ### AIC Output 
 
 ```{r}
+
 aic_effort <- aictab(
-  cand.set = cand_effort,
-  modnames = names(cand_effort)
+cand.set  = cand_effort,
+modnames  = names(cand_effort)
 )
 
 aic_effort
 
+
 ``` 
 
-### Top models
+### R2
 
 ```{r}
-top_models_effort <- cand_effort[c(
-  "hail_days",
-  "max_temp",
-  "hail_maxW",
-  "total_rain",
-  "hail_rain",
-  "max_wind",
-  "maxT_rainDays"
-)]
+# Year-only model
+summary(m_year)$r.squared
+summary(m_year)$adj.r.squared
+
+# Top AICc model
+summary(m_max_rain_year)$r.squared
+summary(m_max_rain_year)$adj.r.squared
 
 ```
 
-### Calculating deviance explained
+
+
+
+
+
+
+--------------------------------------------------------------------------------
+
+
+
+### Objective 2
+not yet added year to the models 
 
 ```{r}
-dev_expl <- function(m) 1 - (deviance(m) / m$null.deviance)
+objective2_table <- tribble(
+  ~`Hypothesis / justification`, ~Model,
 
-sapply(top_models_effort, dev_expl)
+  # ---- Temperature ----
+  "**Temp**", "",
+  "Extreme heat events cause chick heat stress and dehydration, reducing fledging success.",
+  "success ~ max_temp",
+
+  "Cold extremes increase thermoregulatory demand in chicks, increasing mortality risk.",
+  "success ~ min_temp",
+
+  # ---- Rain ----
+  "**Rain**", "",
+  "Prolonged rainfall reduces adult foraging efficiency, limiting food delivery to chicks and reducing breeding success.",
+  "success ~ rain_days",
+
+  "Intense rainfall events cause acute nest disturbance and chick exposure, reducing breeding success.",
+  "success ~ max_rain",
+
+  "Overall wet years reduce provisioning efficiency across the breeding season, lowering breeding success.",
+  "success ~ total_rain",
+
+  # ---- Wind ----
+  "**Wind**", "",
+  "Extreme winds increase nest exposure and disrupt provisioning, reducing chick survival.",
+  "success ~ max_wind",
+
+  # ---- Hail ----
+  "**Hail**", "",
+  "Severe hail events increase nest destruction and chick mortality, reducing breeding success.",
+  "success ~ hail_days",
+
+  # ---- Joint Effects ----
+  "**Joint effects**", "",
+  "Severe storm exposure increases nest destruction and chick mortality, reducing breeding success.",
+  "success ~ hail_days + max_wind",
+
+  "Prolonged wet conditions combined with storm events increase chick exposure and limit provisioning, reducing breeding success.",
+  "success ~ rain_days + hail_days",
+
+  "Heat stress combined with prolonged wet conditions reduces chick thermoregulation and food delivery, lowering breeding success.",
+  "success ~ max_temp + rain_days",
+
+  # ---- Interactive Effects ----
+  "**Interactive effects**", "",
+  "The negative effect of heat stress on breeding success is amplified during persistently wet conditions that limit adult foraging.",
+  "success ~ max_temp * rain_days",
+
+  "Cold stress on chicks is amplified during extreme wind events due to increased exposure and heat loss, reducing breeding success.",
+  "success ~ min_temp * max_wind"
+)
+
+kable(
+  objective2_table,
+  align = c("l", "l"),
+  caption = "Objective 2 candidate model set for breeding success (proportion of nests producing a fledgling)."
+)
+```
+
+```{r}
+m_succ_maxT   <- glm(cbind(success_nests, failed_nests) ~ z_max_temp,
+                     family = binomial, data = success_df)
+
+m_succ_minT   <- glm(cbind(success_nests, failed_nests) ~ z_min_temp,
+                     family = binomial, data = success_df)
+
+m_succ_rainD  <- glm(cbind(success_nests, failed_nests) ~ z_rain_days,
+                     family = binomial, data = success_df)
+
+m_succ_maxR   <- glm(cbind(success_nests, failed_nests) ~ z_max_rain,
+                     family = binomial, data = success_df)
+
+m_succ_totR   <- glm(cbind(success_nests, failed_nests) ~ z_total_rain,
+                     family = binomial, data = success_df)
+
+m_succ_maxW   <- glm(cbind(success_nests, failed_nests) ~ z_max_wind,
+                     family = binomial, data = success_df)
+
+m_succ_hail   <- glm(cbind(success_nests, failed_nests) ~ z_hail_days,
+                     family = binomial, data = success_df)
+
+```
+
+### Joint Effects
+
+```{r}
+m_succ_hailW  <- glm(cbind(success_nests, failed_nests) ~ z_hail_days + z_max_wind,
+                     family = binomial, data = success_df)
+
+m_succ_rainH  <- glm(cbind(success_nests, failed_nests) ~ z_rain_days + z_hail_days,
+                     family = binomial, data = success_df)
+
+m_succ_heatR  <- glm(cbind(success_nests, failed_nests) ~ z_max_temp + z_rain_days,
+                     family = binomial, data = success_df)
+
+```
+
+### Interactive effects
+
+```{r}
+m_succ_int_heat_rain <- glm(
+  cbind(success_nests, failed_nests) ~ z_max_temp * z_rain_days,
+  family = binomial, data = success_df
+)
+
+m_succ_int_cold_wind <- glm(
+  cbind(success_nests, failed_nests) ~ z_min_temp * z_max_wind,
+  family = binomial, data = success_df
+)
+
+```
+
+
+```{r}
+cand_success <- list(
+  max_temp      = m_succ_maxT,
+  min_temp      = m_succ_minT,
+  
+  rain_days     = m_succ_rainD,
+  max_rain      = m_succ_maxR,
+  total_rain    = m_succ_totR,
+ 
+   max_wind      = m_succ_maxW,
+  hail_days     = m_succ_hail,
+  hail_maxW     = m_succ_hailW,
+  rain_hail     = m_succ_rainH,
+ 
+   maxT_rainD    = m_succ_heatR,
+  int_heatRain  = m_succ_int_heat_rain,
+  int_coldWind  = m_succ_int_cold_wind
+)
+
+```
+
+### AIC models
+
+```{r}
+
+aictab(
+  cand.set  = cand_success,
+  modnames = names(cand_success)
+)
+
+```
+
+```{r}
+m_succ_minT <- glm(
+  cbind(success_nests, failed_nests) ~ z_min_temp,
+  family = binomial,
+  data = success_df
+)
+
+m_succ_minT
+```
+
+```{r}
+null_dev <- m_succ_minT$null.deviance
+resid_dev <- m_succ_minT$deviance
+
+dev_explained <- (null_dev - resid_dev) / null_dev
+dev_explained
+
+cat(
+  "Minimum temperature explained",
+  round(dev_explained * 100, 1),
+  "% of the deviance in breeding success.\n"
+)
+
+
+```
+```{r}
+check_overdispersion(m_succ_minT)
+
+```
+overdispersed 
+
+
+### Objective 3
+
+```{r}
+hist(timing_weather_60$lay_DOY)
+qqnorm(timing_weather_60$lay_DOY)
+qqline(timing_weather_60$lay_DOY)
+
+```
+
+
+```{r}
+objective3_table <- tribble(
+  ~`Hypothesis / justification`, ~Model,
+
+  # ---- Temperature (pre-laying cues) ----
+  "**Temp (pre-laying)**", "",
+  "Short-term warm conditions prior to laying may act as a cue for the initiation of breeding.",
+  "lay_DOY ~ mean_temp_60",
+
+  "Cold pre-laying conditions delay breeding due to increased energetic costs",
+  "lay_DOY ~ min_temp_60",
+
+
+  # ---- Rain (pre-laying cues) ----
+  "**Rain (pre-laying)**", "",
+  "Prolonged wet conditions prior to laying delay breeding by limiting foraging efficiency",
+  "lay_DOY ~ rain_days_60",
+
+  "Higher rainfall prior to laying signals improved food availability and advances breeding timing",
+  "lay_DOY ~ total_rain_60",
+
+  # ---- Wind (pre-laying flight conditions) ----
+  "**Wind (pre-laying)**", "",
+  "Persistent windy conditions prior to laying increase flight costs and delay breeding timing",
+  "lay_DOY ~ mean_wind_60",
+
+  # ---- Lagged effects (carry-over cues) ----
+  "**Lagged effects (previous year)**", "",
+  "Higher rainfall in the previous year improves food availability and adult condition entering the breeding season, allowing vultures to initiate breeding earlier",
+  "lay_DOY ~ lag_total_rain",
+
+  "Prolonged wet conditions in the previous year may influence adult condition and carry over to affect laying timing",
+  "lay_DOY ~ lag_rain_days",
+
+  "Thermal conditions in the previous year influence physiological state entering the breeding season",
+  "lay_DOY ~ lag_mean_temp",
+
+  # ---- Joint effects ----
+  "**Joint effects**", "",
+  "Temperature and rainfall cues prior to laying jointly influence breeding timing",
+  "lay_DOY ~ mean_temp_60 + rain_days_60",
+
+  "Carry-over effects from the previous year interact with current pre-laying rainfall cues",
+  "lay_DOY ~ lag_total_rain + rain_days_60",
+
+  "Previous-year rainfall and current temperature jointly influence breeding timing",
+  "lay_DOY ~ lag_total_rain + mean_temp_60",
+
+  # ---- Interactive effects ----
+  "**Interactive effects**", "",
+  "The effect of temperature cues on breeding timing depends on pre-laying rainfall conditions",
+  "lay_DOY ~ mean_temp_60 * rain_days_60",
+
+  "Carry-over effects from the previous year modify responses to current pre-laying temperature cues",
+  "lay_DOY ~ lag_total_rain * mean_temp_60"
+)
+
+kable(
+  objective3_table,
+  align = c("l", "l"),
+  caption = "Objective 3 candidate model set for breeding timing (laying date, day of year)."
+)
+
+```
+
+```{r}
+timing_weather_60 <- timing_weather_60 |>
+  left_join(
+    weather_yearly_lag |>
+      dplyr::select(
+        YEAR,
+        lag_total_rain,
+        lag_rain_days,
+        lag_mean_temp
+      ),
+    by = c("year" = "YEAR")
+  )
+
+```
+
+
+```{r}
+cand_timing <- list(
+
+  meanT_60   = lm(lay_DOY ~ mean_temp_60, data = timing_weather_60),
+  maxT_60    = lm(lay_DOY ~ max_temp_60,  data = timing_weather_60),
+  minT_60    = lm(lay_DOY ~ min_temp_60,  data = timing_weather_60),
+
+  rainDays_60 = lm(lay_DOY ~ rain_days_60,  data = timing_weather_60),
+  totalR_60   = lm(lay_DOY ~ total_rain_60, data = timing_weather_60),
+
+  meanW_60 = lm(lay_DOY ~ mean_wind_60, data = timing_weather_60),
+  maxW_60  = lm(lay_DOY ~ max_wind_60,  data = timing_weather_60),
+
+  temp_rain = lm(lay_DOY ~ mean_temp_60 + rain_days_60, data = timing_weather_60),
+  temp_wind = lm(lay_DOY ~ mean_temp_60 + mean_wind_60, data = timing_weather_60),
+  rain_wind = lm(lay_DOY ~ rain_days_60 + mean_wind_60, data = timing_weather_60),
+
+  temp_x_rain = lm(lay_DOY ~ mean_temp_60 * rain_days_60, data = timing_weather_60),
+  minT_x_wind = lm(lay_DOY ~ min_temp_60 * mean_wind_60, data = timing_weather_60)
+)
+
+
+```
+
+```{r}
+
+aic_timing <- aictab(
+  cand.set  = cand_timing,
+  modnames = names(cand_timing)
+)
+
+aic_timing
+
+```
+
+```{r}
+summary(cand_timing$temp_x_rain)$r.squared
 
 ```
 
 :::
+
+
 
 
 
