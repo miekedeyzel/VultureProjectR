@@ -876,7 +876,7 @@ check_overdispersion(m_success_hail)
 
 ## Objective 3
 
-### 60 day pre laying period 
+### 60 and 30 day pre laying period 
 
 ```{r}
 timing_df <- vultures.clean |>
@@ -905,6 +905,26 @@ hail_days_60  = sum(w$hail, na.rm = TRUE)
 timing_weather_60 <- timing_df |>
 mutate(win60 = purrr::map(laying.date, summarise_60, weather = weather_lag)) |>
 unnest(win60)
+
+summarise_30 <- function(lay_date, weather) {
+  w <- weather |>
+    filter(date > (lay_date - days(30)), date <= lay_date)
+
+  tibble(
+    mean_temp_30  = mean(w$mean_temp, na.rm = TRUE),
+    max_temp_30   = mean(w$max_temp,  na.rm = TRUE),
+    min_temp_30   = mean(w$min_temp,  na.rm = TRUE),
+    total_rain_30 = sum(w$rain,       na.rm = TRUE),
+    rain_days_30  = sum(w$rain_day,   na.rm = TRUE),
+    mean_wind_30  = mean(w$mean_wind, na.rm = TRUE),
+    max_wind_30   = mean(w$max_wind,  na.rm = TRUE),
+    hail_days_30  = sum(w$hail,       na.rm = TRUE)
+  )
+}
+
+timing_weather_30 <- timing_df |>
+  mutate(win30 = purrr::map(laying.date, summarise_30, weather = weather_lag)) |>
+  tidyr::unnest(win30)
 
 ```
 
@@ -1369,7 +1389,7 @@ m_succ_maxW <- glmer(
   family = binomial, data = success_df
 )
 
-m_succ_hail <- glmer(
+m_succ_hail <- glmer( 
   cbind(success_nests, failed_nests) ~ z_hail_days + (1 | year),
   family = binomial, data = success_df
 )
@@ -1528,7 +1548,22 @@ kable(
 ```
 
 ```{r}
+
+# 60 days prior
 timing_weather_60 <- timing_weather_60 |>
+  left_join(
+    weather_yearly_lag |>
+      dplyr::select(
+        YEAR,
+        lag_total_rain,
+        lag_rain_days,
+        lag_mean_temp
+      ),
+    by = c("year" = "YEAR")
+  )
+
+# 30 days prior
+timing_weather_30 <- timing_weather_30 |>
   left_join(
     weather_yearly_lag |>
       dplyr::select(
@@ -1544,7 +1579,50 @@ timing_weather_60 <- timing_weather_60 |>
 
 
 ```{r}
-cand_timing <- list(
+
+cand_timing_30 <- list(
+
+  meanT_30   = lm(lay_DOY ~ mean_temp_30, data = timing_weather_30),
+  maxT_30    = lm(lay_DOY ~ max_temp_30,  data = timing_weather_30),
+  minT_30    = lm(lay_DOY ~ min_temp_30,  data = timing_weather_30),
+
+  rainDays_30 = lm(lay_DOY ~ rain_days_30,  data = timing_weather_30),
+  totalR_30   = lm(lay_DOY ~ total_rain_30, data = timing_weather_30),
+
+  meanW_30 = lm(lay_DOY ~ mean_wind_30, data = timing_weather_30),
+  maxW_30  = lm(lay_DOY ~ max_wind_30,  data = timing_weather_30),
+
+  # lagged (previous year)
+  lagTotR  = lm(lay_DOY ~ lag_total_rain, data = timing_weather_30),
+  lagRainD = lm(lay_DOY ~ lag_rain_days,  data = timing_weather_30),
+  lagMeanT = lm(lay_DOY ~ lag_mean_temp,  data = timing_weather_30),
+
+  # additive
+  temp_rain = lm(lay_DOY ~ mean_temp_30 + rain_days_30, data = timing_weather_30),
+  temp_wind = lm(lay_DOY ~ mean_temp_30 + mean_wind_30, data = timing_weather_30),
+  rain_wind = lm(lay_DOY ~ rain_days_30 + mean_wind_30, data = timing_weather_30),
+
+  # interactions
+  temp_x_rain = lm(lay_DOY ~ mean_temp_30 * rain_days_30, data = timing_weather_30),
+  minT_x_wind = lm(lay_DOY ~ min_temp_30 * mean_wind_30, data = timing_weather_30),
+  lagR_x_temp = lm(lay_DOY ~ lag_total_rain * mean_temp_30, data = timing_weather_30)
+)
+
+```
+
+
+```{r}
+
+aic_timing_30 <- aictab(
+  cand.set = cand_timing_30,
+  modnames = names(cand_timing_30)
+)
+
+```
+
+```{r}
+
+cand_timing_60 <- list(
 
   meanT_60   = lm(lay_DOY ~ mean_temp_60, data = timing_weather_60),
   maxT_60    = lm(lay_DOY ~ max_temp_60,  data = timing_weather_60),
@@ -1556,30 +1634,40 @@ cand_timing <- list(
   meanW_60 = lm(lay_DOY ~ mean_wind_60, data = timing_weather_60),
   maxW_60  = lm(lay_DOY ~ max_wind_60,  data = timing_weather_60),
 
+  # lagged (previous year)
+  lagTotR  = lm(lay_DOY ~ lag_total_rain, data = timing_weather_60),
+  lagRainD = lm(lay_DOY ~ lag_rain_days,  data = timing_weather_60),
+  lagMeanT = lm(lay_DOY ~ lag_mean_temp,  data = timing_weather_60),
+
+  # additive
   temp_rain = lm(lay_DOY ~ mean_temp_60 + rain_days_60, data = timing_weather_60),
   temp_wind = lm(lay_DOY ~ mean_temp_60 + mean_wind_60, data = timing_weather_60),
   rain_wind = lm(lay_DOY ~ rain_days_60 + mean_wind_60, data = timing_weather_60),
 
+  # interactions
   temp_x_rain = lm(lay_DOY ~ mean_temp_60 * rain_days_60, data = timing_weather_60),
-  minT_x_wind = lm(lay_DOY ~ min_temp_60 * mean_wind_60, data = timing_weather_60)
+  minT_x_wind = lm(lay_DOY ~ min_temp_60 * mean_wind_60, data = timing_weather_60),
+  lagR_x_temp = lm(lay_DOY ~ lag_total_rain * mean_temp_60, data = timing_weather_60)
 )
-
 
 ```
 
 ```{r}
 
-aic_timing <- aictab(
-  cand.set  = cand_timing,
-  modnames = names(cand_timing)
+aic_timing_60 <- aictab(
+  cand.set = cand_timing_60,
+  modnames = names(cand_timing_60)
 )
-
-aic_timing
 
 ```
 
 ```{r}
-summary(cand_timing$temp_x_rain)$r.squared
+aic_timing_30
+summary(cand_timing_30$temp_x_rain)$r.squared
+
+
+aic_timing_60
+summary(cand_timing_60$temp_x_rain)$r.squared
 
 ```
 
