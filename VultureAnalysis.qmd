@@ -1671,6 +1671,22 @@ summary(cand_timing_60$temp_x_rain)$r.squared
 
 ```
 
+```{r}
+m_year_trend <- lm(lay_DOY ~ year, data = timing_weather_30)
+summary(m_year_trend)
+
+```
+
+```{r}
+summary(m_year_trend)$r.squared
+
+```
+```{r}
+m_year_trend60 <- lm(lay_DOY ~ year, data = timing_weather_60)
+summary(m_year_trend60)
+
+```
+
 :::
 
 
