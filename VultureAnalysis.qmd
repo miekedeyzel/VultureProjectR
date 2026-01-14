@@ -1076,155 +1076,169 @@ effort_weather <- active.nests |>
 par(mfrow = c(1, 2))
 ```
 
-```{r}
-m_null <- lm(log_active_nests ~ 1, data = effort_weather)    
-m_year <- lm(log_active_nests ~ year, data = effort_weather)
 
-```
-
-
-### Single predictor models
+### Fitingt then no-year models
 
 ```{r}
-m_mean_temp <- lm(log_active_nests ~ mean_temp, data = effort_weather)
-m_max_temp <- lm(log_active_nests ~ max_temp, data = effort_weather)
-m_min_temp <- lm(log_active_nests ~ min_temp, data = effort_weather)
+# Baseline 
+m_null <- lm(log_active_nests ~ 1, data = effort_weather)
 
-m_total_rain <- lm(log_active_nests ~ total_rain, data = effort_weather)
-m_rain_days <- lm(log_active_nests ~ rain_days, data = effort_weather)
-m_max_rain <- lm(log_active_nests ~ max_rain, data = effort_weather)
+# Single predictor models 
+m_mean_temp      <- lm(log_active_nests ~ mean_temp,      data = effort_weather)
+m_max_temp       <- lm(log_active_nests ~ max_temp,       data = effort_weather)
+m_min_temp       <- lm(log_active_nests ~ min_temp,       data = effort_weather)
+
+m_total_rain     <- lm(log_active_nests ~ total_rain,     data = effort_weather)
+m_rain_days      <- lm(log_active_nests ~ rain_days,      data = effort_weather)
+m_max_rain       <- lm(log_active_nests ~ max_rain,       data = effort_weather)
 m_lag_total_rain <- lm(log_active_nests ~ lag_total_rain, data = effort_weather)
 
-m_mean_wind <- lm(log_active_nests ~ mean_wind, data = effort_weather)
-m_max_wind <- lm(log_active_nests ~ max_wind, data = effort_weather)
-m_hail_days <- lm(log_active_nests ~ hail_days, data = effort_weather)
+m_mean_wind      <- lm(log_active_nests ~ mean_wind,      data = effort_weather)
+m_max_wind       <- lm(log_active_nests ~ max_wind,       data = effort_weather)
+m_hail_days      <- lm(log_active_nests ~ hail_days,      data = effort_weather)
 
+# Joint effects 
+m_minT_totalR    <- lm(log_active_nests ~ min_temp + total_rain,  data = effort_weather)
+m_minT_maxR      <- lm(log_active_nests ~ min_temp + max_rain,    data = effort_weather)
+m_minT_maxW      <- lm(log_active_nests ~ min_temp + max_wind,    data = effort_weather)
+m_hail_maxW      <- lm(log_active_nests ~ hail_days + max_wind,   data = effort_weather)
+m_maxR_maxW      <- lm(log_active_nests ~ max_rain + max_wind,    data = effort_weather)
+m_maxT_rainDays  <- lm(log_active_nests ~ max_temp + rain_days,   data = effort_weather)
+m_hail_rainDays  <- lm(log_active_nests ~ hail_days + rain_days,  data = effort_weather)
 
+# Interactions 
+m_minT_x_rainDays <- lm(log_active_nests ~ min_temp * rain_days,      data = effort_weather)
+m_minT_x_meanWind <- lm(log_active_nests ~ min_temp * mean_wind,      data = effort_weather)
+m_lagR_x_maxT     <- lm(log_active_nests ~ lag_total_rain * max_temp, data = effort_weather)
 ```
 
-### Joint effect models
+### Fit with year models 
 
 ```{r}
-m_cold_wet_amt <- lm(log_active_nests ~ min_temp + total_rain, data = effort_weather)
-m_cold_storm <- lm(log_active_nests ~ min_temp + max_rain, data = effort_weather)
-m_cold_wind <- lm(log_active_nests ~ min_temp + max_wind, data = effort_weather)
+# Baseline 
+m_year <- lm(log_active_nests ~ year, data = effort_weather)
 
-m_hail_wind <- lm(log_active_nests ~ hail_days + max_wind, data = effort_weather)
-m_hail_rain <- lm(log_active_nests ~ total_rain + hail_days, data = effort_weather)
-m_rain_wind <- lm(log_active_nests ~ max_rain + max_wind, data = effort_weather)
+# Single predictor models 
+m_mean_temp_year      <- lm(log_active_nests ~ year + mean_temp,      data = effort_weather)
+m_max_temp_year       <- lm(log_active_nests ~ year + max_temp,       data = effort_weather)
+m_min_temp_year       <- lm(log_active_nests ~ year + min_temp,       data = effort_weather)
 
-m_heat_wet_days <- lm(log_active_nests ~ max_temp + rain_days, data = effort_weather)
-
-```
-
-### Interacting effect models
-
-```{r}
-
-m_int_cold_wet   <- lm(log_active_nests ~ min_temp * rain_days,      data = effort_weather)
-m_int_rain_hail  <- lm(log_active_nests ~ total_rain * hail_days,    data = effort_weather)
-m_int_cold_wind  <- lm(log_active_nests ~ min_temp * mean_wind,      data = effort_weather)
-m_int_lag_heat   <- lm(log_active_nests ~ lag_total_rain * max_temp, data = effort_weather)
-
-```
-
-### Include year
-
-```{r}
-m_mean_temp_year <- lm(log_active_nests ~ year + mean_temp, data = effort_weather)
-m_max_temp_year <- lm(log_active_nests ~ year + max_temp, data = effort_weather)
-m_min_temp_year <- lm(log_active_nests ~ year + min_temp, data = effort_weather)
-
-m_total_rain_year <- lm(log_active_nests ~ year + total_rain, data = effort_weather)
-m_rain_days_year <- lm(log_active_nests ~ year + rain_days, data = effort_weather)
-m_max_rain_year <- lm(log_active_nests ~ year + max_rain, data = effort_weather)
+m_total_rain_year     <- lm(log_active_nests ~ year + total_rain,     data = effort_weather)
+m_rain_days_year      <- lm(log_active_nests ~ year + rain_days,      data = effort_weather)
+m_max_rain_year       <- lm(log_active_nests ~ year + max_rain,       data = effort_weather)
 m_lag_total_rain_year <- lm(log_active_nests ~ year + lag_total_rain, data = effort_weather)
 
-m_mean_wind_year <- lm(log_active_nests ~ year + mean_wind, data = effort_weather)
-m_max_wind_year <- lm(log_active_nests ~ year + max_wind, data = effort_weather)
-m_hail_days_year <- lm(log_active_nests ~ year + hail_days, data = effort_weather)
-```
+m_mean_wind_year      <- lm(log_active_nests ~ year + mean_wind,      data = effort_weather)
+m_max_wind_year       <- lm(log_active_nests ~ year + max_wind,       data = effort_weather)
+m_hail_days_year      <- lm(log_active_nests ~ year + hail_days,      data = effort_weather)
 
-```{r}
+# Joint effects 
+m_minT_totalR_year    <- lm(log_active_nests ~ year + min_temp + total_rain, data = effort_weather)
+m_minT_maxR_year      <- lm(log_active_nests ~ year + min_temp + max_rain,   data = effort_weather)
+m_minT_maxW_year      <- lm(log_active_nests ~ year + min_temp + max_wind,   data = effort_weather)
+m_hail_maxW_year      <- lm(log_active_nests ~ year + hail_days + max_wind,  data = effort_weather)
+m_maxR_maxW_year      <- lm(log_active_nests ~ year + max_rain + max_wind,   data = effort_weather)
+m_maxT_rainDays_year  <- lm(log_active_nests ~ year + max_temp + rain_days,  data = effort_weather)
+m_hail_rainDays_year  <- lm(log_active_nests ~ year + hail_days + rain_days, data = effort_weather)
 
-cand_effort <- list(
-null               = m_null,
-year               = m_year,
-
-
-mean_temp          = m_mean_temp,
-max_temp           = m_max_temp,
-min_temp           = m_min_temp,
-total_rain         = m_total_rain,
-rain_days          = m_rain_days,
-max_rain           = m_max_rain,
-lag_total_rain     = m_lag_total_rain,
-mean_wind          = m_mean_wind,
-max_wind           = m_max_wind,
-hail_days          = m_hail_days,
-
-
-minT_totalR        = m_cold_wet_amt,
-minT_maxR          = m_cold_storm,
-minT_maxW          = m_cold_wind,
-hail_maxW          = m_hail_wind,
-hail_rain          = m_hail_rain,
-maxR_maxW          = m_rain_wind,
-maxT_rainDays      = m_heat_wet_days,
-
-
-minT_x_rainDays    = m_int_cold_wet,
-minT_x_meanWind    = m_int_cold_wind,
-lagR_x_maxT        = m_int_lag_heat,
-rain_x_hail        = m_int_rain_hail,
-
-
-mean_temp_year      = m_mean_temp_year,
-max_temp_year       = m_max_temp_year,
-min_temp_year       = m_min_temp_year,
-total_rain_year     = m_total_rain_year,
-rain_days_year      = m_rain_days_year,
-max_rain_year       = m_max_rain_year,
-lag_total_rain_year = m_lag_total_rain_year,
-mean_wind_year      = m_mean_wind_year,
-max_wind_year       = m_max_wind_year,
-hail_days_year      = m_hail_days_year
-)
-
-
+# Interactions 
+m_minT_x_rainDays_year <- lm(log_active_nests ~ year + min_temp * rain_days,      data = effort_weather)
+m_minT_x_meanWind_year <- lm(log_active_nests ~ year + min_temp * mean_wind,      data = effort_weather)
+m_lagR_x_maxT_year     <- lm(log_active_nests ~ year + lag_total_rain * max_temp, data = effort_weather)
 ```
 
 
-### AIC Output 
+
+---
+
+Two separate AICc model selection runs
 
 ```{r}
+# AIC 1: without year
+cand_effort_no_year <- list(
+  null            = m_null,
 
-aic_effort <- aictab(
-cand.set  = cand_effort,
-modnames  = names(cand_effort)
+  mean_temp       = m_mean_temp,
+  max_temp        = m_max_temp,
+  min_temp        = m_min_temp,
+  total_rain      = m_total_rain,
+  rain_days       = m_rain_days,
+  max_rain        = m_max_rain,
+  lag_total_rain  = m_lag_total_rain,
+  mean_wind       = m_mean_wind,
+  max_wind        = m_max_wind,
+  hail_days       = m_hail_days,
+
+  minT_totalR     = m_minT_totalR,
+  minT_maxR       = m_minT_maxR,
+  minT_maxW       = m_minT_maxW,
+  hail_maxW       = m_hail_maxW,
+  maxR_maxW       = m_maxR_maxW,
+  maxT_rainDays   = m_maxT_rainDays,
+  hail_rainDays   = m_hail_rainDays,
+
+  minT_x_rainDays = m_minT_x_rainDays,
+  minT_x_meanWind = m_minT_x_meanWind,
+  lagR_x_maxT     = m_lagR_x_maxT
 )
 
-aic_effort
-
-
-``` 
-
-### R2
+aic_effort_no_year <- aictab(cand.set = cand_effort_no_year, modnames = names(cand_effort_no_year))
+aic_effort_no_year
+```
 
 ```{r}
-# Year-only model
-summary(m_year)$r.squared
+# AIC 2: with year
+cand_effort_with_year <- list(
+  year               = m_year,
+
+  mean_temp          = m_mean_temp_year,
+  max_temp           = m_max_temp_year,
+  min_temp           = m_min_temp_year,
+  total_rain         = m_total_rain_year,
+  rain_days          = m_rain_days_year,
+  max_rain           = m_max_rain_year,
+  lag_total_rain     = m_lag_total_rain_year,
+  mean_wind          = m_mean_wind_year,
+  max_wind           = m_max_wind_year,
+  hail_days          = m_hail_days_year,
+
+  minT_totalR        = m_minT_totalR_year,
+  minT_maxR          = m_minT_maxR_year,
+  minT_maxW          = m_minT_maxW_year,
+  hail_maxW          = m_hail_maxW_year,
+  maxR_maxW          = m_maxR_maxW_year,
+  maxT_rainDays      = m_maxT_rainDays_year,
+  hail_rainDays      = m_hail_rainDays_year,
+
+  minT_x_rainDays    = m_minT_x_rainDays_year,
+  minT_x_meanWind    = m_minT_x_meanWind_year,
+  lagR_x_maxT        = m_lagR_x_maxT_year
+)
+
+aic_effort_with_year <- aictab(cand.set = cand_effort_with_year, modnames = names(cand_effort_with_year))
+aic_effort_with_year
+
+```
+
+### Check residuals
+```{r}
+# Diagnostics for top model withoyt year
+best_no_year_E <- cand_effort_no_year[[ which.min(aic_effort_no_year$AICc) ]]
+par(mfrow = c(2,2)); plot(best_no_year_E)
+
+# Diagnostics for top model with year
+best_with_year_E <- cand_effort_with_year[[ which.min(aic_effort_with_year$AICc) ]]
+par(mfrow = c(2,2)); plot(best_with_year_E)
+```
+
+```{r}
+# year-only baseline and best with-year model
 summary(m_year)$adj.r.squared
+summary(best_with_year_E)$adj.r.squared
 
-# Top AICc model
-summary(m_max_rain_year)$r.squared
-summary(m_max_rain_year)$adj.r.squared
-
+# best no-year model
+summary(best_no_year_E)$adj.r.squared
 ```
-
-
-
-
 
 
 
