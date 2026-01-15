@@ -2562,7 +2562,7 @@ Laying date advanced with increasing pre-laying temperature, but this effect was
 
 :::
 
-
+ 
 
 
 
