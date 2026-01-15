@@ -1368,20 +1368,8 @@ ggplot(plot_fit_df, aes(x = year)) +
 
 
 ```{r}
-print("DEBUG: table1 columns are:")
-print(names(table1))
-print("DEBUG: first rows of table1:")
-print(head(table1))
 
-```
-
-```{r}
-library(dplyr)
-library(tibble)
-library(knitr)
-library(kableExtra)
-
-# build Table 1 fresh (weather-only) 
+# build Table 1(weather-only) 
 aic_df <- as.data.frame(aic_effort_no_year)
 
 # model ids
@@ -1427,7 +1415,7 @@ table1 <- table1 |>
     `Adj. R²` = round(`Adj. R²`, 3)
   )
 
-# grouping + neat names 
+# grouping adn neat names 
 group_order <- c("Baseline","Rain","Temperature","Wind","Hail","Joint effects","Interactions")
 
 model_group <- function(m){
