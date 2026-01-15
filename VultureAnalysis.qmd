@@ -981,6 +981,8 @@ plot(failed.nests$year, failed.nests$success_prop)
 
 ## Candidate model set
 
+### Objective 1
+
 ```{r}
 
 objective1_table <- tribble(
@@ -1242,6 +1244,7 @@ aic_effort_with_year
 ```
 
 ### Check residuals
+
 ```{r}
 # Diagnostics for top model withoyt year
 best_no_year_E <- cand_effort_no_year[[ which.min(aic_effort_no_year$AICc) ]]
@@ -1259,6 +1262,401 @@ summary(best_with_year_E)$adj.r.squared
 
 # best no-year model
 summary(best_no_year_E)$adj.r.squared
+```
+
+### Figures 
+
+```{r}
+
+ggplot(effort_weather, aes(x = year, y = active_nests)) +
+  geom_point(size = 2, colour = "grey30") +
+  geom_smooth(method = "lm", se = TRUE, colour = "black") +
+  scale_x_continuous(breaks = seq(min(effort_weather$year), max(effort_weather$year), by = 5)) +
+  labs(
+    x = "Year",
+    y = "Number of active nests",
+    title = "Annual breeding effort at Dronfield Nature Reserve"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+
+
+
+
+```{r}
+
+prep_aic_plot <- function(aic_obj, set_label){
+  df <- as.data.frame(aic_obj)
+
+  # model names
+  if ("Modnames" %in% names(df)) df$model <- df$Modnames
+  if (!"model" %in% names(df)) df$model <- rownames(df)
+
+  df |>
+    dplyr::mutate(set = set_label) |>
+    dplyr::rename(delta = Delta_AICc, weight = AICcWt) |>
+    dplyr::select(set, model, delta, weight)
+}
+
+aic_plot_df <- dplyr::bind_rows(
+  prep_aic_plot(aic_effort_with_year, "With year"),
+  prep_aic_plot(aic_effort_no_year, "Without year")
+) |>
+  dplyr::filter(delta <= 3) |>
+  dplyr::group_by(set) |>
+  dplyr::mutate(model = forcats::fct_reorder(model, -delta)) |>
+  dplyr::ungroup()
+
+ggplot(aic_plot_df, aes(x = delta, y = model)) +
+  geom_vline(xintercept = 2, linetype = 2) +
+  geom_point(aes(size = weight), colour = "grey20") +
+  facet_wrap(~set, scales = "free_y") +
+  scale_size_continuous(range = c(2, 8)) +
+  labs(
+    x = expression(Delta*"AICc (lower is better)"),
+    y = NULL,
+    title = "Support for candidate models with and without year",
+    subtitle = "Only models with ΔAICc ≤ 3 are shown; point size indicates AICc weight"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+
+
+```{r}
+effort_weather <- effort_weather |>
+  mutate(
+    fit_year = fitted(m_year),
+    fit_best = fitted(best_with_year_E)
+  )
+
+library(tidyr)
+
+plot_fit_df <- effort_weather |>
+  dplyr::select(year, log_active_nests, fit_year, fit_best) |>
+  pivot_longer(cols = c(fit_year, fit_best),
+               names_to = "model",
+               values_to = "fitted") |>
+  mutate(model = recode(model,
+                        fit_year = "Year-only model",
+                        fit_best = "Year + weather model"))
+
+library(ggplot2)
+
+ggplot(plot_fit_df, aes(x = year)) +
+  geom_point(aes(y = log_active_nests), colour = "grey35", size = 2) +
+  geom_line(aes(y = fitted, linetype = model), linewidth = 1) +
+  scale_x_continuous(breaks = seq(min(plot_fit_df$year),
+                                  max(plot_fit_df$year),
+                                  by = 5)) +
+  labs(
+    x = "Year",
+    y = "log(Number of active nests)",
+    title = "Observed and fitted breeding effort",
+    subtitle = "Comparison of year-only and year + weather models"
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "bottom"
+  )
+
+```
+
+
+```{r}
+print("DEBUG: table1 columns are:")
+print(names(table1))
+print("DEBUG: first rows of table1:")
+print(head(table1))
+
+```
+
+```{r}
+library(dplyr)
+library(tibble)
+library(knitr)
+library(kableExtra)
+
+# build Table 1 fresh (weather-only) 
+aic_df <- as.data.frame(aic_effort_no_year)
+
+# model ids
+if ("Modnames" %in% names(aic_df)) {
+  aic_df <- aic_df |> dplyr::mutate(model_id = Modnames)
+} else {
+  aic_df <- tibble::rownames_to_column(aic_df, "model_id")
+}
+
+table1 <- aic_df |>
+  dplyr::rename(
+    K = K,
+    AICc = AICc,
+    `ΔAICc` = Delta_AICc,
+    w = AICcWt
+  ) |>
+  dplyr::select(model_id, K, AICc, `ΔAICc`, w) |>
+  dplyr::arrange(`ΔAICc`) |>
+  dplyr::filter(`ΔAICc` <= 4)  
+
+# add Adj R2 + slope(SE)
+get_stats <- function(mod){
+  adjr2 <- summary(mod)$adj.r.squared
+  if (length(coef(mod)) == 2) {
+    cf <- summary(mod)$coefficients
+    slope_se <- paste0(round(cf[2,1], 3), " (", round(cf[2,2], 3), ")")
+  } else {
+    slope_se <- ""
+  }
+  tibble::tibble(`Adj. R²` = adjr2, `slope (SE)` = slope_se)
+}
+
+stats_df <- lapply(table1$model_id, function(mn) get_stats(cand_effort_no_year[[mn]])) |>
+  dplyr::bind_rows() |>
+  dplyr::mutate(model_id = table1$model_id)
+
+table1 <- table1 |>
+  dplyr::left_join(stats_df, by = "model_id") |>
+  dplyr::mutate(
+    AICc = round(AICc, 2),
+    `ΔAICc` = round(`ΔAICc`, 2),
+    w = round(w, 3),
+    `Adj. R²` = round(`Adj. R²`, 3)
+  )
+
+# grouping + neat names 
+group_order <- c("Baseline","Rain","Temperature","Wind","Hail","Joint effects","Interactions")
+
+model_group <- function(m){
+  dplyr::case_when(
+    m == "null" ~ "Baseline",
+    m %in% c("total_rain","rain_days","max_rain","lag_total_rain") ~ "Rain",
+    m %in% c("mean_temp","max_temp","min_temp") ~ "Temperature",
+    m %in% c("mean_wind","max_wind") ~ "Wind",
+    m %in% c("hail_days") ~ "Hail",
+    m %in% c("minT_totalR","minT_maxR","minT_maxW","hail_maxW","maxR_maxW","maxT_rainDays","hail_rainDays") ~ "Joint effects",
+    m %in% c("minT_x_rainDays","minT_x_meanWind","lagR_x_maxT") ~ "Interactions",
+    TRUE ~ "Joint effects"
+  )
+}
+
+pretty_model <- function(x){
+  dplyr::recode(
+    x,
+    "null"           = "Intercept only",
+    "total_rain"     = "Total rainfall",
+    "rain_days"      = "Rainy days",
+    "max_rain"       = "Maximum daily rainfall",
+    "lag_total_rain" = "Previous year's total rainfall",
+    "mean_temp"      = "Mean temperature",
+    "max_temp"       = "Maximum temperature",
+    "min_temp"       = "Minimum temperature",
+    "mean_wind"      = "Mean wind speed",
+    "max_wind"       = "Maximum wind speed",
+    "hail_days"      = "Hail days",
+    "minT_totalR"     = "Min temperature + total rainfall",
+    "minT_maxR"       = "Min temperature + max daily rainfall",
+    "minT_maxW"       = "Min temperature + max wind speed",
+    "hail_maxW"       = "Hail days + max wind speed",
+    "maxR_maxW"       = "Max daily rainfall + max wind speed",
+    "maxT_rainDays"   = "Max temperature + rainy days",
+    "hail_rainDays"   = "Hail days + rainy days",
+    "minT_x_rainDays" = "Min temperature × rainy days",
+    "minT_x_meanWind" = "Min temperature × mean wind speed",
+    "lagR_x_maxT"     = "Prev. rainfall × max temperature",
+    .default = x
+  )
+}
+
+table1_clean <- table1 |>
+  dplyr::mutate(
+    Group = model_group(model_id),
+    Model = pretty_model(model_id),
+    Group = factor(Group, levels = group_order)
+  ) |>
+  dplyr::arrange(Group, `ΔAICc`) |>
+  dplyr::select(Group, Model, K, AICc, `ΔAICc`, w, `Adj. R²`, `slope (SE)`)
+
+#print 
+group_sizes <- table1_clean |>
+  dplyr::count(Group, name = "n") |>
+  dplyr::mutate(
+    start = cumsum(dplyr::lag(n, default = 0)) + 1,
+    end   = cumsum(n)
+  )
+
+tbl <- knitr::kable(
+  table1_clean |> dplyr::select(-Group),
+  caption = "Table 1. Competitive weather-only candidate models (ΔAICc ≤ 4) explaining annual breeding effort (log number of active nests) at Dronfield. K = number of parameters; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight. Adjusted R² is shown for all models; slope (SE) is reported only for single-predictor models.",
+  align = "l"
+) |>
+  kableExtra::kable_styling(full_width = FALSE)
+
+for(i in seq_len(nrow(group_sizes))){
+  tbl <- tbl |>
+    kableExtra::pack_rows(as.character(group_sizes$Group[i]),
+                          group_sizes$start[i],
+                          group_sizes$end[i])
+}
+
+tbl
+
+
+```
+
+```{r}
+
+delta_cutoff <- 4      # competitive set
+digits_aic   <- 2
+digits_r2    <- 3
+digits_slope <- 3
+
+# Preferred group order
+group_order <- c("Baseline", "Rain", "Temperature", "Wind", "Hail", "Joint effects", "Interactions")
+
+model_group_with_year <- function(m){
+  dplyr::case_when(
+    m %in% c("year") ~ "Baseline", 
+
+    m %in% c("total_rain","rain_days","max_rain","lag_total_rain") ~ "Rain",
+    m %in% c("mean_temp","max_temp","min_temp") ~ "Temperature",
+    m %in% c("mean_wind","max_wind") ~ "Wind",
+    m %in% c("hail_days") ~ "Hail",
+
+    m %in% c("minT_totalR","minT_maxR","minT_maxW","hail_maxW","maxR_maxW","maxT_rainDays","hail_rainDays") ~ "Joint effects",
+    m %in% c("minT_x_rainDays","minT_x_meanWind","lagR_x_maxT") ~ "Interactions",
+
+    TRUE ~ "Joint effects"
+  )
+}
+
+pretty_model_with_year <- function(x){
+  dplyr::recode(
+    x,
+    "year"           = "Year (baseline)",
+
+    "total_rain"     = "Total rainfall",
+    "rain_days"      = "Rainy days",
+    "max_rain"       = "Maximum daily rainfall",
+    "lag_total_rain" = "Previous year's total rainfall",
+
+    "mean_temp"      = "Mean temperature",
+    "max_temp"       = "Maximum temperature",
+    "min_temp"       = "Minimum temperature",
+
+    "mean_wind"      = "Mean wind speed",
+    "max_wind"       = "Maximum wind speed",
+
+    "hail_days"      = "Hail days",
+
+    "minT_totalR"    = "Min temperature + total rainfall",
+    "minT_maxR"      = "Min temperature + max daily rainfall",
+    "minT_maxW"      = "Min temperature + max wind speed",
+    "hail_maxW"      = "Hail days + max wind speed",
+    "maxR_maxW"      = "Max daily rainfall + max wind speed",
+    "maxT_rainDays"  = "Max temperature + rainy days",
+    "hail_rainDays"  = "Hail days + rainy days",
+
+    "minT_x_rainDays" = "Min temperature × rainy days",
+    "minT_x_meanWind" = "Min temperature × mean wind speed",
+    "lagR_x_maxT"     = "Prev. rainfall × max temperature",
+
+    .default = x
+  )
+}
+
+aic_df2 <- as.data.frame(aic_effort_with_year)
+
+
+if ("Modnames" %in% names(aic_df2)) {
+  aic_df2 <- dplyr::mutate(aic_df2, model = Modnames)
+} else {
+  aic_df2 <- tibble::rownames_to_column(aic_df2, "model")
+}
+
+aic_df2 <- aic_df2 %>%
+  dplyr::rename(
+    K     = K,
+    AICc  = AICc,
+    dAICc = Delta_AICc,
+    w     = AICcWt
+  ) %>%
+  dplyr::select(model, K, AICc, dAICc, w) %>%
+  dplyr::arrange(dAICc) %>%
+  dplyr::filter(dAICc <= delta_cutoff) %>%
+  dplyr::filter(model != "year")  
+
+#
+get_stats_with_year <- function(mod){
+  adjr2 <- summary(mod)$adj.r.squared
+
+  if (length(coef(mod)) == 3) {
+    cf <- summary(mod)$coefficients
+   
+    slope <- unname(cf[3, 1])
+    se    <- unname(cf[3, 2])
+    slope_se <- paste0(round(slope, digits_slope), " (", round(se, digits_slope), ")")
+  } else {
+    slope_se <- ""
+  }
+
+  tibble(adj_R2 = adjr2, slope_SE = slope_se)
+}
+
+stats_df2 <- lapply(aic_df2$model, function(mn) get_stats_with_year(cand_effort_with_year[[mn]])) %>%
+  dplyr::bind_rows() %>%
+  dplyr::mutate(model = aic_df2$model)
+
+table2 <- aic_df2 %>%
+  dplyr::left_join(stats_df2, by = "model") %>%
+  dplyr::mutate(
+    AICc   = round(AICc, digits_aic),
+    dAICc  = round(dAICc, digits_aic),
+    w      = round(w, 3),
+    adj_R2 = round(adj_R2, digits_r2)
+  ) %>%
+  dplyr::mutate(
+    model_id = model,
+    Group = model_group_with_year(model_id),
+    Model = pretty_model_with_year(model_id),
+    Group = factor(Group, levels = group_order)
+  ) %>%
+  dplyr::arrange(Group, dAICc) %>%
+  dplyr::rename(
+    `ΔAICc` = dAICc,
+    `Adj. R²` = adj_R2,
+    `slope (SE)` = slope_SE
+  ) %>%
+  dplyr::select(Group, Model, K, AICc, `ΔAICc`, w, `Adj. R²`, `slope (SE)`)
+
+
+group_sizes2 <- table2 %>%
+  dplyr::count(Group, name = "n") %>%
+  dplyr::mutate(
+    start = cumsum(dplyr::lag(n, default = 0)) + 1,
+    end   = cumsum(n)
+  )
+
+tbl2 <- knitr::kable(
+  table2 %>% dplyr::select(-Group),
+  caption = "Table 2. Competitive candidate models including year (ΔAICc ≤ 4) explaining annual breeding effort (log number of active nests) at Dronfield. K = number of parameters; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight. Adjusted R² is shown for all models; slope (SE) is reported only for models with a single weather predictor in addition to year.",
+  align = "l"
+) %>%
+  kableExtra::kable_styling(full_width = FALSE)
+
+for(i in seq_len(nrow(group_sizes2))){
+  tbl2 <- tbl2 %>%
+    kableExtra::pack_rows(as.character(group_sizes2$Group[i]),
+                          group_sizes2$start[i],
+                          group_sizes2$end[i])
+}
+
+tbl2
+
+
 ```
 
 
@@ -1675,19 +2073,23 @@ summary(cand_timing_60$temp_x_rain)$r.squared
 m_year_trend <- lm(lay_DOY ~ year, data = timing_weather_30)
 summary(m_year_trend)
 
-```
+``` 
 
 ```{r}
 summary(m_year_trend)$r.squared
 
 ```
+
 ```{r}
 m_year_trend60 <- lm(lay_DOY ~ year, data = timing_weather_60)
 summary(m_year_trend60)
 
 ```
 
+
+
 :::
+
 
 
 
