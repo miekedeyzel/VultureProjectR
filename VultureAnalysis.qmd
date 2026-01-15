@@ -2558,7 +2558,7 @@ ggplot(df, aes(x = mean_temp_30, y = lay_DOY)) +
   )
 
 ```
-Laying date advanced with increasing pre-laying temperature, but this effect was contingent on rainfall conditions, indicating that thermal cues did not operate independently of broader environmental context. Warmer conditions are likely to reduce thermoregulatory costs and facilitate physiological readiness for breeding; however, the strength of this temperature effect varied with rainfall. Rather than rainfall acting as a direct trigger for breeding, wetter pre-laying conditions may reflect short-term improvements in ecosystem productivity or adult condition, thereby modifying how effectively temperature cues translate into earlier breeding.
+Laying date advanced with increasing pre-laying temperature, but this effect was contingent on rainfall conditions, indicating that thermal cues did not operate independently of broader environmental context. 
 
 :::
 
