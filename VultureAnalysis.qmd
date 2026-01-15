@@ -1246,13 +1246,20 @@ aic_effort_with_year
 ### Check residuals
 
 ```{r}
-# Diagnostics for top model withoyt year
-best_no_year_E <- cand_effort_no_year[[ which.min(aic_effort_no_year$AICc) ]]
-par(mfrow = c(2,2)); plot(best_no_year_E)
+# identify top-ranked model (no year)
+best_no_year_name <- aic_effort_no_year$Modnames[1]
+best_no_year_E <- cand_effort_no_year[[best_no_year_name]]
 
-# Diagnostics for top model with year
-best_with_year_E <- cand_effort_with_year[[ which.min(aic_effort_with_year$AICc) ]]
-par(mfrow = c(2,2)); plot(best_with_year_E)
+par(mfrow = c(2,2))
+plot(best_no_year_E)
+
+# identify top-ranked model (with year)
+best_with_year_name <- aic_effort_with_year$Modnames[1]
+best_with_year_E <- cand_effort_with_year[[best_with_year_name]]
+
+par(mfrow = c(2,2))
+plot(best_with_year_E)
+
 ```
 
 ```{r}
@@ -1327,49 +1334,8 @@ ggplot(aic_plot_df, aes(x = delta, y = model)) +
 
 
 ```{r}
-effort_weather <- effort_weather |>
-  mutate(
-    fit_year = fitted(m_year),
-    fit_best = fitted(best_with_year_E)
-  )
 
-library(tidyr)
-
-plot_fit_df <- effort_weather |>
-  dplyr::select(year, log_active_nests, fit_year, fit_best) |>
-  pivot_longer(cols = c(fit_year, fit_best),
-               names_to = "model",
-               values_to = "fitted") |>
-  mutate(model = recode(model,
-                        fit_year = "Year-only model",
-                        fit_best = "Year + weather model"))
-
-library(ggplot2)
-
-ggplot(plot_fit_df, aes(x = year)) +
-  geom_point(aes(y = log_active_nests), colour = "grey35", size = 2) +
-  geom_line(aes(y = fitted, linetype = model), linewidth = 1) +
-  scale_x_continuous(breaks = seq(min(plot_fit_df$year),
-                                  max(plot_fit_df$year),
-                                  by = 5)) +
-  labs(
-    x = "Year",
-    y = "log(Number of active nests)",
-    title = "Observed and fitted breeding effort",
-    subtitle = "Comparison of year-only and year + weather models"
-  ) +
-  theme_bw() +
-  theme(
-    panel.grid = element_blank(),
-    legend.position = "bottom"
-  )
-
-```
-
-
-```{r}
-
-# build Table 1(weather-only) 
+# Table 1(weather-only) 
 aic_df <- as.data.frame(aic_effort_no_year)
 
 # model ids
@@ -1387,8 +1353,7 @@ table1 <- aic_df |>
     w = AICcWt
   ) |>
   dplyr::select(model_id, K, AICc, `ΔAICc`, w) |>
-  dplyr::arrange(`ΔAICc`) |>
-  dplyr::filter(`ΔAICc` <= 4)  
+  dplyr::arrange(`ΔAICc`) 
 
 # add Adj R2 + slope(SE)
 get_stats <- function(mod){
@@ -1478,7 +1443,7 @@ group_sizes <- table1_clean |>
 
 tbl <- knitr::kable(
   table1_clean |> dplyr::select(-Group),
-  caption = "Table 1. Competitive weather-only candidate models (ΔAICc ≤ 4) explaining annual breeding effort (log number of active nests) at Dronfield. K = number of parameters; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight. Adjusted R² is shown for all models; slope (SE) is reported only for single-predictor models.",
+  caption = "Table 1. Weather-only candidate models explaining annual breeding effort (log number of active nests) at Dronfield. K = number of parameters; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight. Adjusted R² is shown for all models; slope (SE) is reported only for single-predictor models.",
   align = "l"
 ) |>
   kableExtra::kable_styling(full_width = FALSE)
@@ -1496,27 +1461,21 @@ tbl
 ```
 
 ```{r}
-
-delta_cutoff <- 4      # competitive set
 digits_aic   <- 2
 digits_r2    <- 3
 digits_slope <- 3
 
-# Preferred group order
 group_order <- c("Baseline", "Rain", "Temperature", "Wind", "Hail", "Joint effects", "Interactions")
 
 model_group_with_year <- function(m){
   dplyr::case_when(
-    m %in% c("year") ~ "Baseline", 
-
+    m %in% c("year") ~ "Baseline",
     m %in% c("total_rain","rain_days","max_rain","lag_total_rain") ~ "Rain",
     m %in% c("mean_temp","max_temp","min_temp") ~ "Temperature",
     m %in% c("mean_wind","max_wind") ~ "Wind",
     m %in% c("hail_days") ~ "Hail",
-
     m %in% c("minT_totalR","minT_maxR","minT_maxW","hail_maxW","maxR_maxW","maxT_rainDays","hail_rainDays") ~ "Joint effects",
     m %in% c("minT_x_rainDays","minT_x_meanWind","lagR_x_maxT") ~ "Interactions",
-
     TRUE ~ "Joint effects"
   )
 }
@@ -1525,127 +1484,124 @@ pretty_model_with_year <- function(x){
   dplyr::recode(
     x,
     "year"           = "Year (baseline)",
-
     "total_rain"     = "Total rainfall",
     "rain_days"      = "Rainy days",
     "max_rain"       = "Maximum daily rainfall",
     "lag_total_rain" = "Previous year's total rainfall",
-
     "mean_temp"      = "Mean temperature",
     "max_temp"       = "Maximum temperature",
     "min_temp"       = "Minimum temperature",
-
     "mean_wind"      = "Mean wind speed",
     "max_wind"       = "Maximum wind speed",
-
     "hail_days"      = "Hail days",
-
-    "minT_totalR"    = "Min temperature + total rainfall",
-    "minT_maxR"      = "Min temperature + max daily rainfall",
-    "minT_maxW"      = "Min temperature + max wind speed",
-    "hail_maxW"      = "Hail days + max wind speed",
-    "maxR_maxW"      = "Max daily rainfall + max wind speed",
-    "maxT_rainDays"  = "Max temperature + rainy days",
-    "hail_rainDays"  = "Hail days + rainy days",
-
+    "minT_totalR"     = "Min temperature + total rainfall",
+    "minT_maxR"       = "Min temperature + max daily rainfall",
+    "minT_maxW"       = "Min temperature + max wind speed",
+    "hail_maxW"       = "Hail days + max wind speed",
+    "maxR_maxW"       = "Max daily rainfall + max wind speed",
+    "maxT_rainDays"   = "Max temperature + rainy days",
+    "hail_rainDays"   = "Hail days + rainy days",
     "minT_x_rainDays" = "Min temperature × rainy days",
     "minT_x_meanWind" = "Min temperature × mean wind speed",
     "lagR_x_maxT"     = "Prev. rainfall × max temperature",
-
     .default = x
   )
 }
 
 aic_df2 <- as.data.frame(aic_effort_with_year)
 
-
 if ("Modnames" %in% names(aic_df2)) {
-  aic_df2 <- dplyr::mutate(aic_df2, model = Modnames)
+  aic_df2 <- aic_df2 |> dplyr::mutate(model = Modnames)
 } else {
   aic_df2 <- tibble::rownames_to_column(aic_df2, "model")
 }
 
-aic_df2 <- aic_df2 %>%
+aic_df2 <- aic_df2 |>
   dplyr::rename(
     K     = K,
     AICc  = AICc,
     dAICc = Delta_AICc,
     w     = AICcWt
-  ) %>%
-  dplyr::select(model, K, AICc, dAICc, w) %>%
-  dplyr::arrange(dAICc) %>%
-  dplyr::filter(dAICc <= delta_cutoff) %>%
-  dplyr::filter(model != "year")  
+  ) |>
+  dplyr::select(model, K, AICc, dAICc, w) |>
+  dplyr::arrange(dAICc)
 
-#
 get_stats_with_year <- function(mod){
   adjr2 <- summary(mod)$adj.r.squared
 
-  if (length(coef(mod)) == 3) {
+  if (length(coef(mod)) == 3) {   # intercept + year + ONE weather predictor
     cf <- summary(mod)$coefficients
-   
     slope <- unname(cf[3, 1])
     se    <- unname(cf[3, 2])
-    slope_se <- paste0(round(slope, digits_slope), " (", round(se, digits_slope), ")")
+    slope_se <- paste0(
+      round(slope, digits_slope),
+      " (", round(se, digits_slope), ")"
+    )
   } else {
     slope_se <- ""
   }
 
-  tibble(adj_R2 = adjr2, slope_SE = slope_se)
+  tibble::tibble(adj_R2 = adjr2, slope_SE = slope_se)
 }
 
-stats_df2 <- lapply(aic_df2$model, function(mn) get_stats_with_year(cand_effort_with_year[[mn]])) %>%
-  dplyr::bind_rows() %>%
+
+stats_df2 <- lapply(aic_df2$model, function(mn) get_stats_with_year(cand_effort_with_year[[mn]])) |>
+  dplyr::bind_rows() |>
   dplyr::mutate(model = aic_df2$model)
 
-table2 <- aic_df2 %>%
-  dplyr::left_join(stats_df2, by = "model") %>%
+table2 <- aic_df2 |>
+  dplyr::left_join(stats_df2, by = "model") |>
   dplyr::mutate(
     AICc   = round(AICc, digits_aic),
     dAICc  = round(dAICc, digits_aic),
     w      = round(w, 3),
     adj_R2 = round(adj_R2, digits_r2)
-  ) %>%
+  ) |>
   dplyr::mutate(
     model_id = model,
     Group = model_group_with_year(model_id),
     Model = pretty_model_with_year(model_id),
     Group = factor(Group, levels = group_order)
-  ) %>%
-  dplyr::arrange(Group, dAICc) %>%
+  ) |>
+  dplyr::arrange(Group, dAICc) |>
   dplyr::rename(
     `ΔAICc` = dAICc,
     `Adj. R²` = adj_R2,
     `slope (SE)` = slope_SE
-  ) %>%
+  ) |>
   dplyr::select(Group, Model, K, AICc, `ΔAICc`, w, `Adj. R²`, `slope (SE)`)
 
-
-group_sizes2 <- table2 %>%
-  dplyr::count(Group, name = "n") %>%
+group_sizes2 <- table2 |>
+  dplyr::count(Group, name = "n") |>
+  dplyr::filter(n > 0) |>
   dplyr::mutate(
     start = cumsum(dplyr::lag(n, default = 0)) + 1,
     end   = cumsum(n)
   )
 
 tbl2 <- knitr::kable(
-  table2 %>% dplyr::select(-Group),
-  caption = "Table 2. Competitive candidate models including year (ΔAICc ≤ 4) explaining annual breeding effort (log number of active nests) at Dronfield. K = number of parameters; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight. Adjusted R² is shown for all models; slope (SE) is reported only for models with a single weather predictor in addition to year.",
+  table2 |> dplyr::select(-Group),
+  caption = "Table 2. Candidate models including year explaining annual breeding effort (log number of active nests) at Dronfield. K = number of parameters; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight. Adjusted R² is shown for all models; slope (SE) is reported for each model (non-intercept terms shown as estimate (SE)).",
   align = "l"
-) %>%
+) |>
   kableExtra::kable_styling(full_width = FALSE)
 
 for(i in seq_len(nrow(group_sizes2))){
-  tbl2 <- tbl2 %>%
-    kableExtra::pack_rows(as.character(group_sizes2$Group[i]),
-                          group_sizes2$start[i],
-                          group_sizes2$end[i])
+  tbl2 <- tbl2 |>
+    kableExtra::pack_rows(
+      as.character(group_sizes2$Group[i]),
+      group_sizes2$start[i],
+      group_sizes2$end[i]
+    )
 }
 
 tbl2
 
 
+
 ```
+
+
 
 
 
@@ -1845,16 +1801,273 @@ aic_success
 
 ```
 
-```{r}
-v0 <- as.data.frame(VarCorr(m0_success))$vcov[1]
-v_minT <- as.data.frame(VarCorr(m_succ_minT))$vcov[1]
 
-(v0 - v_minT) / v0
+```{r}
+vc_year <- function(mod) {
+  vc <- as.data.frame(VarCorr(mod))
+  vc$vcov[vc$grp == "year"][1]
+}
+
+v0     <- vc_year(m0_success)
+v_minT <- vc_year(m_succ_minT)
+
+prop_between_year_explained <- (v0 - v_minT) / v0
+prop_between_year_explained
+
+```
+
+### Figures and tables 
+
+```{r}
+library(dplyr)
+library(tibble)
+library(purrr)
+library(knitr)
+library(kableExtra)
+library(lme4)
+
+aic_df <- as.data.frame(aic_success)
+
+if ("Modnames" %in% names(aic_df)) {
+  aic_df <- aic_df |> mutate(model_id = Modnames)
+} else {
+  aic_df <- tibble::rownames_to_column(aic_df, "model_id")
+}
+
+table_success <- aic_df |>
+  rename(
+    K = K,
+    AICc = AICc,
+    `ΔAICc` = Delta_AICc,
+    w = AICcWt
+  ) |>
+  dplyr::select(model_id, K, AICc, `ΔAICc`, w) |>
+  arrange(`ΔAICc`)
+
+vc_year <- function(mod) {
+  vc <- as.data.frame(VarCorr(mod))
+  vc$vcov[vc$grp == "year"][1]
+}
+
+v0 <- vc_year(m0_success)
+
+var_expl_tbl <- tibble(
+  model_id = names(cand_success),
+  `Variance explained` = map_dbl(cand_success, ~ {
+    v <- vc_year(.x)
+    (v0 - v) / v0
+  })
+) |>
+  mutate(`Variance explained` = round(`Variance explained`, 3))
+
+table_success <- table_success |>
+  left_join(var_expl_tbl, by = "model_id")
+
+get_slope_se <- function(mod) {
+  cf <- summary(mod)$coefficients
+  if (nrow(cf) == 2) {
+    paste0(round(cf[2, 1], 3), " (", round(cf[2, 2], 3), ")")
+  } else {
+    ""
+  }
+}
+
+slope_tbl <- tibble(
+  model_id = table_success$model_id,
+  `slope (SE)` = map_chr(table_success$model_id, ~ get_slope_se(cand_success[[.x]]))
+)
+
+table_success <- table_success |>
+  left_join(slope_tbl, by = "model_id") |>
+  mutate(
+    AICc = round(AICc, 2),
+    `ΔAICc` = round(`ΔAICc`, 2),
+    w = round(w, 3)
+  )
+
+group_order <- c("Baseline", "Temperature", "Rain", "Wind", "Hail", "Joint effects", "Interactions")
+
+model_group_succ <- function(m) {
+  case_when(
+    m %in% c("null_re", "null", "null_success") ~ "Baseline",
+    m %in% c("min_temp", "max_temp") ~ "Temperature",
+    m %in% c("rain_days", "max_rain", "total_rain") ~ "Rain",
+    m %in% c("max_wind") ~ "Wind",
+    m %in% c("hail_days") ~ "Hail",
+    m %in% c("hail_maxW", "rain_hail", "maxT_rainD") ~ "Joint effects",
+    m %in% c("int_heatRain", "int_coldWind") ~ "Interactions",
+    TRUE ~ "Joint effects"
+  )
+}
+
+neat_succ <- function(x) {
+  recode(
+    x,
+    "null_re"      = "Intercept only",
+    "min_temp"     = "Minimum temperature",
+    "max_temp"     = "Maximum temperature",
+    "rain_days"    = "Rainy days",
+    "max_rain"     = "Maximum daily rainfall",
+    "total_rain"   = "Total rainfall",
+    "max_wind"     = "Maximum wind speed",
+    "hail_days"    = "Hail days",
+    "hail_maxW"    = "Hail days + max wind speed",
+    "rain_hail"    = "Rainy days + hail days",
+    "maxT_rainD"   = "Max temperature + rainy days",
+    "int_heatRain" = "Max temperature × rainy days",
+    "int_coldWind" = "Min temperature × max wind speed",
+    .default = x
+  )
+}
+
+table_success_clean <- table_success |>
+  mutate(
+    Group = model_group_succ(model_id),
+    Model = neat_succ(model_id),
+    Group = factor(Group, levels = group_order)
+  ) |>
+  arrange(Group, `ΔAICc`) |>
+  dplyr::select(Group, Model, K, AICc, `ΔAICc`, w, `Variance explained`, `slope (SE)`)
+
+group_sizes <- table_success_clean |>
+  count(Group, name = "n") |>
+  filter(n > 0) |>
+  mutate(
+    start = cumsum(lag(n, default = 0)) + 1,
+    end = cumsum(n)
+  )
+
+tbl_succ <- kable(
+  table_success_clean |> dplyr::select(-Group),
+  caption = "Table 3:Model selection results for breeding success (binomial GLMMs with a random intercept for year). Variance explained is the proportional reduction in the estimated between-year variance relative to the null model. Slope (SE) is shown only for single-predictor models.",
+  align = "l"
+) |>
+  kable_styling(full_width = FALSE)
+
+for (i in seq_len(nrow(group_sizes))) {
+  tbl_succ <- tbl_succ |>
+    pack_rows(
+      as.character(group_sizes$Group[i]),
+      group_sizes$start[i],
+      group_sizes$end[i]
+    )
+}
+
+tbl_succ
+
+
+```
+
+```{r}
+
+minT_model <- m_succ_minT
+
+
+success_df_plot <- success_df |>
+  mutate(
+    success_rate = success_nests / (success_nests + failed_nests),
+    year_num = as.numeric(as.character(year))
+  )
+
+yrs <- sort(unique(success_df_plot$year_num[is.finite(success_df_plot$year_num)]))
+breaks_5y <- yrs[seq(1, length(yrs), by = 5)]  #
+
+ggplot(success_df_plot, aes(x = year_num, y = success_rate)) +
+  geom_point(size = 2, colour = "grey30") +
+  geom_smooth(
+    method = "lm",
+    se = TRUE,
+    colour = "grey30",
+    fill = "grey85"
+  ) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_x_continuous(breaks = breaks_5y) +
+  labs(
+    x = "Year",
+    y = "Breeding success",
+    title = "Annual breeding success (proportion of successful nests) of White-backed Vultures"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
 
 ```
 
 
+```{r}
+obs_df <- success_df |>
+  mutate(
+    success_rate = success_nests / (success_nests + failed_nests),
+    se = sqrt(success_rate * (1 - success_rate) /
+                (success_nests + failed_nests))
+  )
 
+```
+
+```{r}
+minT_model <- m_succ_minT
+
+pred_df <- success_df |>
+  mutate(
+    pred = predict(
+      minT_model,
+      newdata = success_df,
+      type = "response",
+      re.form = NA
+    )
+  )
+
+```
+
+```{r}
+
+obs_df <- success_df |>
+  mutate(
+    year_num = as.numeric(gsub("[^0-9]", "", as.character(year))),
+    success_rate = success_nests / (success_nests + failed_nests),
+    se = sqrt(success_rate * (1 - success_rate) / (success_nests + failed_nests))
+  )
+
+minT_model <- m_succ_minT
+
+pred_df <- success_df |>
+  mutate(
+    year_num = as.numeric(gsub("[^0-9]", "", as.character(year))),
+    pred = predict(minT_model, newdata = success_df, type = "response", re.form = NA)
+  )
+
+
+ggplot() +
+  geom_point(
+    data = obs_df,
+    aes(x = year_num, y = success_rate),
+    size = 2, shape = 21, fill = "white", colour = "grey30"
+  ) +
+  geom_errorbar(
+    data = obs_df,
+    aes(x = year_num,
+        ymin = success_rate - se,
+        ymax = success_rate + se),
+    width = 0, colour = "grey30"
+  ) +
+  geom_line(
+    data = pred_df,
+    aes(x = year_num, y = pred),
+    linewidth = 1, colour = "black"
+  ) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_x_continuous(breaks = seq(1995, 2025, by = 5)) +
+  labs(
+    x = "Year",
+    y = "Breeding success",
+    title = "Observed and temperature-predicted breeding success",
+    subtitle = "Points show annual observed success (± SE); line shows predictions from the minimum temperature model"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+figure shows that years with warmer minimum temperatures tend to have slightly higher breeding success, but temperature alone does not explain most of the year-to-year variation.
+Given the temperature in each year, this is what the model predicts breeding success should be
 
 --------------------------------------------------------------------------------
 
@@ -1930,7 +2143,6 @@ kable(
   align = c("l", "l"),
   caption = "Objective 3 candidate model set for breeding timing (laying date, day of year)."
 )
-
 ```
 
 ```{r}
@@ -2075,6 +2287,278 @@ summary(m_year_trend60)
 ```
 
 
+### Figures and Tables
+
+```{r}
+cand_timing_30 <- cand_timing_30[names(cand_timing_30) != "null"]
+cand_timing_60 <- cand_timing_60[names(cand_timing_60) != "null"]
+
+build_obj3_base <- function(cand_list){
+
+  tab <- tibble::tibble(
+    model_id  = names(cand_list),
+    Deviance  = sapply(cand_list, stats::deviance),
+    K         = sapply(cand_list, function(m) length(stats::coef(m))),
+    AICc      = sapply(cand_list, AICcmodavg::AICc),
+    R2        = sapply(cand_list, function(m) summary(m)$r.squared),
+    `slope (SE)` = purrr::imap_chr(cand_list, ~{
+      broom::tidy(.x) |>
+        dplyr::filter(term != "(Intercept)") |>
+        dplyr::mutate(txt = paste0(
+          sprintf("%.3f", estimate),
+          " (", sprintf("%.3f", std.error), ")"
+        )) |>
+        dplyr::pull(txt) |>
+        paste(collapse = "; ")
+    })
+  ) |>
+    dplyr::arrange(AICc) |>
+    dplyr::mutate(
+      `ΔAICc` = AICc - min(AICc),
+      w = exp(-0.5 * `ΔAICc`) / sum(exp(-0.5 * `ΔAICc`)),
+      Deviance = round(Deviance, 3),
+      AICc = round(AICc, 2),
+      `ΔAICc` = round(`ΔAICc`, 2),
+      w = round(w, 3),
+      R2 = round(R2, 3)
+    ) |>
+    dplyr::select(
+      model_id, Deviance, K, AICc, `ΔAICc`, w, R2, `slope (SE)`
+    )
+
+  tab
+}
+
+model_key <- tibble::tribble(
+  ~model_id,      ~Group,               ~Model,
+  "meanT_30",     "Temperature",        "Mean temperature (30 days)",
+  "maxT_30",      "Temperature",        "Maximum temperature (30 days)",
+  "minT_30",      "Temperature",        "Minimum temperature (30 days)",
+
+  "rainDays_30",  "Rain",               "Rainy days (30 days)",
+  "totalR_30",    "Rain",               "Total rainfall (30 days)",
+
+  "meanW_30",     "Wind",               "Mean wind speed (30 days)",
+  "maxW_30",      "Wind",               "Maximum wind speed (30 days)",
+
+  "meanT_60",     "Temperature",        "Mean temperature (60 days)",
+  "maxT_60",      "Temperature",        "Maximum temperature (60 days)",
+  "minT_60",      "Temperature",        "Minimum temperature (60 days)",
+
+  "rainDays_60",  "Rain",               "Rainy days (60 days)",
+  "totalR_60",    "Rain",               "Total rainfall (60 days)",
+
+  "meanW_60",     "Wind",               "Mean wind speed (60 days)",
+  "maxW_60",      "Wind",               "Maximum wind speed (60 days)",
+
+  "lagTotR",      "Lagged effects",     "Previous year's total rainfall",
+  "lagRainD",     "Lagged effects",     "Previous year's rainy days",
+  "lagMeanT",     "Lagged effects",     "Previous year's mean temperature",
+
+  "temp_rain",    "Joint effects",      "Mean temperature + rainy days",
+  "temp_wind",    "Joint effects",      "Mean temperature + mean wind speed",
+  "rain_wind",    "Joint effects",      "Rainy days + mean wind speed",
+
+  "temp_x_rain",  "Interactive effects","Mean temperature × rainy days",
+  "minT_x_wind",  "Interactive effects","Minimum temperature × mean wind speed",
+  "lagR_x_temp",  "Interactive effects","Previous year's rainfall × mean temperature"
+)
+
+make_grouped_table <- function(cand_list, caption_text){
+
+  group_order <- c(
+    "Rain", "Temperature", "Wind",
+    "Lagged effects", "Joint effects", "Interactive effects", "Other"
+  )
+
+  tab <- build_obj3_base(cand_list) |>
+    dplyr::left_join(model_key, by = "model_id") |>
+    dplyr::mutate(
+      Group = dplyr::coalesce(Group, "Other"),
+      Model = dplyr::coalesce(Model, model_id),
+      Group = factor(Group, levels = group_order)
+    ) |>
+    dplyr::arrange(Group, AICc) |>
+    dplyr::select(Group, Model, Deviance, K, AICc, `ΔAICc`, w, R2, `slope (SE)`)
+
+  group_sizes <- tab |>
+    dplyr::count(Group, name = "n") |>
+    dplyr::filter(n > 0) |>
+    dplyr::mutate(
+      start = cumsum(dplyr::lag(n, default = 0)) + 1,
+      end = cumsum(n)
+    )
+
+  kb <- knitr::kable(
+    tab |> dplyr::select(-Group),
+    caption = caption_text,
+    align = c("l","r","r","r","r","r","r","r","l"),
+ Twbooktabs = TRUE
+  ) |>
+    kableExtra::kable_styling(full_width = TRUE)
+
+  for(i in seq_len(nrow(group_sizes))){
+    kb <- kb |>
+      kableExtra::pack_rows(
+        as.character(group_sizes$Group[i]),
+        group_sizes$start[i],
+        group_sizes$end[i],
+        bold = TRUE
+      )
+  }
+
+  kb
+}
+
+make_grouped_table(
+  cand_timing_30,
+  "Table 4. Models explaining laying date (day of year) at Dronfield using 30-day pre-laying weather cues. K = number of parameters; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight. R² is shown for all models; slope (SE) is reported for each weather predictor."
+)
+
+make_grouped_table(
+  cand_timing_60,
+  "Table 5. Models explaining laying date (day of year) at Dronfield using 60-day pre-laying weather cues. K = number of parameters; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight. R² is shown for all models; slope (SE) is reported for each weather predictor."
+)
+
+```
+
+
+
+
+
+```{r}
+ggplot(timing_weather_60, aes(x = lay_DOY)) +
+  geom_histogram(bins = 15, fill = "grey70", colour = "black") +
+  labs(
+    x = "Laying date (day of year)",
+    y = "Frequency",
+    title = "Distribution of laying dates"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+
+```{r}
+timing_weather_30_filt <- timing_weather_30 |>
+  dplyr::filter(year >= 1993, year <= 2024)
+
+ggplot(timing_weather_30_filt, aes(x = year, y = lay_DOY)) +
+  geom_point(
+    size = 1.8,
+    colour = "grey30",
+    alpha = 0.6
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = TRUE,
+    colour = "grey",
+    linewidth = 1
+  ) +
+  scale_x_continuous(
+    breaks = seq(1995, 2025, by = 5),
+    limits = c(1993, 2024)
+  ) +
+  labs(
+    x = "Year",
+    y = "Laying date (day of year)",
+    title = "Annual variation in laying date at Dronfield"
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank()
+  )+
+  geom_jitter(
+  width = 0.2,
+  height = 0,
+  size = 1.6,
+  colour = "grey30",
+  alpha = 0.6
+)
+
+
+
+```
+
+```{r}
+# Figure 3.3: Temperature × rainfall interaction with prediction ribbons
+
+m_int <- cand_timing_30$temp_x_rain
+
+df <- timing_weather_30 |>
+  dplyr::filter(year >= 1993, year <= 2024)
+
+# rainfall quantiles
+rain_q <- quantile(df$rain_days_30,
+                   probs = c(0.25, 0.5, 0.75),
+                   na.rm = TRUE)
+
+# prediction grid
+newdat <- expand.grid(
+  mean_temp_30 = seq(
+    min(df$mean_temp_30, na.rm = TRUE),
+    max(df$mean_temp_30, na.rm = TRUE),
+    length.out = 80
+  ),
+  rain_days_30 = as.numeric(rain_q)
+)
+
+# predictions + SE
+pred <- predict(m_int, newdata = newdat, se.fit = TRUE)
+
+newdat$fit <- pred$fit
+newdat$lo  <- pred$fit - 1.96 * pred$se.fit
+newdat$hi  <- pred$fit + 1.96 * pred$se.fit
+
+newdat$Rain_group <- factor(
+  newdat$rain_days_30,
+  labels = c("Low rainfall (25%)",
+             "Medium rainfall (50%)",
+             "High rainfall (75%)")
+)
+
+# plot
+ggplot(df, aes(x = mean_temp_30, y = lay_DOY)) +
+  geom_point(
+    colour = "grey75",
+    size = 1.6,
+    alpha = 0.35
+  ) +
+  geom_ribbon(
+    data = newdat,
+    aes(
+      x = mean_temp_30,
+      ymin = lo,
+      ymax = hi,
+      group = Rain_group
+    ),
+    alpha = 0.12,
+    inherit.aes = FALSE
+  ) +
+  geom_line(
+    data = newdat,
+    aes(
+      x = mean_temp_30,
+      y = fit,
+      linetype = Rain_group
+    ),
+    linewidth = 1.2,
+    inherit.aes = FALSE
+  ) +
+  labs(
+    x = "Mean temperature (30 days pre-laying)",
+    y = "Laying date (day of year)",
+    linetype = "Rainfall conditions",
+    title = "Temperature–rainfall interaction predicts laying date"
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    legend.position = "right"
+  )
+
+```
+Laying date advanced with increasing pre-laying temperature, but this effect was contingent on rainfall conditions, indicating that thermal cues did not operate independently of broader environmental context. Warmer conditions are likely to reduce thermoregulatory costs and facilitate physiological readiness for breeding; however, the strength of this temperature effect varied with rainfall. Rather than rainfall acting as a direct trigger for breeding, wetter pre-laying conditions may reflect short-term improvements in ecosystem productivity or adult condition, thereby modifying how effectively temperature cues translate into earlier breeding.
 
 :::
 
