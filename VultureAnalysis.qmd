@@ -2825,7 +2825,7 @@ library(dplyr)
 library(ggplot2)
 library(forcats)
 
-# ---- short labels (edit these if you want even shorter) ----
+# ---- short labels
 model_labels <- tibble::tribble(
   ~model_id,      ~label_short,
   "meanT_30",     "Mean T (30d)",
@@ -3147,7 +3147,6 @@ digraph dag {
 
 
 ```
-Grey nodes represent latent biological states, blue indicates observed weather, dark grey indicates temporal indexing, and T* denotes the observed timing variable subject to missingness.
 
 Year (Y) represents background temporal variation that may influence both local weather conditions (W) and breeding processes through unmeasured long-term ecological or population-level changes. Weather is hypothesised to affect true breeding timing (T), acting as a short-term environmental cue, and to influence breeding success (S) through conditions experienced during incubation and early chick development. Breeding timing may further affect breeding success, reflecting potential fitness consequences of breeding earlier or later in the season. Observed timing (T*) represents the timing information available in the dataset and depends on both true breeding timing and breeding success, as unsuccessful breeding attempts are less likely to yield reliable timing records. This highlights that missing timing data are biologically structured rather than random, and that weather may influence both breeding timing and the probability that timing is observed. 
 
