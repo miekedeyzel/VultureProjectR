@@ -3176,7 +3176,7 @@ digraph effort_dag {
   # Edges (exact causal story)
   Y -> U
   Y -> W
-  W -> U
+  Y -> BE
   U -> BE
   W -> BE
 }
@@ -3185,7 +3185,7 @@ digraph effort_dag {
 ```
 Causal structure linking temporal variation, weather, unmeasured ecological processes, and breeding effort (BE), measured as the annual number of active nests. 
 
-Year (Y) is included as a temporal index representing the passage of time and captures long-term trends in both observed and unobserved processes. Weather (W) represents short-term and interannual variation in environmental conditions (e.g. temperature, rainfall, wind, and extreme events) and is structured by year. Unmeasured long-term drivers (U) represent slowly varying ecological and contextual processes that were not directly observed, such as food availability, adult condition, population state, management context, or land-use change. These processes are assumed to influence breeding effort directly and to vary through time, independent of short-term annual weather variability. Breeding effort is therefore determined by both short-term weather effects and longer-term unmeasured processes, while the strong temporal trend in breeding effort is interpreted primarily as arising from variation in U rather than from weather alone. This structure highlights that apparent associations between weather and breeding effort may reflect shared temporal trends or indirect pathways, rather than direct causal effects of weather.
+Year (Y) is included as a temporal index representing the temporal trends and captures long-term trends in both observed and unobserved processes. Weather (W) represents interannual variation in environmental conditions (e.g. temperature, rainfall, wind, and extreme events) and is structured by year. Unmeasured long-term drivers (U) represent slowly varying ecological and contextual processes that were not directly observed, such as food availability, adult condition, population state, management context, or land-use change. These processes are assumed to influence breeding effort directly and to vary through time, independent of annual weather variability. Breeding effort is therefore determined by both weather effects and longer-term unmeasured processes, while the strong temporal trend in breeding effort is interpreted primarily as arising from variation in U rather than from weather alone. the associations between weather and breeding effort may reflect shared temporal trends or indirect pathways, rather than direct causal effects of weather.
 
 
 
