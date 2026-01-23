@@ -1276,8 +1276,8 @@ summary(best_no_year_E)$adj.r.squared
 ```{r}
 
 ggplot(effort_weather, aes(x = year, y = active_nests)) +
-  geom_point(size = 2, colour = "grey30") +
-  geom_smooth(method = "lm", se = TRUE, colour = "black") +
+  geom_point(size = 2, colour = "grey") +
+  geom_smooth(method = "lm", se = TRUE, colour = "grey30") +
   scale_x_continuous(breaks = seq(min(effort_weather$year), max(effort_weather$year), by = 5)) +
   labs(
     x = "Year",
@@ -1329,9 +1329,62 @@ ggplot(aic_plot_df, aes(x = delta, y = model)) +
   ) +
   theme_bw() +
   theme(panel.grid = element_blank())
-
+ 
 ```
 
+```{r}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+
+plot_aic_facets_from_cands <- function(cand_with, cand_without,
+                                       label_with = "With year",
+                                       label_without = "Without year",
+                                       daic_max = 3){
+
+  build_df <- function(cand_list, panel_label){
+    tibble(
+      model_id = names(cand_list),
+      AICc = sapply(cand_list, AICcmodavg::AICc)
+    ) |>
+      arrange(AICc) |>
+      mutate(
+        dAICc = AICc - min(AICc),
+        weight = exp(-0.5 * dAICc) / sum(exp(-0.5 * dAICc)),
+        panel = panel_label
+      )
+  }
+
+  dat <- bind_rows(
+    build_df(cand_with,    label_with),
+    build_df(cand_without, label_without)
+  ) |>
+    filter(is.finite(dAICc), dAICc <= daic_max) |>
+    group_by(panel) |>
+    arrange(dAICc, .by_group = TRUE) |>
+    mutate(model_id = fct_reorder(model_id, dAICc, .desc = TRUE)) |>
+    ungroup()
+
+  ggplot(dat, aes(x = dAICc, y = model_id, size = weight)) +
+    geom_vline(xintercept = 2, linetype = "dashed") +
+    geom_point(alpha = 0.9) +
+    facet_wrap(~panel, scales = "free_y") +
+    labs(
+      x = expression(Delta*AIC[c]*" (lower is better)"),
+      y = NULL,
+      size = "AICc weight",
+      title = "Support for candidate models with and without year",
+      subtitle = paste0("Only models with ΔAICc ≤ ", daic_max,
+                        " are shown; dashed line = ΔAICc = 2")
+    ) +
+    theme_bw() +
+    theme(
+      panel.grid = element_blank(),
+      legend.position = "right"
+    )
+}
+
+```
 
 ```{r}
 
@@ -1459,6 +1512,93 @@ tbl
 
 
 ```
+
+```{r}
+ggplot(a_all, aes(x = Panel, y = `ΔAICc`)) +
+  geom_jitter(width = 0.15, alpha = 0.6, size = 2) +
+  geom_hline(yintercept = 2, linetype = "dashed") +
+  labs(
+    x = NULL,
+    y = expression(Delta*AIC[c]),
+    title = "Model support with and without year",
+    subtitle = "Each point represents a fitted model; dashed line indicates weak support"
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidytext)
+
+aic_no_year_plot <- table1_clean |>
+  filter(Group != "Baseline" | Model == "Intercept only") |>
+  mutate(
+    Model_f = reorder_within(Model, `ΔAICc`, Group),
+    is_null = Model == "Intercept only"
+  )
+
+ggplot(aic_no_year_plot, aes(x = `ΔAICc`, y = Model_f)) +
+  geom_vline(xintercept = 2, linetype = "dashed", colour = "grey40") +
+  geom_point(aes(size = w, shape = is_null), alpha = 0.85) +
+  scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17), guide = "none") +
+  scale_y_reordered() +
+  scale_size_continuous(range = c(2.5, 7)) +
+  labs(
+    x = expression(Delta*AIC[c]),
+    y = NULL,
+    size = "Akaike weight",
+    title = "Weather-only model support (year excluded)"
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.y = element_text(size = 10)
+  )
+
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(tidytext)
+
+# build clean table from the WITH-YEAR AIC object
+aic_with_year_plot <- as.data.frame(aic_effort_with_year) |>
+  tibble::rownames_to_column("model_id") |>
+  dplyr::rename(
+    `ΔAICc` = Delta_AICc,
+    w = AICcWt
+  ) |>
+  dplyr::mutate(
+    Model = pretty_model(model_id),
+    Model_f = reorder(Model, `ΔAICc`),
+    is_null = model_id == "null"
+  )
+
+ggplot(aic_with_year_plot, aes(x = `ΔAICc`, y = Model_f)) +
+  geom_vline(xintercept = 2, linetype = "dashed", colour = "grey40") +
+  geom_point(aes(size = w, shape = is_null), alpha = 0.85) +
+  scale_shape_manual(values = c(`FALSE` = 16, `TRUE` = 17), guide = "none") +
+  scale_size_continuous(range = c(2.5, 7)) +
+  labs(
+    x = expression(Delta*AIC[c]),
+    y = NULL,
+    size = "Akaike weight",
+    title = "Weather + year model support"
+  ) +
+  theme_bw() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.y = element_text(size = 10)
+  )
+
+```
+
+
 
 ```{r}
 digits_aic   <- 2
@@ -1602,7 +1742,48 @@ tbl2
 ```
 
 
+```{r}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(tidytext)   
 
+daic_keep <- 4
+
+effort_bar_df2 <- bind_rows(
+  prep_aictab_bar(aic_effort_with_year, "With year"),
+  prep_aictab_bar(aic_effort_no_year,   "Without year")
+) |>
+  group_by(panel) |>
+  filter(dAICc <= daic_keep) |>
+  mutate(
+    # reorder *within* each facet so best (0) ends up at the bottom after coord_flip()
+    label_w = tidytext::reorder_within(label, dAICc, panel)
+
+  ) |>
+  ungroup()
+
+ggplot(effort_bar_df2, aes(x = label_w, y = dAICc, fill = is_best)) +
+  geom_col(width = 0.7) +
+  coord_flip() +
+  geom_hline(yintercept = 2, linetype = "dashed") +
+  facet_wrap(~panel, scales = "free_y") +
+  tidytext::scale_x_reordered() +
+  scale_fill_manual(values = c(`TRUE` = "steelblue", `FALSE` = "grey75"), guide = "none") +
+  scale_y_continuous(limits = c(0, daic_keep), breaks = 0:daic_keep) +
+  labs(
+    x = NULL,
+    y = expression(Delta*AIC[c]),
+    title = 
+"Objective 1: Model support for breeding effort",
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+   subtitle = paste0(
+"Only models with ΔAICc ≤ ", daic_keep,
+                      " shown; dashed line = ΔAICc = 2")
 
 
 --------------------------------------------------------------------------------
@@ -1985,7 +2166,8 @@ ggplot(success_df_plot, aes(x = year_num, y = success_rate)) +
   labs(
     x = "Year",
     y = "Breeding success",
-    title = "Annual breeding success (proportion of successful nests) of White-backed Vultures"
+    title = "Annual breeding success (proportion of successful nests) 
+of White-backed Vultures"
   ) +
   theme_bw() +
   theme(panel.grid = element_blank())
@@ -2068,6 +2250,83 @@ ggplot() +
 ```
 figure shows that years with warmer minimum temperatures tend to have slightly higher breeding success, but temperature alone does not explain most of the year-to-year variation.
 Given the temperature in each year, this is what the model predicts breeding success should be
+
+
+```{r}
+succ_clean <- succ_clean %>%
+  mutate(dAICc_plot = if_else(model_id == "min_temp", 0.05, dAICc))
+
+ggplot() +
+  geom_col(
+    data = succ_clean,
+    aes(x = label, y = dAICc_plot),
+    width = 0.7,
+    fill = "grey75"
+  ) +
+  geom_col(
+    data = succ_clean %>% filter(model_id == "min_temp"),
+    aes(x = label, y = dAICc_plot),
+    width = 0.7,
+    fill = "steelblue"
+  ) +
+  coord_flip() +
+  geom_hline(yintercept = 2, linetype = "dashed") +
+  labs(
+    title = "Model support for breeding success",
+    subtitle = "ΔAICc values; best model visually offset",
+    x = NULL,
+    y = expression(Delta*AIC[c])
+  ) +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+
+```
+
+```{r}
+ggplot() +
+
+  # observed annual success (faded)
+  geom_point(
+    data = success_df,
+    aes(
+      x = z_min_temp,
+      y = success_nests / (success_nests + failed_nests)
+    ),
+    colour = "grey50",
+    alpha = 0.5,
+    size = 2
+  ) +
+
+  # model prediction
+  geom_ribbon(
+    data = pred_minT,
+    aes(x = x, ymin = conf.low, ymax = conf.high),
+    fill = "#1f78b4",
+    alpha = 0.15
+  ) +
+  geom_line(
+    data = pred_minT,
+    aes(x = x, y = predicted),
+    colour = "#1f78b4",
+    linewidth = 1.4
+  ) +
+
+  labs(
+    x = "Minimum temperature (standardised)",
+    y = "Breeding success",
+    title = "Breeding success increases with warmer minimum temperatures"
+  ) +
+
+  theme_bw() +
+  theme(panel.grid = element_blank())
+
+```
+
+   title = "Breeding success increases with warmer minimum temperatures"
+
+
+
 
 --------------------------------------------------------------------------------
 
@@ -2559,6 +2818,382 @@ ggplot(df, aes(x = mean_temp_30, y = lay_DOY)) +
 
 ```
 Laying date advanced with increasing pre-laying temperature, but this effect was contingent on rainfall conditions, indicating that thermal cues did not operate independently of broader environmental context. 
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+
+# ---- short labels (edit these if you want even shorter) ----
+model_labels <- tibble::tribble(
+  ~model_id,      ~label_short,
+  "meanT_30",     "Mean T (30d)",
+  "maxT_30",      "Max T (30d)",
+  "minT_30",      "Min T (30d)",
+  "rainDays_30",  "Rain days (30d)",
+  "totalR_30",    "Total rain (30d)",
+  "meanW_30",     "Mean wind (30d)",
+  "maxW_30",      "Max wind (30d)",
+
+  "meanT_60",     "Mean T (60d)",
+  "maxT_60",      "Max T (60d)",
+  "minT_60",      "Min T (60d)",
+  "rainDays_60",  "Rain days (60d)",
+  "totalR_60",    "Total rain (60d)",
+  "meanW_60",     "Mean wind (60d)",
+  "maxW_60",      "Max wind (60d)",
+
+  "lagTotR",      "Lag total rain",
+  "lagRainD",     "Lag rain days",
+  "lagMeanT",     "Lag mean T",
+
+  "temp_rain",    "Mean T + rain days",
+  "temp_wind",    "Mean T + mean wind",
+  "rain_wind",    "Rain days + mean wind",
+
+  "temp_x_rain",  "Mean T × rain days",
+  "minT_x_wind",  "Min T × mean wind",
+  "lagR_x_temp",  "Lag rain × mean T"
+)
+
+plot_daic <- function(cand_list, period_label){
+  tab <- build_obj3_base(cand_list) |>
+    left_join(model_labels, by = "model_id") |>
+    mutate(
+      label_short = coalesce(label_short, model_id),
+      is_best = (`ΔAICc` == min(`ΔAICc`)),
+      label_short = fct_reorder(label_short, `ΔAICc`, .desc = FALSE)
+
+    )
+
+  ggplot(tab, aes(x = label_short, y = `ΔAICc`, fill = is_best)) +
+    geom_col(width = 0.75) +
+    coord_flip() +
+    scale_fill_manual(values = c(`TRUE` = "steelblue", `FALSE` = "grey70"), guide = "none") +
+    geom_hline(yintercept = 2, linetype = "dashed") +
+    labs(
+      x = NULL,
+      y = expression(Delta*AIC[c]),
+      title = paste0("Objective 3: Model support (", period_label, ")"),
+      subtitle = "Dashed line = ΔAICc = 2 (models with substantial support)"
+    ) +
+    theme_bw() +
+    theme(panel.grid = element_blank())
+}
+
+p_daic_30 <- plot_daic(cand_timing_30, "30-day cues")
+p_daic_60 <- plot_daic(cand_timing_60, "60-day cues")
+
+p_daic_30
+p_daic_60
+
+
+```
+
+
+
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+plot_temp_rain_clean <- function(model, data,
+                                 xvar = "mean_temp_30",
+                                 zvar = "rain_days_30",
+                                 yvar = "lay_DOY",
+                                 period_label = "30-day cues",
+                                 zoom_y = TRUE){
+
+  # choose representative low/med/high rainfall values
+  qs <- quantile(data[[zvar]], probs = c(0.2, 0.5, 0.8), na.rm = TRUE)
+
+  grid <- expand.grid(
+    x = seq(min(data[[xvar]], na.rm = TRUE), max(data[[xvar]], na.rm = TRUE), length.out = 100),
+    z = qs
+  )
+  names(grid) <- c(xvar, zvar)
+
+  grid$pred <- predict(model, newdata = grid)
+  grid$rain_level <- factor(
+    c("Low rain", "Medium rain", "High rain")[match(grid[[zvar]], qs)],
+    levels = c("Low rain", "Medium rain", "High rain")
+  )
+
+  p <- ggplot(data, aes(x = .data[[xvar]], y = .data[[yvar]])) +
+    geom_point(size = 1.6, alpha = 0.35, colour = "grey25") +
+    geom_line(
+      data = grid,
+      aes(x = .data[[xvar]], y = pred, linetype = rain_level),
+      linewidth = 1.1,
+      colour = "black"
+    ) +
+    scale_linetype_manual(values = c("solid", "dashed", "dotdash")) +
+    labs(
+      title = paste0("Breeding timing  (", period_label, ")"),
+      subtitle = "Predicted laying date across temperature at low / medium / high rainfall",
+      x = "Mean temperature (30 days prior)",
+      y = "Laying date (DOY)",
+      linetype = NULL
+    ) +
+    theme_bw() +
+    theme(
+      panel.grid = element_blank(),
+      plot.title = element_text(size = 12, face = "bold"),
+      plot.subtitle = element_text(size = 9),
+      axis.title = element_text(size = 9),
+      axis.text = element_text(size = 9),
+      legend.position = "bottom",
+      legend.box = "horizontal"
+    )
+
+  if (zoom_y) {
+    # zoom to central range so a few outliers don't destroy the plot
+    yl <- quantile(data[[yvar]], probs = c(0.02, 0.98), na.rm = TRUE)
+    p <- p + coord_cartesian(ylim = yl)
+  }
+
+  p
+}
+
+# USE IT (30-day best interaction model)
+plot_temp_rain_clean(
+  model = cand_timing_30$temp_x_rain,
+  data  = timing_weather_30,
+  xvar  = "mean_temp_30",
+  zvar  = "rain_days_30",
+  period_label = "30-day cues",
+  zoom_y = TRUE
+)
+
+```
+```{r}
+library(dplyr)
+library(ggplot2)
+
+plot_temp_rain_clean <- function(model, data,
+                                 xvar,
+                                 zvar,
+                                 yvar = "lay_DOY",
+                                 period_label = "",
+                                 xlab = NULL,
+                                 zlab = NULL,
+                                 zoom_y = TRUE){
+
+  # drop rows missing the needed columns (prevents Inf/-Inf)
+  dd <- data |>
+    dplyr::filter(
+      !is.na(.data[[xvar]]),
+      !is.na(.data[[zvar]]),
+      !is.na(.data[[yvar]])
+    )
+
+  # choose representative low/med/high values of the moderator (zvar)
+  qs <- quantile(dd[[zvar]], probs = c(0.2, 0.5, 0.8), na.rm = TRUE)
+
+  grid <- expand.grid(
+    x = seq(min(dd[[xvar]], na.rm = TRUE), max(dd[[xvar]], na.rm = TRUE), length.out = 100),
+    z = qs
+  )
+  names(grid) <- c(xvar, zvar)
+
+  grid$pred <- predict(model, newdata = grid)
+
+  # nice legend labels
+  z_show <- ifelse(is.null(zlab), zvar, zlab)
+  grid$level <- factor(
+    c("Low", "Medium", "High")[match(grid[[zvar]], qs)],
+    levels = c("Low", "Medium", "High")
+  )
+
+  p <- ggplot(dd, aes(x = .data[[xvar]], y = .data[[yvar]])) +
+    geom_point(size = 1.6, alpha = 0.35, colour = "grey25") +
+    geom_line(
+      data = grid,
+      aes(x = .data[[xvar]], y = pred, linetype = level),
+      linewidth = 1.1,
+      colour = "black"
+    ) +
+    scale_linetype_manual(
+      values = c("solid", "dashed", "dotdash"),
+      labels = paste0(levels(grid$level), " ", z_show)
+    ) +
+    labs(
+      title = paste0("Breeding timing (", period_label, ")"),
+      subtitle = "Predicted laying date across temperature at low / medium / high rainfall",
+      x = ifelse(is.null(xlab), xvar, xlab),
+      y = "Laying date (DOY)",
+      linetype = NULL
+    ) +
+    theme_bw() +
+    theme(
+      panel.grid = element_blank(),
+      plot.title = element_text(size = 12, face = "bold"),
+      plot.subtitle = element_text(size = 9),
+      axis.title = element_text(size = 9),
+      axis.text = element_text(size = 9),
+      legend.position = "bottom",
+      legend.box = "horizontal"
+    )
+
+  if (zoom_y) {
+    yl <- quantile(dd[[yvar]], probs = c(0.02, 0.98), na.rm = TRUE)
+    p <- p + coord_cartesian(ylim = yl)
+  }
+
+  p
+}
+
+# -----------------------------
+# 30 DAYS: mean_temp_30 × rain_days_30
+# -----------------------------
+p_timing_30 <- plot_temp_rain_clean(
+  model = cand_timing_30$temp_x_rain,
+  data  = timing_weather_30,
+  xvar  = "mean_temp_30",
+  zvar  = "rain_days_30",
+  period_label = "30-day cues",
+  xlab = "Mean temperature (30 days prior)",
+  zlab = "Rainy days (30 days prior)",
+  zoom_y = TRUE
+)
+
+# -----------------------------
+# 60 DAYS: mean_temp_60 × rain_days_60
+# -----------------------------
+p_timing_60 <- plot_temp_rain_clean(
+  model = cand_timing_60$temp_x_rain,
+  data  = timing_weather_60,
+  xvar  = "mean_temp_60",
+  zvar  = "rain_days_60",
+  period_label = "60-day cues",
+  xlab = "Mean temperature (60 days prior)",
+  zlab = "Rainy days (60 days prior)",
+  zoom_y = TRUE
+)
+
+p_timing_30
+p_timing_60
+
+```
+
+
+
+## DAGs
+
+```{r}
+install.packages("ggdag")
+install.packages("dagitty")
+
+library(ggdag)
+library(dagitty)
+library(DiagrammeR)
+
+```
+
+
+### Objective 3: Breeding Timing - missing data
+
+```{r}
+library(DiagrammeR)
+
+grViz("
+digraph dag {
+  graph [layout = neato, splines = true, overlap = false]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    shape = box,
+    margin = 0.18
+  ]
+
+  edge [
+    penwidth = 2,
+    arrowsize = 0.7
+  ]
+
+  # --- nodes ---
+  T  [label='T', pos='0,2!']      # latent timing
+  S  [label='S', pos='2,2!']      # breeding success
+  Y  [label='Y', pos='0,0!']      # year / time index
+  W  [label='W', pos='2,0!']      # weather
+
+  Tstar [
+    label='T*',
+    shape=circle,
+    fixedsize=true,
+    width=0.75,
+    height=0.75,
+    fontsize=20,
+    pos='4,2!'
+  ]
+
+  # --- causal structure ---
+  T -> S
+  S -> Tstar
+
+  Y -> T
+  Y -> S
+  Y -> W
+
+  W -> T
+  W -> S
+}
+")
+
+
+
+```
+Grey nodes represent latent biological states, blue indicates observed weather, dark grey indicates temporal indexing, and T* denotes the observed timing variable subject to missingness.
+
+Year (Y) represents background temporal variation that may influence both local weather conditions (W) and breeding processes through unmeasured long-term ecological or population-level changes. Weather is hypothesised to affect true breeding timing (T), acting as a short-term environmental cue, and to influence breeding success (S) through conditions experienced during incubation and early chick development. Breeding timing may further affect breeding success, reflecting potential fitness consequences of breeding earlier or later in the season. Observed timing (T*) represents the timing information available in the dataset and depends on both true breeding timing and breeding success, as unsuccessful breeding attempts are less likely to yield reliable timing records. This highlights that missing timing data are biologically structured rather than random, and that weather may influence both breeding timing and the probability that timing is observed. 
+
+### Objective 1: Breeding effort 
+
+```{r}
+library(DiagrammeR)
+
+grViz("
+digraph effort_dag {
+  graph [layout = neato, splines = true, overlap = false]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    shape = box,
+    margin = 0.18
+  ]
+
+  edge [
+    penwidth = 2,
+    arrowsize = 0.6
+  ]
+
+  # Nodes (matching your hand sketch)
+  Y  [label='Y',  pos='0,2!']   # year / time index
+  W  [label='W',  pos='0,0!']   # weather
+  U  [label='U',  pos='3,2!']   # unmeasured long-term drivers
+  BE [label='BE', pos='3,0!']   # breeding effort
+
+  # Edges (exact causal story)
+  Y -> U
+  Y -> W
+  W -> U
+  U -> BE
+  W -> BE
+}
+")
+
+```
+Causal structure linking temporal variation, weather, unmeasured ecological processes, and breeding effort (BE), measured as the annual number of active nests. 
+
+Year (Y) is included as a temporal index representing the passage of time and captures long-term trends in both observed and unobserved processes. Weather (W) represents short-term and interannual variation in environmental conditions (e.g. temperature, rainfall, wind, and extreme events) and is structured by year. Unmeasured long-term drivers (U) represent slowly varying ecological and contextual processes that were not directly observed, such as food availability, adult condition, population state, management context, or land-use change. These processes are assumed to influence breeding effort directly and to vary through time, and may also be partially influenced by weather. Breeding effort is therefore determined by both short-term weather effects and longer-term unmeasured processes, while the strong temporal trend in breeding effort is interpreted primarily as arising from variation in U rather than from weather alone. This shows that links between weather and breeding effort might simply reflect the fact that both change over time, or act through other processes, rather than weather having a direct effect.
+
+
 
 :::
 
