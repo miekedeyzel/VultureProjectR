@@ -2949,7 +2949,6 @@ plot_temp_rain_clean <- function(model, data,
     )
 
   if (zoom_y) {
-    # zoom to central range so a few outliers don't destroy the plot
     yl <- quantile(data[[yvar]], probs = c(0.02, 0.98), na.rm = TRUE)
     p <- p + coord_cartesian(ylim = yl)
   }
@@ -2957,7 +2956,7 @@ plot_temp_rain_clean <- function(model, data,
   p
 }
 
-# USE IT (30-day best interaction model)
+# (30-day best interaction model)
 plot_temp_rain_clean(
   model = cand_timing_30$temp_x_rain,
   data  = timing_weather_30,
@@ -2981,7 +2980,6 @@ plot_temp_rain_clean <- function(model, data,
                                  zlab = NULL,
                                  zoom_y = TRUE){
 
-  # drop rows missing the needed columns (prevents Inf/-Inf)
   dd <- data |>
     dplyr::filter(
       !is.na(.data[[xvar]]),
@@ -2989,7 +2987,6 @@ plot_temp_rain_clean <- function(model, data,
       !is.na(.data[[yvar]])
     )
 
-  # choose representative low/med/high values of the moderator (zvar)
   qs <- quantile(dd[[zvar]], probs = c(0.2, 0.5, 0.8), na.rm = TRUE)
 
   grid <- expand.grid(
@@ -3000,7 +2997,6 @@ plot_temp_rain_clean <- function(model, data,
 
   grid$pred <- predict(model, newdata = grid)
 
-  # nice legend labels
   z_show <- ifelse(is.null(zlab), zvar, zlab)
   grid$level <- factor(
     c("Low", "Medium", "High")[match(grid[[zvar]], qs)],
@@ -3153,7 +3149,6 @@ Year (Y) represents background temporal variation that may influence both local 
 ### Objective 1: Breeding effort 
 
 ```{r}
-library(DiagrammeR)
 
 grViz("
 digraph effort_dag {
