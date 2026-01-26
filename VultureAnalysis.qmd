@@ -7,6 +7,31 @@ format:
     embed-resources: true
 ---
 ::: {.panel-tabset}
+```{r}
+#| label: setup
+#| include: false
+
+prep_aictab_bar <- function(aic_obj, panel_label) {
+  df <- as.data.frame(aic_obj)
+
+  if (!("dAICc" %in% names(df))) {
+    if ("Delta_AICc" %in% names(df)) df$dAICc <- df$Delta_AICc
+    else stop("Can't find dAICc / Delta_AICc.")
+  }
+
+  if (!("label" %in% names(df))) {
+    if ("Modnames" %in% names(df)) df$label <- df$Modnames
+    else df$label <- rownames(df)
+  }
+
+  best <- min(df$dAICc, na.rm = TRUE)
+
+  df |>
+    mutate(panel = panel_label, is_best = dAICc == best) |>
+    select(panel, label, dAICc, is_best)
+}
+
+```
   
 ## Packages   
  
@@ -40,6 +65,12 @@ library(knitr)
 library(AICcmodavg)
 library(lme4)
 
+
+```
+```{r}
+conflicted::conflict_prefer("select", "dplyr")
+conflicted::conflict_prefer("filter", "dplyr")
+conflicted::conflict_prefer("lag", "dplyr")
 
 ```
 
@@ -1513,21 +1544,7 @@ tbl
 
 ```
 
-```{r}
-ggplot(a_all, aes(x = Panel, y = `ΔAICc`)) +
-  geom_jitter(width = 0.15, alpha = 0.6, size = 2) +
-  geom_hline(yintercept = 2, linetype = "dashed") +
-  labs(
-    x = NULL,
-    y = expression(Delta*AIC[c]),
-    title = "Model support with and without year",
-    subtitle = "Each point represents a fitted model; dashed line indicates weak support"
-  ) +
-  theme_bw() +
-  theme(panel.grid = element_blank())
 
-
-```
 
 ```{r}
 library(dplyr)
@@ -2251,9 +2268,33 @@ ggplot() +
 figure shows that years with warmer minimum temperatures tend to have slightly higher breeding success, but temperature alone does not explain most of the year-to-year variation.
 Given the temperature in each year, this is what the model predicts breeding success should be
 
+```{r}
+succ_clean <- as.data.frame(aic_success)
+
+if (!("model_id" %in% names(succ_clean))) {
+  if ("Modnames" %in% names(succ_clean)) succ_clean$model_id <- succ_clean$Modnames
+  else succ_clean$model_id <- rownames(succ_clean)
+}
+
+if (!("dAICc" %in% names(succ_clean))) {
+  if ("Delta_AICc" %in% names(succ_clean)) succ_clean$dAICc <- succ_clean$Delta_AICc
+  else if ("Delta.AICc" %in% names(succ_clean)) succ_clean$dAICc <- succ_clean$Delta.AICc
+  else stop("Can't find dAICc / Delta_AICc in aic_success.")
+}
+
+if (!("label" %in% names(succ_clean))) {
+  succ_clean$label <- succ_clean$model_id
+}
+
+succ_clean <- succ_clean |>
+  dplyr::mutate(
+    dAICc_plot = dplyr::if_else(model_id == "min_temp", 0.05, dAICc)
+  )
+
+```
 
 ```{r}
-succ_clean <- succ_clean %>%
+succ_clean <- succ_clean |> 
   mutate(dAICc_plot = if_else(model_id == "min_temp", 0.05, dAICc))
 
 ggplot() +
@@ -2264,7 +2305,7 @@ ggplot() +
     fill = "grey75"
   ) +
   geom_col(
-    data = succ_clean %>% filter(model_id == "min_temp"),
+    data = succ_clean |>  filter(model_id == "min_temp"),
     aes(x = label, y = dAICc_plot),
     width = 0.7,
     fill = "steelblue"
@@ -2283,41 +2324,49 @@ ggplot() +
 
 ```
 
-```{r}
-ggplot() +
 
-  # observed annual success (faded)
+```{r}
+library(ggeffects)
+library(dplyr)
+library(ggplot2)
+
+
+pred_minT <- ggpredict(m_succ_minT, terms = "z_min_temp [all]", type = "fixed") |>
+  as.data.frame() |>
+  rename(
+    x = x,
+    predicted = predicted,
+    conf.low = conf.low,
+    conf.high = conf.high
+  )
+
+# observed annual success
+obs_pts <- success_df |>
+  mutate(success_rate = success_nests / (success_nests + failed_nests))
+
+ggplot() +
   geom_point(
-    data = success_df,
-    aes(
-      x = z_min_temp,
-      y = success_nests / (success_nests + failed_nests)
-    ),
+    data = obs_pts,
+    aes(x = z_min_temp, y = success_rate),
     colour = "grey50",
     alpha = 0.5,
     size = 2
   ) +
-
-  # model prediction
   geom_ribbon(
     data = pred_minT,
     aes(x = x, ymin = conf.low, ymax = conf.high),
-    fill = "#1f78b4",
     alpha = 0.15
   ) +
   geom_line(
     data = pred_minT,
     aes(x = x, y = predicted),
-    colour = "#1f78b4",
-    linewidth = 1.4
+    linewidth = 1.2
   ) +
-
   labs(
     x = "Minimum temperature (standardised)",
     y = "Breeding success",
-    title = "Breeding success increases with warmer minimum temperatures"
+    title = "Breeding success vs minimum temperature"
   ) +
-
   theme_bw() +
   theme(panel.grid = element_blank())
 
@@ -3079,12 +3128,18 @@ p_timing_60
 ## DAGs
 
 ```{r}
-install.packages("ggdag")
-install.packages("dagitty")
+#install.packages("ggdag")
+#install.packages("dagitty")
+#install.packages(rsvg)
+
 
 library(ggdag)
 library(dagitty)
 library(DiagrammeR)
+library(rsvg)
+library(DiagrammeRsvg)
+
+
 
 ```
 
@@ -3094,7 +3149,7 @@ library(DiagrammeR)
 ```{r}
 library(DiagrammeR)
 
-grViz("
+BT <-  grViz("
 digraph dag {
   graph [layout = neato, splines = true, overlap = false]
 
@@ -3140,7 +3195,13 @@ digraph dag {
 }
 ")
 
+svg_txt_bt <- DiagrammeRsvg::export_svg(BT)
 
+out_file_bt <- "timing_dag.svg"
+writeLines(svg_txt_bt, out_file_bt)
+
+
+knitr::include_graphics(out_file_bt)
 
 ```
 
@@ -3150,30 +3211,22 @@ Year (Y) represents background temporal variation that may influence both local 
 
 ```{r}
 
-grViz("
+library(DiagrammeR)
+library(DiagrammeRsvg)
+library(knitr)
+
+
+BE <- grViz("
 digraph effort_dag {
   graph [layout = neato, splines = true, overlap = false]
+  node [fontname = Helvetica, fontsize = 22, penwidth = 2, shape = box, margin = 0.18]
+  edge [penwidth = 2, arrowsize = 0.6]
 
-  node [
-    fontname = Helvetica,
-    fontsize = 22,
-    penwidth = 2,
-    shape = box,
-    margin = 0.18
-  ]
+  Y  [label='Y',  pos='0,2!']
+  W  [label='W',  pos='0,0!']
+  U  [label='U',  pos='3,2!']
+  BE [label='BE', pos='3,0!']
 
-  edge [
-    penwidth = 2,
-    arrowsize = 0.6
-  ]
-
-  # Nodes (matching your hand sketch)
-  Y  [label='Y',  pos='0,2!']   # year / time index
-  W  [label='W',  pos='0,0!']   # weather
-  U  [label='U',  pos='3,2!']   # unmeasured long-term drivers
-  BE [label='BE', pos='3,0!']   # breeding effort
-
-  # Edges (exact causal story)
   Y -> U
   Y -> W
   Y -> BE
@@ -3181,6 +3234,16 @@ digraph effort_dag {
   W -> BE
 }
 ")
+
+
+svg_txt <- DiagrammeRsvg::export_svg(BE)
+
+out_file <- "effort_dag.svg"
+writeLines(svg_txt, out_file)
+
+
+knitr::include_graphics(out_file)
+
 
 ```
 Causal structure linking temporal variation, weather, unmeasured ecological processes, and breeding effort (BE), measured as the annual number of active nests. 
