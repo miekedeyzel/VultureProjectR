@@ -67,6 +67,7 @@ library(lme4)
 
 
 ```
+
 ```{r}
 conflicted::conflict_prefer("select", "dplyr")
 conflicted::conflict_prefer("filter", "dplyr")
@@ -534,29 +535,53 @@ weather_yearly |>
 ```
 
 ```{r}
-cor_mat <- weather_yearly |>
-dplyr::select(mean_temp, max_temp, min_temp, total_rain, max_rain,
-rain_days, mean_wind, max_wind, hail_days) |>
-cor(use = "pairwise.complete.obs")
+library(Hmisc)
+
+
+vars <- weather_yearly |>
+  dplyr::select(mean_temp, max_temp, min_temp, total_rain, max_rain,
+                rain_days, mean_wind, max_wind, hail_days)
+
+res <- rcorr(as.matrix(vars), type = "pearson")
+
+cor_mat <- res$r
+p_mat   <- res$P
 
 cor_df <- as.data.frame(cor_mat) |>
-rownames_to_column("var1") |>
-pivot_longer(-var1, names_to = "var2", values_to = "cor")
+  rownames_to_column("var1") |>
+  pivot_longer(-var1, names_to = "var2", values_to = "cor") |>
+  mutate(p = as.vector(p_mat))
 
-ggplot(cor_df, aes(x = var1, y = var2, fill = cor)) +
-geom_tile() +
-scale_fill_gradient2(
-low = "#b2182b", mid = "white", high = "#2166ac",
-midpoint = 0, limits = c(-1, 1)
-) +
-labs(x = "", y = "", fill = "Correlation") +
-theme_bw() +
-theme(
-axis.text.x = element_text(angle = 45, hjust = 1),
-panel.grid  = element_blank()
-)
+cor_df <- cor_df |>
+  mutate(sig = case_when(
+    is.na(p) ~ "",
+    p < 0.001 ~ "***",
+    p < 0.01  ~ "**",
+    p < 0.05  ~ "*",
+    TRUE      ~ ""
+  ))
 
 ```
+
+
+```{r}
+ggplot(cor_df, aes(x = var1, y = var2, fill = cor)) +
+  geom_tile() +
+  geom_text(aes(label = sig), size = 4) +
+  scale_fill_gradient2(
+    low = "#b2182b", mid = "white", high = "#2166ac",
+    midpoint = 0, limits = c(-1, 1)
+  ) +
+  labs(x = "", y = "", fill = "Correlation") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid  = element_blank()
+  )
+
+
+```
+
  
 ### All weather across years
 
@@ -3123,7 +3148,82 @@ p_timing_60
 
 ```
 
+### Simulation 
 
+```{r}
+set.seed(1)
+
+simulate_b <- function(
+  n_years = 32,
+  nests_per_year = 60,
+  beta_WT = -4,      # W -> T 
+  beta_WS = 1.0,     # W -> S 
+  sigma_T = 8,       # spread of lay dates within a year
+  year_sd = 4        # add between-year timing variation
+){
+
+  years <- 1:n_years
+
+  # year-level w
+  W_y <- rnorm(n_years, 0, 1)
+
+  # unobserved between-yea
+  u_y <- rnorm(n_years, 0, year_sd)
+
+  dat <- do.call(rbind, lapply(years, function(y){
+    W <- W_y[y]
+    u <- u_y[y]
+
+    # true timing 
+    T <- 170 + beta_WT * W + u + rnorm(nests_per_year, 0, sigma_T)
+
+    # success depends on weather 
+    eta <- 0.5 + beta_WS * W
+    pS  <- plogis(eta)
+    S   <- rbinom(nests_per_year, 1, pS)
+
+    # observed timing only if success
+    Tstar <- ifelse(S == 1, T, NA_real_)
+
+    data.frame(
+      year = y,
+      W = W,
+      T = T,
+      S = S,
+      Tstar = Tstar
+    )
+  }))
+
+  fit_obs <- lm(Tstar ~ W, data = dat)
+
+  fit_true <- lm(T ~ W, data = dat)
+
+  list(
+    dat = dat,
+    beta_hat_obs  = coef(fit_obs)[["W"]],
+    beta_hat_true = coef(fit_true)[["W"]],
+    fit_obs = fit_obs,
+    fit_true = fit_true
+  )
+}
+
+#run 1
+out <- simulate_b(beta_WT = -4, beta_WS = 1.5)
+out$beta_hat_true
+out$beta_hat_obs
+
+```
+```{r}
+set.seed(3)
+runs <- 1000
+res <- replicate(runs, {
+  o <- simulate_b(beta_WT = -4, beta_WS = 1.5)
+  o$beta_hat_obs - o$beta_hat_true
+})
+quantile(res, c(0.025, 0.5, 0.975))
+mean(res)
+
+```
 
 ## DAGs
 
