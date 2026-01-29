@@ -6,6 +6,12 @@ format:
   html: 
     embed-resources: true
 ---
+<style>
+p {
+  text-align: justify;
+}
+</style>
+
 ::: {.panel-tabset}
 
 ## Introduction 
@@ -70,8 +76,167 @@ We hypothesise that the breeding timing, measured in laying dates, is influenced
 
 ## Methods 
 
-### Site discription 
+### Study Area 
 
-The breeding data used in this study were collected at Dronfield Nature Reserve, approximately 5km north of Kimberley in the Northern Cape, South Africa. Dronfield is located within a semi-arid region with a dominant vegetation type, the Kimberley Thornveld and has a mean annual rainfall of approximately 400 mm. The Thornveld is known for its open savanna structure with camel thorn trees scattered across the landscape with tall grasses in between. In addition, Dronfield includes numerous areas of semi-open mixed woodland, which, in combination with the savanna structure, supports a long-term breeding population of White-backed Vultures (*Gyps africanus*). The breeding nests of more than 100 white-backed vulture breeding pairs are mainly found within medium to large camel thorn trees found across the reserve. This breeding colony is one of six in the Kimberley area, with few threats while under Dronfield management, other than powerline electrocution remaining a persistent local threat, as eight main powerlines run through the reserves. However, when these vultures leave the reserve, they are faced with numerous surrounding threats, such as food shortage, poisoning, especially lead poisoning associated with hunting activities and drowning in surrounding farmland areas while foraging. Englewood, the neighbouring property to Dronfield, was included in the analysis until 2010 when land use change displaced the vultures to adjacent properties. 
+The breeding data used in this study were collected at Dronfield Nature Reserve, approximately 5km north of Kimberley in the Northern Cape, South Africa. Dronfield is part of a greater portion of protected and farming landscape, allowing vultures to regularly move between breeding and foraging areas. Dronfield is located within a semi-arid region with a dominant vegetation type, the Kimberley Thornveld and has a mean annual rainfall of approximately 400 mm. The Thornveld is known for its open savanna structure with camel thorn trees scattered across the landscape with tall grasses in between. In addition, Dronfield includes numerous areas of semi-open mixed woodland, which, in combination with the savanna structure, supports a long-term breeding population of White-backed Vultures (Gyps africanus). 
+The nests of more than 100 White-backed vulture breeding pairs are mainly found within medium to large camel thorn trees found across the reserve. This breeding colony is one of six in the greater Kimberley area, with few relatively few threats while under Dronfield management. However, the threat of powerline electrocution is persistent as multiple powerlines run across the reserve. Additionally, when these vultures leave the reserve, they are faced with numerous surrounding threats, such as food shortage due to land use change, poisoning, such as lead poisoning associated with hunting activities and drowning in surrounding farmland areas while foraging. The consistent distribution of suitable nesting habitats at Dronfield resulted in a consistent spatial distribution of nest sites across the years, allowing for repeated long-term monitoring of the individual nest sites. 
+
+### Data collection 
+
+The long-term monitoring program of African White-backed vultures commenced in 1993, with few methodical adjustments made to date. The primary goal of the monitoring program has been to document the population dynamics and breeding activity of the African White-backed vulture population in the reserve, with a specific focus on breeding success and effort across the years. These surveys were conducted by experienced observers, each ensuring standarised protocols for nest identification, assessment, and recording of breeding data using the same data sheets. 
+	The surveys were predominantly conducted twice a year, during the breeding season, including an early breeding survey and a post-breeding survey. Egg laying at Dronfield typically occurs from the end of May to the beginning of June. Therefore, since 2001, the early breeding survey has been conducted just after this stage of the breeding cycle, in August. Vegetation cover during this time also allowed for easier visualisation and access to the nests in the tree canopy. This survey aimed to establish the annual breeding effort measured in the number of active nests. To do this, multiple teams were deployed and assigned a section of the reserve to ensure comprehensive spatial coverage. Survey routes were established to ensure coverage of all previously known nesting areas, including additional suitable habitat to capture any new nests that might have been established and to limit the possibility of double-counting nests. En route, the various teams visited and assessed each tree for vulture breeding activity, including the presence of parents at the nests as incubation commenced, the presence of an egg inside the nest, or no indication of breeding activity at all. 
+	Active nests were then defined as nests that had clear evidence of breeding activity for the current breeding season, such as a recorded egg inside the nest. Preparatory breeding activity, such as nests with evidence of recent preparation and lining, but without an egg, was documented as a breeding attempt to account for later egg-laying that could have occurred after the survey. The nests that showed no sign of any breeding activity were classified as inactive nests. The observation date, tree number and coordinates were documented alongside active or inactive identification of nests within the reserve to enable long-term nest use of each new or recurring nest.  
+	The post-breeding survey was conducted in October and aimed to assess the breeding outcome, following the breeding effort survey in August. This survey allowed us to determine the breeding success of the nests identified as active in the October survey by establishing the presence of a surviving chick in the nest. Each nest identified during the first survey in August was revisited and assessed for its breeding outcome. For a nest to be classified and successful, a living chick had to be present in the nest during the time of surveying. The chicks in these nests were then carefully retrieved from their nests to conduct additional measurements before being placed back into their nests. This included measuring individual weights and the wing length of each chick to establish an estimated laying date, used to analyse changes in the annual breeding timing. Wing length was used as a proxy for chick age, as it is a consistent metric for estimating the relative age during early development. Based on the wing length, the estimated age of each chick was then subtracted from the observation date to establish relative laying dates. Additionally, each chick that was deemed the appropriate size was ringed and tagged, receiving a unique code for long-term monitoring. Nests that were identified as active during the August survey but did not contain a living chick during the October survey were classified as unsuccessful nests, typically adjacent to evidence of eggshell fragments or whitewash. 
+	During both of these surveys, a standardised nest status code was assigned to each nest (Appendix Table A1). A list of 20 different codes was constructed to describe what is seen at each nest sighting, ranging from breeding outcome, nest condition and other notable sightings at each nest that could describe the breeding activity at each nest. This code system was kept consistent throughout the monitoring program. The main aim of the monitoring program remained the same over time, however, the survey design has been adjusted to ensure the most effective way to capture breeding activity in the reserve. The initial surveying years, 1993 to 2000, consisted of a single survey in October to document the number of successful nests during that breeding season by the presence of chicks. From 2001 onwards, the second survey, in the early-breeding period, was introduced to improve and ensure more robust data collection regarding breeding activity at Dronfield. 
+
+
+## Results 
+
+In this chapter, the results of the analyses determining the effects of weather on the breeding effort, success, and outcome of White-backed vultures are presented. The results are structured by objectives, with each based on model selection using an information-theoretic framework. Supporting information and analyses are provided in the appendix. 
+
+*Objective 1: Breeding effort*
+
+The breeding effort, quantified as the annual number of active nests, shows clear fluctuations across the years, however, the long-term increase in breeding effort remains evident (Figure 1). 
+
+![](Figure1_breeding_effort.png)
+Figure 1: The breeding effort, represented as the number of active nests each breeding season, across the study period.
+
+The number of active nests has increased from fewer than 50 nests per breeding season in the early years of sampling to 138 nests recorded for the 2024 breeding season. Despite the general increasing trend, there were a few years that deviated substantially from the general trend, such as 2009, when the breeding effort dropped from 90 active nests in 2008 to 57 active nests.
+
+The strong temporal signal observed in Figure 1 was reflected in the model selection results (Table 1). Year accounted for the majority of the variation in the breeding effort, with the selected weather variables accounting for minimal additional explanatory power. 
+
+**Table 1:** The model selection results relating to the annual weather variation to breeding effort, measured in the number of active nests at Dronfield between 1993 and 2024. Models were fitted using linear regressions. A ‘+’ between two predictor weather variables indicates additive effects, and ‘x’ indicates an interaction term. The number of parameters is represented by K, with AICc being Akaike’s Information Criterion. ∆AICc represents the difference in AICc compared to the best supporting model, and w represents the Akaike weight. Adjusted R2 represents the proportion of variance explained by each model. Regression coefficients (slope) with standard error are reported for the simple predictor models only. 
+
+| Model | K | AICc | ΔAICc | w | Adj. R² | slope (SE) |
+|---|---|---|---|---|---|---|
+| **Baseline** | | | | | | |
+| Year (baseline) | 3 | -28.43 | 0.64 | 0.140 | 0.759 | |
+| **Rain** | | | | | | |
+| Maximum daily rainfall | 4 | -29.07 | 0.00 | 0.193 | 0.775 | -0.002 (0.001) |
+| Total rainfall | 4 | -27.49 | 1.58 | 0.088 | 0.764 | 0 (0) |
+| Previous year's total rainfall | 4 | -25.81 | 3.27 | 0.038 | 0.751 | 0 (0) |
+| Rainy days | 4 | -25.78 | 3.29 | 0.037 | 0.750 | 0 (0.002) |
+| **Temperature** | | | | | | |
+| Minimum temperature | 4 | -26.68 | 2.39 | 0.058 | 0.757 | 0.016 (0.017) |
+| Mean temperature | 4 | -26.59 | 2.48 | 0.056 | 0.757 | 0.026 (0.030) |
+| Maximum temperature | 4 | -26.42 | 2.65 | 0.051 | 0.755 | 0.010 (0.013) |
+| **Wind** | | | | | | |
+| Maximum wind speed | 4 | -25.90 | 3.18 | 0.039 | 0.751 | -0.002 (0.006) |
+| Mean wind speed | 4 | -25.87 | 3.21 | 0.039 | 0.751 | -0.019 (0.070) |
+| **Hail** | | | | | | |
+| Hail days | 4 | -25.88 | 3.19 | 0.039 | 0.751 | 0.006 (0.020) |
+| **Joint effects** | | | | | | |
+| Min temperature + max daily rainfall | 5 | -27.44 | 1.63 | 0.085 | 0.776 | |
+| Max daily rainfall + max wind speed | 5 | -26.41 | 2.66 | 0.051 | 0.769 | |
+| Min temperature + total rainfall | 5 | -25.04 | 4.03 | 0.026 | 0.758 | |
+| Min temperature + max wind speed | 5 | -23.83 | 5.24 | 0.014 | 0.749 | |
+| Max temperature + rainy days | 5 | -23.78 | 5.29 | 0.014 | 0.748 | |
+| Hail days + max wind speed | 5 | -23.12 | 5.95 | 0.010 | 0.743 | |
+| Hail days + rainy days | 5 | -23.03 | 6.04 | 0.009 | 0.742 | |
+| **Interactions** | | | | | | |
+| Prev. rainfall × max temperature | 6 | -21.36 | 7.71 | 0.004 | 0.744 | |
+| Min temperature × mean wind speed | 6 | -21.30 | 7.77 | 0.004 | 0.744 | |
+| Min temperature × rainy days | 6 | -21.04 | 8.03 | 0.003 | 0.741 | |
+
+
+The model selection indicated that breeding effort was weakly associated with the weather predictors. The model best supported was the maximum daily rainfall (∆AICc = 0.00, w = 0.19), however, the effect remains small (slope = -0.002). The baseline model that included only year showed similar support compared to the top-supported model (∆AICc = 0.64, w = 0.14).  The number of rain days and the lagged rainfall (based on the previous year’s rainfall) showed limited support (∆AICc > 2). Models that included temperature predictors indicated moderate support, with all predictor variables ranging within ∆AICc = 2.3 and 2.7. Single models, including wind and hail, showed poor performance. Neither the interaction effect nor the additive models improved the model fit compared to single predictor models, with interactive models showing poor received little support (∆AICc > 7). 
+
+*Objective 2: Breeding success*
+
+**Table 2**: The model selection results relating to annual weather variation to breeding success, quantified as the number of successful nests relative to unsuccessful nests. Models were fitted using a binomial generalised linear mixed- effects model. A ‘+’ between two predictor weather variables indicates additive effects, and ‘x’ indicates an interaction term. The number of parameters is represented by K, with AICc being Akaike’s Information Criterion. ∆AICc represents the difference in AICc compared to the best supporting model, and w represents the Akaike weight. Deviance explained is comparable to R2. Regression coefficients (slope) with standard error are reported for the simple predictor models only.
+
+
+| Model | K | AICc | ΔAICc | w | Deviance explained | slope (SE) |
+|---|---|---|---|---|---|---|
+| **Baseline** | | | | | | |
+| Intercept only | 2 | 229.45 | 2.52 | 0.123 | 0.000 | |
+| **Temperature** | | | | | | |
+| Minimum temperature | 3 | 226.93 | 0.00 | 0.435 | 0.210 | 0.167 (0.072) |
+| Maximum temperature | 3 | 230.85 | 3.92 | 0.061 | 0.042 | -0.077 (0.075) |
+| **Rain** | | | | | | |
+| Maximum daily rainfall | 3 | 231.01 | 4.09 | 0.056 | 0.034 | 0.075 (0.079) |
+| Rainy days | 3 | 231.61 | 4.68 | 0.042 | 0.014 | -0.041 (0.076) |
+| Total rainfall | 3 | 231.65 | 4.72 | 0.041 | 0.008 | 0.038 (0.076) |
+| **Wind** | | | | | | |
+| Maximum wind speed | 3 | 231.73 | 4.81 | 0.039 | 0.003 | -0.031 (0.077) |
+| **Hail** | | | | | | |
+| Hail days | 3 | 230.45 | 3.53 | 0.074 | 0.052 | -0.088 (0.073) |
+| **Joint effects** | | | | | | |
+| Max temperature + rainy days | 4 | 232.10 | 5.18 | 0.033 | 0.104 | |
+| Rainy days + hail days | 4 | 232.30 | 5.38 | 0.030 | 0.087 | |
+| Hail days + max wind speed | 4 | 232.67 | 5.74 | 0.025 | 0.062 | |
+| **Interactions** | | | | | | |
+| Min temperature × wind speed | 5 | 232.04 | 5.11 | 0.034 | 0.225 | |
+| Max temperature × rainy days | 5 | 234.93 | 8.01 | 0.008 | 0.104 | |
+
+
+The model selection indicated that the breeding success had clearer associations with the weather variables included in the models (Table 2). The model showing the best support (∆AICc = 0.00, w = 0.44) is the single predictor model including minimum temperature, explaining the largest proportion of deviance compared to any of the other models (21%). The other models with single predictor variables explained little extra deviance and weak support relative to the best supported model (∆AICc > 3). The same was seen for models that had additive and interactive predictor variables, showing weak support compared to the best-supported model. 
+
+Figure 2, showing the relationship between the predictor variable, minimum temperature and breeding success, indicates a positive relationship (slope = 0.167). Years with warmer temperatures have higher breeding success, as the upward trend suggests (Figure 2). The graphs also indicate that the observed breeding success varies substantially around the fitted relationship. 
+
+![](Figure2_success_min_temperature.png)
+Figure 2: The relationship between minimum temperature and breeding success, expressed as the proportion of successful nests.
+
+When accounting for population size in the best supported single predictor model, the combined model (minimum temperature + population size) was strongly supported (∆AICc = 0, w = 0.91) and accounts for 51% of the between-year variation in the breeding success at Dronfield. Minimum temperature was still positively associated with the breeding success in the combined model and explains 21% of the annual variation in breeding success, in both scenarios. 
+
+**Table 3**: Results from the analyses comparing breeding success models including minimum temperature only, population size, and the combination of both predictor variables. ∆AICc ranks the models with the Akaike weight (w), indicating the relative support of each model.  Between-year variance is calculated relative to the null model
+
+| Model                                   | ΔAICc | w    | Between-year variance explained |
+|-----------------------------------------|-------|------|----------------------------------|
+| Minimum temperature                     | 6.91  | 0.03 | 0.21                             |
+| Population size                         | 5.44  | 0.06 | 0.24                             |
+| Minimum temperature + population size   | 0.00  | 0.91 | 0.50                             |
+
+
+*Objective 3: Breeding timing*
+
+The breeding timing was strongly associated with pre-laying weather conditions, with interactive effects between weather variables being the strongest predictors of the laying date (Table 5). 
+
+**Table 4:** Results from the model selection relating breeding timing, predicted by laying date, and the 30 day pre-laying weather conditions at Dronfield. Models were fitted using linear regressions. A ‘+’ between two predictor weather variables indicates additive effects, and ‘x’ indicates an interaction term. The number of parameters is represented by K, with AICc being Akaike’s Information Criterion. ∆AICc represents the difference in AICc compared to the best supporting model, and w represents the Akaike weight. Adjusted R2 represents the proportion of variance explained by each model. Regression coefficients (slope) with standard error are reported for the simple predictor models only.
+
+
+| Model | Deviance | K | AICc | ΔAICc | w | R² | Slope (SE) |
+|---|---|---|---|---|---|---|---|
+| **Temperature** | | | | | | | |
+| Minimum temperature | 230,069.4 | 2 | 11,529.94 | 193.94 | 0.000 | 0.499 | -5.010 (0.131) |
+| Mean temperature | 241,441.3 | 2 | 11,600.33 | 264.33 | 0.000 | 0.475 | -5.478 (0.151) |
+| Maximum temperature | 280,751.2 | 2 | 11,820.41 | 484.41 | 0.000 | 0.389 | -4.775 (0.157) |
+| **Rain** | | | | | | | |
+| Rainy days | 404,580.3 | 2 | 12,360.96 | 1,024.96 | 0.000 | 0.161 | -2.103 (0.126) |
+| Total rainfall | 415,698.5 | 2 | 12,400.54 | 1,064.54 | 0.000 | 0.138 | -0.286 (0.019) |
+| **Wind** | | | | | | | |
+| Maximum wind speed | 449,433.4 | 2 | 12,506.89 | 1,170.89 | 0.000 | 0.022 | 4.154 (0.727) |
+| Mean wind speed | 452,345.2 | 2 | 12,516.32 | 1,180.31 | 0.000 | 0.016 | 4.397 (0.915) |
+| **Lagged effects** | | | | | | | |
+| Previous year's total rainfall | 444,303.8 | 2 | 12,278.29 | 942.29 | 0.000 | 0.010 | 0.013 (0.003) |
+| Previous year's rainy days | 447,834.4 | 2 | 12,289.62 | 953.61 | 0.000 | 0.003 | 0.062 (0.032) |
+| Previous year's mean temperature | 448,801.1 | 2 | 12,292.70 | 956.70 | 0.000 | 0.000 | -0.456 (0.576) |
+| **Joint effects** | | | | | | | |
+| Mean temperature + rainy days | 203,046.6 | 3 | 11,349.65 | 13.65 | 0.001 | 0.558 | |
+| Mean temperature + mean wind speed | 236,458.4 | 3 | 11,571.91 | 235.91 | 0.000 | 0.485 | |
+| Rainy days + mean wind speed | 369,830.8 | 3 | 12,224.48 | 888.48 | 0.000 | 0.195 | |
+| **Interactive effects** | | | | | | | |
+| Mean temperature × rainy days | 200,878.1 | 4 | 11,336.00 | 0.00 | 0.999 | 0.563 | |
+| Previous year's rainfall × mean temperature | 235,450.7 | 4 | 11,373.62 | 37.62 | 0.000 | 0.476 | |
+| Minimum temperature × mean wind speed | 215,499.8 | 4 | 11,438.51 | 102.51 | 0.000 | 0.531 | |
+
+
+The breeding timing at Dronfield was best explained by an interaction effect of the mean temperature and the number of rainy days in the 30 day pre-laying period, with this interactive model receiving high support (∆AICc = 0.00, w = 0.999). Additionally, this best supported model accounted for 56.3% of the variation in laying date. The single predictor models showed poor support, showing high ∆AICc values regardless of the explanatory power of the models that included temperature, based on their R2 values (Table 4). Similarly, single predictor models including rainfall also indicated weaker support relative to the best fit model. The previous year’s weather conditions did not indicate a strong influence, and additive explained variance of the current breeding seasons, breeding timing (∆AICc > 900). 
+
+Laying dates of unsuccessful nests could not be estimated. A simulation examining the consequences of the unobserved laying dates of the unsuccessful nests indicated that if the effects are linear, the exclusion of the missing laying dates does not cause a systematic bias (See Appendix tbc).  
+
+**Table 5:** Results from the analyses comparing breeding timing models, including the interactive effects of mean temperature and rainy days, population size, and the combination of both models. ∆AICc ranks the models with the Akaike weight (w), indicating the relative support of each model. 
+
+
+| Model | ΔAICc | w | R² |
+|---|---|---|---|
+| Mean temperature × rainy days | 65.56 | 0 | 0.56 |
+| Population size | 1,266.51 | 0 | 0.00 |
+| Mean temperature × rainy days + population size | 0.00 | 1 | 0.58 |
+
+
+
+The interactive model of mean temperature and rainy days received much less support when population size was not accounted for (Table 5). By combining the interactive model with population size, the model became the best supported model (∆AICc = 0, w = 1). Additionally, adding population size to the interactive model indicated a weak increase in explanatory power, increasing with approximate 0.02% from the interactive-only model. 
+
 
 :::
