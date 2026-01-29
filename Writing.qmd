@@ -14,7 +14,7 @@ p {
 
 ::: {.panel-tabset}
 
-## Introduction 
+
  
 ### Introduction
  
@@ -57,7 +57,7 @@ Warmer years are noted to have earlier egg laying dates as most bird species aim
 
 
 
-### Aims and Objectives
+## Aims and Objectives
 
 By analysing 31 years of breeding phenology data alongside local weather data, this project aims to determine if, and how, weather affects the reproductive timing and success of African White Backed Vultures. To address this, three main objectives were identified:
 
@@ -74,7 +74,7 @@ We hypothesise that the breeding success of white-backed vultures will decrease 
 We hypothesise that the breeding timing, measured in laying dates, is influenced by the weather conditions in the 60 days prior to laying periods, which reflects white-backed vulture sensitivity to environmental cues before breeding. 
 
 
-## Methods 
+### Methods (Still need to add DAGs)
 
 ### Study Area 
 
@@ -84,13 +84,37 @@ The nests of more than 100 White-backed vulture breeding pairs are mainly found 
 ### Data collection 
 
 The long-term monitoring program of African White-backed vultures commenced in 1993, with few methodical adjustments made to date. The primary goal of the monitoring program has been to document the population dynamics and breeding activity of the African White-backed vulture population in the reserve, with a specific focus on breeding success and effort across the years. These surveys were conducted by experienced observers, each ensuring standarised protocols for nest identification, assessment, and recording of breeding data using the same data sheets. 
+
 	The surveys were predominantly conducted twice a year, during the breeding season, including an early breeding survey and a post-breeding survey. Egg laying at Dronfield typically occurs from the end of May to the beginning of June. Therefore, since 2001, the early breeding survey has been conducted just after this stage of the breeding cycle, in August. Vegetation cover during this time also allowed for easier visualisation and access to the nests in the tree canopy. This survey aimed to establish the annual breeding effort measured in the number of active nests. To do this, multiple teams were deployed and assigned a section of the reserve to ensure comprehensive spatial coverage. Survey routes were established to ensure coverage of all previously known nesting areas, including additional suitable habitat to capture any new nests that might have been established and to limit the possibility of double-counting nests. En route, the various teams visited and assessed each tree for vulture breeding activity, including the presence of parents at the nests as incubation commenced, the presence of an egg inside the nest, or no indication of breeding activity at all. 
+	
 	Active nests were then defined as nests that had clear evidence of breeding activity for the current breeding season, such as a recorded egg inside the nest. Preparatory breeding activity, such as nests with evidence of recent preparation and lining, but without an egg, was documented as a breeding attempt to account for later egg-laying that could have occurred after the survey. The nests that showed no sign of any breeding activity were classified as inactive nests. The observation date, tree number and coordinates were documented alongside active or inactive identification of nests within the reserve to enable long-term nest use of each new or recurring nest.  
+	
 	The post-breeding survey was conducted in October and aimed to assess the breeding outcome, following the breeding effort survey in August. This survey allowed us to determine the breeding success of the nests identified as active in the October survey by establishing the presence of a surviving chick in the nest. Each nest identified during the first survey in August was revisited and assessed for its breeding outcome. For a nest to be classified and successful, a living chick had to be present in the nest during the time of surveying. The chicks in these nests were then carefully retrieved from their nests to conduct additional measurements before being placed back into their nests. This included measuring individual weights and the wing length of each chick to establish an estimated laying date, used to analyse changes in the annual breeding timing. Wing length was used as a proxy for chick age, as it is a consistent metric for estimating the relative age during early development. Based on the wing length, the estimated age of each chick was then subtracted from the observation date to establish relative laying dates. Additionally, each chick that was deemed the appropriate size was ringed and tagged, receiving a unique code for long-term monitoring. Nests that were identified as active during the August survey but did not contain a living chick during the October survey were classified as unsuccessful nests, typically adjacent to evidence of eggshell fragments or whitewash. 
+	
 	During both of these surveys, a standardised nest status code was assigned to each nest (Appendix Table A1). A list of 20 different codes was constructed to describe what is seen at each nest sighting, ranging from breeding outcome, nest condition and other notable sightings at each nest that could describe the breeding activity at each nest. This code system was kept consistent throughout the monitoring program. The main aim of the monitoring program remained the same over time, however, the survey design has been adjusted to ensure the most effective way to capture breeding activity in the reserve. The initial surveying years, 1993 to 2000, consisted of a single survey in October to document the number of successful nests during that breeding season by the presence of chicks. From 2001 onwards, the second survey, in the early-breeding period, was introduced to improve and ensure more robust data collection regarding breeding activity at Dronfield. 
+	
+
+### Data Analyses ( to be adjusted and added to)
+
+(Still need to add DAGs)
+
+We analysed the relationship between annual weather variation and the breeding performance of African White Backed Vultures using the long-term data collected at Dronfield. Moreover, we examined how the weather affects three main aspects of the reproductive cycle, including breeding effort (number of active nests),  breeding success (proportion of nests that produced a fledgling) and breeding timing (assessed using estimated laying dates). All statistical analyses were conducted in R statistical computing environment (R version 4.4.1). 
+
+Weather data
+
+The weather variables used in this study were derived from a package in the program R 4.4.1, rnoaa, by specifying the weather station ID most suitable for our data (Posit Team 2025). The weather variables were derived from Kimberley meteorological station, 10 km from our study area, Dronfield. The variables used in the analyses were selected to represent a broad understanding of the climatic variation experienced at Dronfield and were biologically motivated. To broadly classify the variables, rainfall, temperature and extreme events were assessed for their impacts on the three outlined focus areas of the breeding cycle. Using the daily weather summaries derived from the weather station, annual and seasonal summaries were used to generate the weather predictors used in the analysis.
+
+The objectives were analysed separately by using specific statistical models deemed fit for the structure of the response variable. This was done by adopting a candidate model set approach for each objective, where the different models represented a biologically motivated hypothesis of how the selected predictor variables might affect each stage of the breeding cycle. Therefore, each model was representative of an explanation for the observed variation in breeding effort, breeding success and timing.  
+
+A model selection approach was used, which involved fitting the set of priori models and then calculating the sample size-adjusted Akaike’s Information Criterion (AICc) for each one. Models that have smaller AICc values were considered as stronger support models.  The candidate models were then ranked by the difference in their AICc values (∆AICc) relative to the best supported model for each objective to identify which weather predictor, or combinations of predictors, better explained variation in each breeding response.
+
+Because of the continuous nature of both breeding timing and breeding effort, these two objectives were analysed using linear regression models. Breeding effort, measured as the number of active nests in each breeding season, was log-transformed before conducting the analyses to adhere to model assumptions, whereas breeding timing was deemed normally distributed before fitting the model. The breeding success objective was analysed using binomial models using a logit link function, as breeding success is measured as the proportion of successful nests relative to the total number of nests each breeding season. By using the proportion of successful nests, it accounted for the variation in sample sizes across the multiple breeding seasons.
+
+Due to the temporal structure of the data, year was added to the analyses to account for the unmeasured annual variation that is not directly attributed to weather conditions. For breeding effort, models were fitted with and without year as a covariate to compare models and determine the effects of weather conditions with and without accounting for the temporal trend. In the breeding success models, year was added to the models as a random effect to account for the unmeasured annual variation in the baseline breeding success, while the fixed effects of weather were modelled. The main focus of the breeding timing was to identify the effects of weather during the pre-laying window and which variables acted as a cue to initiate breeding, therefore year was not included in these models as a predictor variable. To assess the effects of weather on the pre-laying period, weather variables were summarised for the 30 and 60 days before the laying date and fitted to the models. The laying date was only available for the successful nests, as the unsuccessful nests lacked the information needed to estimate laying date
 
 
-## Results 
+
+### Results 
 
 In this chapter, the results of the analyses determining the effects of weather on the breeding effort, success, and outcome of White-backed vultures are presented. The results are structured by objectives, with each based on model selection using an information-theoretic framework. Supporting information and analyses are provided in the appendix. 
 
