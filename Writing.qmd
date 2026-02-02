@@ -1,7 +1,4 @@
 ---
-title: "The Effects of Climate Change on the Breeding Success and Timing of African White-backed Vultures"
-author: "Mieke Deyzel"
-
 format:
   pdf:
     pdf-engine: xelatex
@@ -14,7 +11,9 @@ format:
     include-in-header:
       text: |
         \usepackage{setspace}
-        \setstretch{1.15}
+        \setstretch{1.5}
+
+mainfont: "Times New Roman"
 
 execute:
   eval: false
@@ -25,6 +24,37 @@ p {
   text-align: justify;
 }
 </style> 
+
+```{=latex} 
+\begin{center}
+{\Large\bfseries
+The Effects of Climate Change on the Breeding Success and Timing of African White-backed Vultures
+}
+
+\vspace{1.5cm}
+
+{\normalsize
+Mieke Deyzel
+
+Supervisors: Professor Res Altwegg and Dr Linda van den Heever 
+
+Department of Biological Sciences
+
+University of Cape Town 
+
+Rondebosch 7701
+
+South Africa
+
+}
+\end{center}
+
+\newpage
+
+```
+
+### Abstract 
+
 
 ### Introduction
  
@@ -439,12 +469,45 @@ Mean temperature $\times$ rainy days + population size &  &  &  & 0.00 & 1.00 & 
 
 ```
 
-
-
 The breeding timing at Dronfield was best explained by an interaction effect of the mean temperature and the number of rainy days in the 30 day pre-laying period, with this interactive model receiving high support (∆AICc = 0.00, w = 0.999). Additionally, this best supported model accounted for 56.3% of the variation in laying date. The single predictor models showed poor support, showing high ∆AICc values regardless of the explanatory power of the models that included temperature, based on their R2 values (Table 3). Similarly, single predictor models including rainfall also indicated weaker support relative to the best fit model. The previous year’s weather conditions did not indicate a strong influence, and additive explained variance of the current breeding seasons, breeding timing (∆AICc > 900). 
 
 Laying dates of unsuccessful nests could not be estimated. A simulation examining the consequences of the unobserved laying dates of the unsuccessful nests indicated that if the effects are linear, the exclusion of the missing laying dates does not cause a systematic bias (See Appendix tbc).  
 
 
 The interactive model of mean temperature and rainy days received much less support when population size was not accounted for (Table 3). By combining the interactive model with population size, the model became the best supported model (∆AICc = 0, w = 1). Additionally, adding population size to the interactive model indicated a weak increase in explanatory power, increasing with approximate 0.02% from the interactive-only model. 
+
+### Discussion 
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
