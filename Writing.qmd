@@ -15,9 +15,13 @@ format:
 
 mainfont: "Times New Roman"
 
+bibliography: References.bib
+csl: cse-name-year.csl
+
 execute:
   eval: false
 ---
+
 
 <style>
 p {
@@ -58,46 +62,38 @@ South Africa
 
 ### Introduction
  
-Climate change and weather variability   
+Climate change and weather variability    
 
-Climate change is widely projected to alter ecological systems by increasing the variability in weather patterns and the occurrence of extreme events across the globe. Events such as severe droughts, heat stress and flooding are predicted to become more frequent, leading to significant pressure on ecological systems. Many studies on the effects of climate change on environmental systems focus on shifts in mean climatic conditions, such as long-term change in precipitation, with less attention given to how increased variability may be driving ecological disruptions (Thornton *et al.* 2014). Although this emphasis has improved the understanding of mean climate trends, evidence suggests that interannual variation in climatic conditions plays a crucial role in the ecological response (Maxwell *et al.* 2018). Annual fluctuations in climatic conditions increase the unpredictability of environmental responses and often result in some years being more favourable than others, influencing the availability of important resources such as food, which can cause physiological stress to individuals, populations, and whole ecosystems. This results in substantial variation in the fitness and survival rates of species across multiple years, depending on the environmental conditions (Vázquez *et al.*2015, Berzins *et al.* 2020). Therefore, annual variability in climate is an often-overlooked driver of ecological response to environmental change, emphasising its importance in assessing the impacts of climate change on natural systems. 
+Climate change is widely projected to alter ecological systems by increasing the variability in weather patterns and the frequency of extreme events across the globe [@abbass2022review]. Events such as severe droughts, heat stress and flooding are predicted to become more frequent, leading to significant pressure on ecological systems. As climate change continues to be a growing concern, many studies have focused on determining how climate change is affecting the mean climatic conditions of environmental systems [@thornton2014climate]. Consequently, fewer studies have focused on how increasing smaller scale weather variability may be a major driver of ecological disruptions, despite evidence suggesting the influential role of inter annual variation on ecological responses [@thornton2014climate; @maxwell2019conservation]. 
 
-Effects of climatic variation on avian populations
+Climate variability typically results in more frequent fluctuations in abiotic conditions. In turn, these fluctuations increase the unpredictability of the environment and result in the variability of biological responses, including survival rate, fitness and phenology of many organisms and ecosystems. Despite often being an overlooked driver of environmental change, persistent annual variation in climatic conditions could result in direct consequences for species persistence and broader population dynamics [@vazquez2017ecological; @berzins2020relative]. The way in which organisms and ecosystems respond to climatic variation is an important mechanism that could aid in predicting how climate change, and increased variability could influence biodiversity in the future [@cockrem2022individual; @maclean2021vulnerability]. 
 
-Varying weather patterns, associated with climate change, include the increase in temperatures, fluctuation in rainfall regimes, and more frequent storm events. The way in which organisms and ecosystems respond to these climatic variables is an important component to help predict how climate change could affect biodiversity in the future (Cockrem 2022, Trew and Maclean 2021). In many animal species, the response to climatic variation often involves shifts in the timing of reproduction and migration, together with a change in foraging behaviour, dispersal and habitat selection (Cockrem 2022). TBC (add general ecological consequences of climate change, and end off with narrowing it down to birds) 
 
-  Studying the consequences of changing weather patterns on avian population biology has become a major field of study over the years, with BirdLife International identifying extreme weather events as the biggest threat to bird populations (Jenouvier 2013).  Additionally, predicting the way in which bird populations respond to future climatic changes is of high demand to implement the most effective conservation strategies to mitigate any harmful consequences of climate change (Jenouvier 2013). It has been noted that weather conditions can alter metabolic rates, changes in adult bird body size, and influence the conditions during important activities, such as foraging and courtship, thereby affecting success (Crick 2004). Additionally, weather has an impact on the reproductive success and reproductive phenology of avian populations.
-  
-  Weather conditions during the breeding period have direct consequences on chick survival through possible hyperthermic events or starvation due to conditions limiting foraging efficiency for the adult birds. Alongside the short-term effects of changing weather regimes on bird reproduction, the shift in environmental cues resulting from climate change influences the timing of when populations start to breed, and beyond the change in timing, the overall breeding performance is affected (Crick 2004, Møller *et al.* 2010). Despite variation across species, several studies have found that some species exhibit advanced breeding dates in response to weather conditions. Specifically, some species respond to warmer winters by laying eggs earlier than in colder years (Møller *et al.* 2010). Breeding performance is affected by documented changes in clutch sizes, egg size, and reproductive success, typically measured by whether a fledgling is produced, in response to the warming climate (Møller *et al.* 2010). TBC 
-  
-Weather influences avian breeding success
-  
-The reproductive success of many organisms relies on numerous factors, including food availability, environmental conditions, population dynamics, and, importantly, their response to shifting climatic conditions. Consequently, this led to several studies focusing on how climate change is affecting important reproductive parameters, including reproductive success, timing of reproduction and clutch size, with significant effects found across multiple species (Nielsen and Møller 2006). 
+Effects of weather variability 
 
-   Conditions such as severe droughts, flooding, heat or cooling events reduce the survival rate and typically result in failed reproduction. In avian populations specifically, precipitation and temperature are known to affect the reproductive success of adult birds and the overall condition of the nestlings (Griebel and Dawson 2019). A study conducted by Dawson and Bortolotti (2000) on the reproductive success of Kestrels found that in the event of inclement weather had significant effects on reproductive success, as nestlings were smaller in size and body mass, making a successful fledgling less probable compared to nestlings during more favourable conditions. The decreased probability of producing a fledgling could be due to either direct or indirect effects. The direct effects include extensive energy expenditure on thermoregulation during cooling events, causing significant chilling of the chicks, and indirect effects include reduced hunting effort and prey delivery to the nest by parent birds (Dawson and Bortolotti 2000). Additionally, significant impacts of inclement weather are seen over periods as short as 3 days, leading to either partial or complete brood failure and decreased fledging success (Dawson and Bortolotti 2000).
+Most organisms have optimal temperature ranges and preverences the the amount, and timing of precipitation and as weather conditions move away from the optimum, it often leads to consequences for the species distribution, growth, reproductive success and survival. Climate change and variability alters key environmental cues by shifting rainfall and temperature regimes which could cause significant disruptions to the geographical distribution, growth, reproduction, migration, survival and other important processes of many species [@inouye2022climate]. In the event of increasing temperatures, for example, important processes such as the reproductive timing and migration, has noted to be advanced. Although these phenological shifts could help animals adapt to the changing environment, however, this often causes other ecological processes or food availability to fall out of sync, which could reduce the fitness and reproduction of individuals [@inouye2022climate]. 
 
+Alongside many other animal species, avian populations are particularly sensitive to unpredictable variation in climatic conditions as they heavily rely on specific environmental conditions to regulate important life-history process such as reproduction, migration and foraging efficiency. Thus, global climate change and its resulting conditions such as altered temperature and rainfall regimes and more frequent extreme events could both directly and indirectly have an effect on avian populations during any life-history process [@cockrem2022individual]. The study of how weather patterns are effecting avian population biology has become a growing field of study over the years, with many emphasising the effects of weather conditions on the breeding ecology of many bird species [@jenouvrier2013impacts; @sauve2021effects; @osborn2023climate]. Weather conditions are able to affect the metabolic rate of many bird species by typically increasing the energetic cost while trying to adapt to fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events[@crick2004impact]. 
+
+Reproduction is in itself, one of the most energetically demanding life-history staged across many bird species, making it particularly sensitive to climatic variability [@griebel2019predictors; @andreasson2020avian]. The reproductive success of many avian species therefore relies on resource availability, often shaped by climatic conditions [@arct2025impact]. If the climatic conditions limit resource availability, reproduction increases in energetic cost with limited compensation, which poses significant challenges to the successful egg laying, incubation and parental care [@andreasson2020avian]. In this case, the effects of weather are influencing reproductive success indirectly by introducing limitations to the energy balance and ability to access food. In addition to the high energetic cost, conditions that result in reduced resource availability can cause parental birds to change their breeding strategies by choosing not to breed during the season entirely, changing their breeding timing, reducing the parental investment if the cost becomes too high [@sauve2021effects]. The effects of temperature on the reproductive output of avian species has largely been the focus point of how weather affects reproduction, however, the effects of varying rainfall patterns should not go unmentioned. Similarly to the high energetic cost of thermal stress, unpredictable rainfall regimes can directly affect foraging efficiency, food availability and cause prolonged periods of energetic expenditure [@larson2015does]. Thus, possibly leading to reduced investment in parental care and therefore reducing breeding success.
+
+Together with the indirect effects, weather can also influence reproductive output by directly adding physical challenges across the early life stages including egg development to fledgling. These constraints include possible hyperthermic events or starvation due to conditions limiting foraging efficiency for the adult birds. 
+
+Reductions in breeding success, reproductive investments, or missed breeding seasons, driven by weather variability, often lead to population declines, especially in long-lived species where recruitment depends on the repetition of successful breeding seasons [@andreasson2020avian]. 
+
+Across the globe, there are 23 vulture species, most of them within the family Accipitridae and the remaining species within the family Cathartidae, and while some species are range restricted, a large number of these species are found across multiple continents [@ogada2012dropping]. Vultures are considered to play a vital role in maintaining the health of entire ecosystems through their role as specialised terrestrial scavengers and recycling large amounts of organic waste within an ecosystem [@carucci2022ecosystem] Vultures can swiftly locate and consume carrion, and by doing so, they create competition for and control other often problematic scavenger populations such as jackals and rodents [@buechley2016vultures]. Through their quick disposal of carrion, which acts as a reservoir for harmful diseases, including rabies and anthrax, vultures limit the spread of these pathogens into the ecosystem [@ogada2012dropping]. Thus, the absence of vultures, or a large decline in vulture populations, could have significant consequences on the health and, therefore, overall productivity of ecosystems. 
   
-Vultures 
-  
-Across the globe, there are 23 vulture species, most of them within the family Accipitridae and the remaining species within the family Cathartidae, and while some species are range restricted, a large number of these species are found across multiple continents (Ogada *et al.* 2012). Vultures are considered to play a vital role in maintaining the health of entire ecosystems through their role as specialised terrestrial scavengers and recycling large amounts of organic waste within an ecosystem (Carucci *et al.* 2022). Vultures can swiftly locate and consume carrion, and by doing so, they create competition for and control other often problematic scavenger populations such as jackals and rodents (Buechley and Sekercioglu 2016). Through their quick disposal of carrion, which acts as a reservoir for harmful diseases, including rabies and anthrax, vultures limit the spread of these pathogens into the ecosystem (Ogada *et al.* 2012). Thus, the absence of vultures, or a large decline in vulture populations, could have significant consequences on the health and, therefore, overall productivity of ecosystems. 
-  
-  Despite their ecological importance, vultures are considered one of the most threatened avian groups across the globe, with rapid declines in populations documented for most of the species (Overveld *et al.*  2020). Threats to vulture populations include pesticide and lead poisoning, powerline collision,  habitat loss, and disturbances during breeding, such as limited food availability and increased sporadic weather events (Ives *et al.* 2022). Vultures are large-bodied birds,  known for high flight speed, increased foraging ranges and the important ability to store energy reserves in the event of scarce food availability (Ogada *et al.* 2012). In addition, vultures are also known for their slow life history strategy, focusing on long-term survival, growth, parental investment and include delayed maturity and low reproductive rates (Perrig *et al.*  2019). These life-history traits make vultures especially vulnerable to reduced reproductive success, which has long-term consequences for future population stability. 
+Despite their ecological importance, vultures are considered one of the most threatened avian groups across the globe, with rapid declines in populations documented for most of the species [van2020integrating]. Threats to vulture populations include pesticide and lead poisoning, powerline collision,  habitat loss, and disturbances during breeding, such as limited food availability and increased sporadic weather events [@ives2022global]. Vultures are large-bodied birds,  known for high flight speed, increased foraging ranges and the important ability to store energy reserves in the event of scarce food availability [@ogada2012dropping]. In addition, vultures are also known for their slow life history strategy, focusing on long-term survival, growth, parental investment and include delayed maturity and low reproductive rates [@perrig2019monitoring]. These life-history traits make vultures especially vulnerable to reduced reproductive success, which has long-term consequences for future population stability. 
 
 African White-Backed Vultures 
 
-The African white backed vulture (*Gyps africanus*) is the most widespread and common vulture species across Africa, and as tree dwellers, these vultures are typically found in wooded savannah and bushfield areas (Mundy *et al.* 1992). White-backed vultures are classified as critically endangered by the IUCN Redlist because of the rapidly declining population (IUCN 2021). Currently, there are approximately 4000 breeding pairs of white-backed vultures, and they typically nest at the top of small to medium-sized scattered woody trees such as camelthorn in southern Africa (Mundy *et al.* 1992). White-backed vultures are monogamous, and during breeding season, one egg is laid typically between April – July. Thereafter, the egg is expected to hatch after roughly 60 days, which is followed by parental care from both parents for about 6 months after the chick has fledged. Depending on the region, the breeding success of white-backed vultures is highly variable, ranging from 40-90%. 
+The African white backed vulture (*Gyps africanus*) is the most widespread and common vulture species across Africa, and as tree dwellers, these vultures are typically found in wooded savannah and bushfield areas [@mundy1992vultures]. White-backed vultures are classified as critically endangered by the IUCN Redlist because of the rapidly declining population (IUCN 2021). Currently, there are approximately 4000 breeding pairs of white-backed vultures, and they typically nest at the top of small to medium-sized scattered woody trees such as camelthorn in southern Africa [@mundy1992vultures]. White-backed vultures are monogamous, and during breeding season, one egg is laid typically between April – July. Thereafter, the egg is expected to hatch after roughly 60 days, which is followed by parental care from both parents for about 6 months after the chick has fledged. Depending on the region, the breeding success of white-backed vultures is highly variable, ranging from 40-90%. 
 
-  Conway *et al.* (2015) predicted that Southern Africa will experience significant shifts in climatic conditions, including increased temperatures and changing rainfall patterns, causing major shifts in climatically suitable habitats for numerous species. In the context of vultures, it has been proposed that climate change could have contributed to the historical loss of Cape vulture colonies, resulting from increased temperatures and shifts in rainfall patterns documented in the region (Phipps *et al.* 2017). Cape vultures nest at high elevations, typically on the edges of cliffs, making them and their nests sensitive to weather extremes such as prolonged periods of sun exposure that cause heat stress, decreasing the overall breeding success of the colonies (Phipps *et al.* 2017). 
+  Conway et al. (2015) predicted that Southern Africa will experience significant shifts in climatic conditions, including increased temperatures and changing rainfall patterns, causing major shifts in climatically suitable habitats for numerous species. In the context of vultures, it has been proposed that climate change could have contributed to the historical loss of Cape vulture colonies, resulting from increased temperatures and shifts in rainfall patterns documented in the region [@phipps2013foraging]. Cape vultures nest at high elevations, typically on the edges of cliffs, making them and their nests sensitive to weather extremes such as prolonged periods of sun exposure that cause heat stress, decreasing the overall breeding success of the colonies [@phipps2013foraging]. 
 
-To be added somewhere 
-Reductions in breeding success, reproductive investments, or missed breeding seasons, driven by weather fluctuations, often lead to population declines, especially in long-lived species where recruitment depends on the repetition of successful breeding seasons (Andreasson *et al.* 2020)
-Similar to other large-bodied birds, vultures rely on atmospheric thermals for efficient soaring to locate food, which could become constrained when there is an increase in rainfall that suppresses the formation of these thermals (Virani *et al.* 2012). Constraints like these could cause vultures to reduce their breeding activity and therefore alter their population dynamics because food availability is one of the most important factors that cause variation in the reproductive success of avian species, as they often time their breeding to correspond with high food availability (Harriman *et al.* 2017). These effects are typically seen in years that are known for prolonged rainfall events, and the lasting effects of reduced foraging efficiency are reflected throughout the breeding season.  
-Warmer years are noted to have earlier egg laying dates as most bird species aim to correspond laying dates with periods of high food availability (Andreasson *et al.* 2020). 
+Similar to other large-bodied birds, vultures rely on atmospheric thermals for efficient soaring to locate food, which could become constrained when there is an increase in rainfall that suppresses the formation of these thermals [@virani2012seasonal]. Constraints like these could cause vultures to reduce their breeding activity and therefore alter their population dynamics because food availability is one of the most important factors that cause variation in the reproductive success of avian species, as they often time their breeding to correspond with high food availability [@harriman2017seasonal]. These effects are typically seen in years that are known for prolonged rainfall events, and the lasting effects of reduced foraging efficiency are reflected throughout the breeding season.  
 
-
-
-
-## Aims and Objectives
+Aims and Objectives
 
 By analysing 31 years of breeding  data alongside local weather data, this project aims to determine if, and how, weather affects the reproductive timing and success of African White Backed Vultures. To address this, three main objectives were identified:
 
@@ -112,6 +108,14 @@ We hypothesise that the breeding success of white-backed vultures will decrease 
 3.	To assess whether annual weather conditions in the pre-laying period are associated with the breeding timing of white-backed vultures. 
 
 We hypothesise that the breeding timing, measured in laying dates, is influenced by the weather conditions in the 60 days prior to laying periods, which reflects white-backed vulture sensitivity to environmental cues before breeding. 
+
+TO ADD
+
+- Direct effects of weather on chick mortality, egg breakage, nest damage etc
+
+- Shifts in breeding timing 
+
+- Add sentence or two on importance of study ( no long term for white backs etc)
 
 
 ### Methods
@@ -146,48 +150,70 @@ The objectives were analysed separately by using specific statistical models dee
 
 A model selection approach was used, which involved fitting the set of priori models and then calculating the sample size-adjusted Akaike’s Information Criterion (AICc) for each one. Models that have smaller AICc values were considered as stronger support models.  The candidate models were then ranked by the difference in their AICc values (∆AICc) relative to the best supported model for each objective to identify which weather predictor, or combinations of predictors, better explained variation in each breeding response.
 
-Because of the continuous nature of both breeding timing and the number of active nests, these two objectives were analysed using linear regression models. the number of active nests, measured as the number of active nests in each breeding season, was log-transformed before conducting the analyses to adhere to model assumptions, whereas breeding timing was deemed normally distributed before fitting the model. The breeding success objective was analysed using binomial models using a logit link function, as breeding success is measured as the proportion of successful nests relative to the total number of nests each breeding season. By using the proportion of successful nests, it accounted for the variation in sample sizes across the multiple breeding seasons.
+Because of the continuous nature of both breeding timing and the number of active nests, these two objectives were analysed using linear regression models. The number of active nests, measured as the number of active nests in each breeding season, was log-transformed before conducting the analyses to adhere to model assumptions, whereas breeding timing was deemed normally distributed before fitting the model. The breeding success objective was analysed using binomial models using a logit link function, as breeding success is measured as the proportion of successful nests relative to the total number of nests each breeding season. By using the proportion of successful nests, it accounted for the variation in sample sizes across the multiple breeding seasons.
 
-Due to the temporal structure of the data, year was added to the analyses to account for the unmeasured annual variation that is not directly attributed to weather conditions. For the number of active nests, models were fitted with and without year as a covariate to compare models and determine the effects of weather conditions with and without accounting for the temporal trend. In the breeding success models, year was added to the models as a random effect to account for the unmeasured annual variation in the baseline breeding success, while the fixed effects of weather were modelled. The main focus of the breeding timing was to identify the effects of weather during the pre-laying window and which variables acted as a cue to initiate breeding, therefore year was not included in these models as a predictor variable. To assess the effects of weather on the pre-laying period, weather variables were summarised for the 30 and 60 days before the laying date and fitted to the models. The laying date was only available for the successful nests, as the unsuccessful nests lacked the information needed to estimate laying date
+Due to the temporal structure of the data, year was added to the analyses to account for the unmeasured annual variation that is not directly attributed to weather conditions. For the number of active nests, models were fitted with and without year as a covariate to compare models and determine the effects of weather conditions with and without accounting for the temporal trend. In the breeding success models, year was added to the models as a random effect to account for the unmeasured annual variation in the baseline breeding success, while the fixed effects of weather were modelled. The main focus of the breeding timing was to identify the effects of weather during the pre-laying window and which variables acted as a cue to initiate breeding, therefore year was not included in these models as a predictor variable. To assess the effects of weather on the pre-laying period, weather variables were summarised for the 30 and 60 days before the laying date and fitted to the models. 
 
-DAGS (TBC)
+The laying date was only available for the successful nests, as the unsuccessful nests lacked the information needed to estimate laying date.To see whether the missing data created bias in the model, a simulation was conducted on the causal structure where weather influenced both laying date and breeding success, and laying dates were only recorded for successful nests. After fitting the model to the simulation, the data estimated effects of weather matched the true effect. Therefore, despite the missing date, using only the laying date of successful nests provided a reasonable estimate for the effects of weather variables on the breeding timing. 
+
+A set of directed acyclic graphs (DAGs) was constructed to support causal inference by providing clarity on the assumed relationships between weather variables, time (year), unobserved ecological processed and the different breeding responses, which ultimately were used to help interpret the model decisions (McElreath 2018). Each DAG represents a plausible causal structure of how different variables could influence the breeding response. 
 
 *Number of Active Nests* 
 
-![Number of Active Nests Scenario A](figures/trend_confounded_dag.pdf){#fig:trend-confounded width=65%}
-
-In this scenario, the temporal trend (Y) directly influences both weather (W) and breeding effort (B). Because Y affects both variables, it acts as a confounder of the weather–breeding relationship. To estimate the direct effect of weather on breeding effort, it is therefore necessary to control for Y in the analysis.
-
-![Number of Active Nests – Scenario B](figures/trend_W_B_dag.pdf){#fig:trend-W-B width=65%}
-
-In this scenario, the temporal trend (Y) influences the weather variable (W), which in turn affects breeding (B). There is no direct effect of the trend on breeding, meaning that Y is not a confounder of the weather–breeding relationship. As a result, controlling for Y is unnecessary and could obscure the effect of interest, since the influence of Y on breeding operates entirely through weather.
+![](figures/trend_confounded_dag.pdf){#fig:trend-confounded-a width=65% fig-align="center"}
 
 
-![Number of Active Nests Scenario C](figures/trend_mediator_dag.pdf){#fig:trend-mediator width=70%}
+Figure 1a: Directed acyclic graph showing a confounded causal structure between the number of active nests (N), year (Y), and weather (W).
 
-In this scenario, the temporal trend (Y) acts as a mediator of the weather effect on breeding effort, with weather influencing Y and Y in turn affecting breeding. Because Y lies on the causal pathway between weather and breeding, controlling for Y would block part of the effect of interest. To estimate the total effect of weather on breeding effort, Y should therefore not be included as a control variable.
+In Figure 1a, the scenario represented how the temporal trend (Y) directly influences both weather (W) and the number of active nests (N). Because Y affected both variables, it acts as the confounder of the weather-breeding relationship. Therefore, to estimate the direct effect of weather on the number of active nests, it was necessary to control for Y in the analysis. 
 
+ 
+![](figures/trend_W_B_dag.pdf){#fig:trend-W-B width=65% fig-align="center"}
+
+Figure 1b: Directed acyclic graph showing a causal structure the numver of active nests (N), year (Y) and weather (W).
+
+In Figure 1b, the scenario represented how the temporal structure (Y) influenced the weather variable of interest (W), which in turn, affected the number of active nests (N). Time trend did not directly have an effect on the number of active nests, meaning Y is not a confounder of the weather-breeding relationship. Controlling for Y was therefore not needed as it acted through weather. 
+
+
+![](figures/trend_mediator_dag.pdf){#fig:trend-mediator width=65% fig-align="center"}
+
+Figure 1c:  Directed acyclic graph showing a mediated causal structure between the number of active nests (N), year (Y), and weather (W)
+
+In Figure 1c, the scenario represented how the temporal structure (Y) acted as a mediator of the weather effects on the number of active nests, where weather influenced year and and in turn, year influenced the number of active nests. Because year is in between weather and the number of active nests in the causal pathway, controlling for year would have blocked a part of the effects of interest. Therefore, to estimate the total effects of weather on the number of active nests, year should'nt be included as a control. 
 
 
 *Breeding timimg of succesfull nests*
 
-![Timimg scenario A.](figures/timing_simple_dag.pdf){#fig:timing-dag width=65%}
+![](figures/timing_simple_dag.pdf){#fig:timing-dag width=65% fig-align="center"}
 
-In this scenario, weather (W) does not affect breeding success (S), meaning that success is effectively random with respect to the weather variable used to explain breeding timing. As a result, success does not act as a confounder, and analysing observed timing (T*) yields the correct inference about the effect of weather on timing. This situation is plausible if breeding success is driven mainly by conditions later in the breeding season, rather than by the pre-breeding weather cues that influence the initiation of breeding.
+Figure 2a: Directed acyclic graph showing a mediated causal structure between the breeding timing of successful nests, weather (W), success (S) and observed timing (T*) under scenario A. 
 
-![Timimg scenario B.](figures/timing_B_dag.pdf){#fig:timing-B-dag width=65%}
-
-In scenario (b), the same weather variable (W) influences both breeding timing (T) and breeding success (S), but timing itself does not causally affect success. In this case, success is associated with weather, and observed timing (T^) is therefore indirectly linked to weather through both pathways. However, because success is not a mediator of the weather–timing relationship, analysing T* can still recover the underlying effect of weather on timing, particularly when effects are approximately linear. The simulation results suggest that under this structure, any bias introduced by observing timing only for successful nests is small and unlikely to alter biological interpretation.
+In Figure 2a, weather did not affect the breeding success of successful nests, meaning success is random with respect to the weather variable used to explain breeding timing. Therefore, success does not act as a confounder in this scenario and analysing the observed timing (T*) yields the correct inference about the effect of weather on timing. 
 
 
-![Timing scenario C.](figures/timing_C_dag.pdf){#fig:timing-C-dag width=65%}
+![](figures/timing_B_dag.pdf){#fig:timing-B-dag width=65% fig-align="center"}
 
-In scenario (c), breeding timing directly influences breeding success, in addition to weather affecting timing. Under this structure, it is no longer possible to disentangle whether an apparent effect of weather on observed timing reflects a direct causal effect on breeding initiation or an indirect effect mediated through success. In this case, inference is limited to the timing of successful nests only. Although this scenario may seem plausible at first, it is less clear at the interannual scale considered here, as selection on early or late breeding within a season does not necessarily imply that years with earlier or later average breeding are associated with higher or lower overall breeding success.
+Figure 2b: Directed acyclic graph showing a causal structure between the breeding timing of successful nests, weather (W), success (S) and observed timing (T*) under Scenario B. 
+
+In Figure 2b, the graph represents a scenario where weather (W) influenced both breeding timing (T) and breeding success (S) but timing does not have a direct causal effect on success. therefore, success is associated with weather (W) and the observed timing (T*) is indirectly linked to weather by both pathways. Because success is not a mediator of the relationship between weather and timimg, analysing the observed timing could reveal the underlying effects of weather on timing. This figure inferred the simulation previously explained which suggested under this specific struture, there was no bias in only accounting for successful nests. 
 
 
-![Timimg scenario D.](figures/timing_D_dag.pdf){#fig:timing-D-dag width=65%}
+![](figures/timing_C_dag.pdf){#fig:timing-C-dag width=65% fig-align="center"}
 
-In scenario (d), an unobserved variable (X), representing colony state or population size, influences both breeding timing (T) and breeding success (S). In this case, population-level processes such as density dependence, food competition, or overall adult condition could shift both when breeding is initiated and the likelihood of breeding success. Because X affects both timing and success, it acts as a confounder, and the effect of weather on observed timing (T*) cannot be cleanly isolated without accounting for this shared influence. If a suitable proxy for colony size or population state were available, including it in the analysis could help reduce this source of bias; otherwise, inference about causal pathways remains uncertain.
+Figure 2c: Directed acyclic graph showing a causal structure between the breeding timing of successful nests, weather (W), success (S) and observed timing (T*) under Scenario C. 
+
+
+In Figure 2c, breeding timing directly influenced breeding success, in addition to weather affecting timing. In this scenario, it is not clear if the effects of weather (W) on the observed timing (T*) is a direct causal effect on breeding timing or mediated through success. This scenario becomes less clear in an between-year scale because breeding earlier or later within a season is not necessarily linked to higher breeding success. 
+
+
+
+
+![](figures/timing_D_dag.pdf){#fig:timing-D-dag width=65% fig-align="center"}
+
+Figure 2d:  Directed acyclic graph showing a causal structure between the breeding timing of successful nests, weather (W), success (S) and observed timing (T*) and population size (X) in Scenario D.
+
+In Figure 2d, an unobserved variable (X), population size, influences both breeding timing of successful nests (T) and the breeding success (S). Because population size effects both timing of successful nests and breeding success, it acted as a confounder and the way in which weather effects the observed timing (T*) cannot be identified without accounting for the shared influence, 
+
 
 ### Results 
 
@@ -478,7 +504,7 @@ The interactive model of mean temperature and rainy days received much less supp
 
 ### Discussion 
 
-
+### References 
 
 
  
