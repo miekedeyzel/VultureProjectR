@@ -1,27 +1,39 @@
 ---
 format:
   pdf:
-    pdf-engine: xelatex
-    fontsize: 12pt
     geometry:
-      - left=2.3cm
-      - right=2.3cm
-      - top=2.3cm
-      - bottom=2.3cm
+      - left=2.4cm
+      - right=2.4cm
+      - top=2.4cm
+      - bottom=2.4cm
+    toc: false
+    toc-depth: 3
+    number-sections: true
     include-in-header:
       text: |
         \usepackage{setspace}
         \setstretch{1.5}
 
+        % Ensure headings use Times New Roman
+        \usepackage{titlesec}
+        \titleformat{\section}
+          {\normalfont\bfseries\fontsize{14}{16}\selectfont}
+          {\thesection}{1em}{}
+        \titleformat{\subsection}
+          {\normalfont\bfseries\fontsize{12}{14}\selectfont}
+          {\thesubsection}{1em}{}
+        \titleformat{\subsubsection}
+          {\normalfont\bfseries\fontsize{12}{14}\selectfont}
+          {\thesubsubsection}{1em}{}
+
+        % Kill hyperlink colours
+        \AtBeginDocument{\hypersetup{hidelinks}}
+
 mainfont: "Times New Roman"
 
 bibliography: References.bib
 csl: cse-name-year.csl
-
-execute:
-  eval: false
 ---
-
 
 <style>
 p {
@@ -29,7 +41,10 @@ p {
 }
 </style> 
 
-```{=latex} 
+```{=latex}
+\begin{titlepage}
+\thispagestyle{empty}
+
 \begin{center}
 {\Large\bfseries
 The Effects of Climate Change on the Breeding Success and Timing of African White-backed Vultures
@@ -48,19 +63,26 @@ University of Cape Town
 
 Rondebosch 7701
 
-South Africa 
-
+South Africa
 }
 \end{center}
 
-\newpage
+\end{titlepage}
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
 
 ```
 
-### Abstract 
+```{=latex}
+\tableofcontents
+\newpage
+```
+
+# Abstract 
 
 
-### Introduction
+# Introduction
  
 
 Climate change is widely projected to alter ecological systems by increasing the variability in weather patterns and the frequency of extreme events across the globe [@abbass2022review]. Events such as severe droughts, heat stress and flooding are predicted to become more frequent, leading to significant pressure on ecological systems. As climate change continues to be a growing concern, many studies have focused on determining how climate change is affecting the mean climatic conditions of environmental systems [@thornton2014climate]. Consequently, fewer studies have focused on how increasing smaller scale weather variability may be a major driver of ecological disruptions, despite evidence suggesting the influential role of inter annual variation on ecological responses [@thornton2014climate; @maxwell2019conservation]. 
@@ -70,9 +92,9 @@ Climate variability typically results in more frequent fluctuations in abiotic c
 
 Most organisms have optimal temperature ranges and preverences the the amount, and timing of precipitation and as weather conditions move away from the optimum, it often leads to consequences for the species distribution, growth, reproductive success and survival. Climate change and variability alters key environmental cues by shifting rainfall and temperature regimes which could cause significant disruptions to the geographical distribution, growth, reproduction, migration, survival and other important processes of many species [@inouye2022climate]. In the event of increasing temperatures, for example, important processes such as the reproductive timing and migration, has noted to be advanced. Although these phenological shifts could help animals adapt to the changing environment, however, this often causes other ecological processes or food availability to fall out of sync, which could reduce the fitness and reproduction of individuals [@inouye2022climate]. 
 
-Alongside many other animal species, avian populations are particularly sensitive to unpredictable variation in climatic conditions as they heavily rely on specific environmental conditions to regulate important life-history process such as reproduction, migration and foraging efficiency. Thus, global climate change and its resulting conditions such as altered temperature and rainfall regimes and more frequent extreme events could both directly and indirectly have an effect on avian populations during any life-history process [@cockrem2022individual]. The study of how weather patterns are effecting avian population biology has become a growing field of study over the years, with many emphasising the effects of weather conditions on the breeding ecology of many bird species [@jenouvrier2013impacts; @sauve2021effects; @osborn2023climate]. Weather conditions are able to affect the metabolic rate of many bird species by typically increasing the energetic cost while trying to adapt to fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events[@crick2004impact]. 
+Alongside many other animal species, avian populations are particularly sensitive to unpredictable variation in climatic conditions as they heavily rely on specific environmental conditions to regulate important life-history process such as reproduction, migration and foraging efficiency. Thus, global climate change and its resulting conditions such as altered temperature and rainfall regimes and more frequent extreme events could both directly and indirectly have an effect on avian populations during any life-history process [@cockrem2022individual]. The study of how weather patterns are effecting avian population biology has become a growing field of study over the years, with particular emphasis on the effects of weather conditions on the breeding ecology of many bird species [@jenouvrier2013impacts; @sauve2021effects; @osborn2023climate]. Weather conditions are able to affect the metabolic rate of many bird species by typically increasing the energetic cost while trying to adapt to fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events[@crick2004impact]. 
 
-Reproduction is in itself, one of the most energetically demanding life-history staged across many bird species, making it particularly sensitive to climatic variability [@griebel2019predictors; @andreasson2020avian]. The reproductive success of many avian species therefore relies on resource availability, often shaped by climatic conditions [@arct2025impact]. If the climatic conditions limit resource availability, reproduction increases in energetic cost with limited compensation, which poses significant challenges to the successful egg laying, incubation and parental care [@andreasson2020avian]. In this case, the effects of weather are influencing reproductive success indirectly by introducing limitations to the energy balance and ability to access food. In addition to the high energetic cost, conditions that result in reduced resource availability can cause parental birds to change their breeding strategies by choosing not to breed during the season entirely, changing their breeding timing, reducing the parental investment if the cost becomes too high [@sauve2021effects]. The effects of temperature on the reproductive output of avian species has largely been the focus point of how weather affects reproduction, however, the effects of varying rainfall patterns should not go unmentioned. Similarly to the high energetic cost of thermal stress, unpredictable rainfall regimes can directly affect foraging efficiency, food availability and cause prolonged periods of energetic expenditure [@larson2015does]. Thus, possibly leading to reduced investment in parental care and therefore reducing breeding success.
+Reproduction is in itself, is one of the most energetically demanding life-history staged across many bird species, making it particularly sensitive to climatic variability [@griebel2019predictors; @andreasson2020avian]. The reproductive success of many avian species therefore relies on resource availability, often shaped by climatic conditions [@arct2025impact]. If the climatic conditions limit resource availability, reproduction increases in energetic cost with limited compensation, which poses significant challenges to the successful egg laying, incubation and parental care [@andreasson2020avian]. In this case, the effects of weather are influencing reproductive success indirectly by introducing limitations to the energy balance and ability to access food. In addition to the high energetic cost, conditions that result in reduced resource availability can cause parental birds to change their breeding strategies by choosing not to breed during the season entirely, changing their breeding timing, reducing the parental investment if the cost becomes too high [@sauve2021effects]. The effects of temperature on the reproductive output of avian species has largely been the focus point of how weather affects reproduction, however, the effects of varying rainfall patterns should not go unmentioned. Similarly to the high energetic cost of thermal stress, unpredictable rainfall regimes can directly affect foraging efficiency, food availability and cause prolonged periods of energetic expenditure [@larson2015does]. Thus, possibly leading to reduced investment in parental care and therefore reducing breeding success.
 
 Together with the indirect effects, weather can also influence reproductive output by directly adding physical challenges across the early life stages including egg development to fledgling. These constraints include possible hypothermic and hyperthermic events for chicks as during this early life-stage, as their thermoregulatory ability is underdeveloped [@kosicki2012effect]. Additionally, in more servere instances, prolonged periods of rainfall could cause nest flooding, often causing nest collapse or the drowning of chicks [@ortega2022seasonal]  Thus, conditions deviating from the optimum for chick survival, could significantly reduce the breeding success of avian populations. A study conducted on the relationship between reproductive success weather conditions of Kestrels found that in the event of inclement weather, there were significant impacts of the reproductive success. During these unfavorable conditions, the nestlings were notably smaller in body mass which decreased the probability of surviving to a fledgling compared to nestlings during more stable conditions [@dawson2000reproductive]. 
 
@@ -80,7 +102,7 @@ The decision of when to initiate breeding is a key component to the life-history
 
 When a population experiences low breeding investment, decreased breeding success or missing of entire breeding seasons, the population could face a drastic decline, which is particularly threatening to long-lived species. For these species, the long-term viability of the population relies on the repetition of successful breeding seasons [@andreasson2020avian]. This is especially the case for many long-lived species such as vultures, characterised by their delayed maturity and low reproductive rates.
 
-Across the globe, there are 23 vulture species, most of them within the family Accipitridae and the remaining species within the family Cathartidae, and while some species are range restricted, a large number of these species are found across multiple continents [@ogada2012dropping]. Vultures are considered to play a vital role in maintaining the health of entire ecosystems through their role as specialised terrestrial scavengers and recycling large amounts of organic waste within an ecosystem [@carucci2022ecosystem] Vultures can swiftly locate and consume carrion, and by doing so, they create competition for and control other often problematic scavenger populations such as jackals and rodents [@buechley2016vultures]. Through their quick disposal of carrion, which acts as a reservoir for harmful diseases, including rabies and anthrax, vultures limit the spread of these pathogens into the ecosystem [@ogada2012dropping]. Thus, the absence of vultures, or a large decline in vulture populations, could have significant consequences on the health and, therefore, overall productivity of ecosystems. 
+Across the globe, there are 23 vulture species, and while some species are range restricted, a large number of these species are found across multiple continents [@ogada2012dropping]. Vultures are considered to play a vital role in maintaining the health of entire ecosystems through their role as specialised terrestrial scavengers and recycling large amounts of organic waste within an ecosystem [@carucci2022ecosystem] Vultures can swiftly locate and consume carrion, and by doing so, they create competition for and control other often problematic scavenger populations such as jackals and rodents [@buechley2016vultures]. Through their quick disposal of carrion, which acts as a reservoir for harmful diseases, including rabies and anthrax, vultures limit the spread of these pathogens into the ecosystem [@ogada2012dropping]. Thus, the absence of vultures, or a large decline in vulture populations, could have significant consequences on the health and, therefore, overall productivity of ecosystems. 
   
 Despite their ecological importance, vultures are considered one of the most threatened avian groups across the globe, with rapid declines in populations documented for most of the species [van2020integrating]. Threats to vulture populations include pesticide and lead poisoning, powerline collision,  habitat loss, and disturbances during breeding, such as limited food availability and increased sporadic weather events [@ives2022global]. Vultures are large-bodied birds,  known for high flight speed, increased foraging ranges and the important ability to store energy reserves in the event of scarce food availability [@ogada2012dropping]. In addition, vultures are also known for their slow life history strategy, focusing on long-term survival, growth, parental investment and include delayed maturity and low reproductive rates [@perrig2019monitoring]. These life-history traits make vultures especially vulnerable to reduced reproductive success, which has long-term consequences for future population stability. 
 
@@ -89,6 +111,8 @@ The African white backed vulture (*Gyps africanus*) is the most widespread and c
 Conway et al. (2015) predicted that Southern Africa will experience significant shifts in climatic conditions, including increased temperatures and changing rainfall patterns, causing major shifts in climatically suitable habitats for numerous species. In the context of vultures, it has been proposed that climate change could have contributed to the historical loss of Cape vulture colonies, resulting from increased temperatures and shifts in rainfall patterns documented in the region [@phipps2013foraging]. Cape vultures nest at high elevations, typically on the edges of cliffs, making them and their nests sensitive to weather extremes such as prolonged periods of sun exposure that cause heat stress, decreasing the overall breeding success of the colonies [@phipps2013foraging]. 
 
 Similar to other large-bodied birds, vultures rely on atmospheric thermals for efficient soaring to locate food, which could become constrained when there is an increase in rainfall that suppresses the formation of these thermals [@virani2012seasonal]. Constraints like these could cause vultures to reduce their breeding activity and therefore alter their population dynamics because food availability is one of the most important factors that cause variation in the reproductive success of avian species, as they often time their breeding to correspond with high food availability [@harriman2017seasonal]. These effects are typically seen in years that are known for prolonged rainfall events, and the lasting effects of reduced foraging efficiency are reflected throughout the breeding season.  
+
+## Aims and Objectives 
 
 This study aims to assess how inter annual weather variation influenced the breeding cycle of African White-backed vultures by using 31 years of breeding data from Dronfield Nature Reserve in Kimberley, South Africa. Three components of the breeding cycle will be assessed for a comprehensive overview what influence weather has, namely, the number of active nests, proportion of successful nests and the breeding timing of successful nests. The study will adress three objectives:
 
@@ -108,14 +132,16 @@ Currently, very little is known about how climatic variability is effecting bree
 
 
 
-### Methods
+# Methods
 
-### Study Area 
+## Study Area 
 
 The breeding data used in this study were collected at Dronfield Nature Reserve, approximately 5km north of Kimberley in the Northern Cape, South Africa. Dronfield is part of a greater portion of protected and farming landscape, allowing vultures to regularly move between breeding and foraging areas. Dronfield is located within a semi-arid region with a dominant vegetation type, the Kimberley Thornveld and has a mean annual rainfall of approximately 400 mm. The Thornveld is known for its open savanna structure with camel thorn trees scattered across the landscape with tall grasses in between. In addition, Dronfield includes numerous areas of semi-open mixed woodland, which, in combination with the savanna structure, supports a long-term breeding population of White-backed Vultures (Gyps africanus). 
 The nests of more than 100 White-backed vulture breeding pairs are mainly found within medium to large camel thorn trees found across the reserve. This breeding colony is one of six in the greater Kimberley area, with few relatively few threats while under Dronfield management. However, the threat of powerline electrocution is persistent as multiple powerlines run across the reserve. Additionally, when these vultures leave the reserve, they are faced with numerous surrounding threats, such as food shortage due to land use change, poisoning, such as lead poisoning associated with hunting activities and drowning in surrounding farmland areas while foraging. The consistent distribution of suitable nesting habitats at Dronfield resulted in a consistent spatial distribution of nest sites across the years, allowing for repeated long-term monitoring of the individual nest sites. 
 
-### Data collection 
+## Data collection 
+
+### Field data collection 
 
 The long-term monitoring program of African White-backed vultures commenced in 1993, with few methodical adjustments made to date. The primary goal of the monitoring program has been to document the population dynamics and breeding activity of the African White-backed vulture population in the reserve, with a specific focus on breeding success and effort across the years. These surveys were conducted by experienced observers, each ensuring standarised protocols for nest identification, assessment, and recording of breeding data using the same data sheets. 
 
@@ -128,13 +154,15 @@ The post-breeding survey was conducted in October and aimed to assess the breedi
 During both of these surveys, a standardised nest status code was assigned to each nest (Appendix Table A1). A list of 20 different codes was constructed to describe what is seen at each nest sighting, ranging from breeding outcome, nest condition and other notable sightings at each nest that could describe the breeding activity at each nest. This code system was kept consistent throughout the monitoring program. The main aim of the monitoring program remained the same over time, however, the survey design has been adjusted to ensure the most effective way to capture breeding activity in the reserve. The initial surveying years, 1993 to 2000, consisted of a single survey in October to document the number of successful nests during that breeding season by the presence of chicks. From 2001 onwards, the second survey, in the early-breeding period, was introduced to improve and ensure more robust data collection regarding breeding activity at Dronfield. 
 	
 
-### Data Analyses 
+## Data Analyses 
 
 We analysed the relationship between annual weather variation and the breeding performance of African White Backed Vultures using the long-term data collected at Dronfield. Moreover, we examined how the weather affects three main aspects of the reproductive cycle, including the number of active nests,  breeding success (proportion of nests that produced a fledgling) and breeding timing (assessed using estimated laying dates). All statistical analyses were conducted in R statistical computing environment (R version 4.4.1). 
 
-Weather data
+### Weather data
 
 The weather variables used in this study were derived from a package in the program R 4.4.1, rnoaa, by specifying the weather station ID most suitable for our data (Posit Team 2025). The weather variables were derived from Kimberley meteorological station, 10 km from our study area, Dronfield. The variables used in the analyses were selected to represent a broad understanding of the climatic variation experienced at Dronfield and were biologically motivated. To broadly classify the variables, rainfall, temperature and extreme events were assessed for their impacts on the three outlined focus areas of the breeding cycle. Using the daily weather summaries derived from the weather station, annual and seasonal summaries were used to generate the weather predictors used in the analysis.
+
+### Statistical analyses
 
 The objectives were analysed separately by using specific statistical models deemed fit for the structure of the response variable. This was done by adopting a candidate model set approach for each objective, where the different models represented a biologically motivated hypothesis of how the selected predictor variables might affect each stage of the breeding cycle. Therefore, each model was representative of an explanation for the observed variation in the number of active nests, breeding success and timing.  
 
@@ -145,6 +173,8 @@ Because of the continuous nature of both breeding timing and the number of activ
 Due to the temporal structure of the data, year was added to the analyses to account for the unmeasured annual variation that is not directly attributed to weather conditions. For the number of active nests, models were fitted with and without year as a covariate to compare models and determine the effects of weather conditions with and without accounting for the temporal trend. In the breeding success models, year was added to the models as a random effect to account for the unmeasured annual variation in the baseline breeding success, while the fixed effects of weather were modelled. The main focus of the breeding timing was to identify the effects of weather during the pre-laying window and which variables acted as a cue to initiate breeding, therefore year was not included in these models as a predictor variable. To assess the effects of weather on the pre-laying period, weather variables were summarised for the 30 and 60 days before the laying date and fitted to the models. 
 
 The laying date was only available for the successful nests, as the unsuccessful nests lacked the information needed to estimate laying date.To see whether the missing data created bias in the model, a simulation was conducted on the causal structure where weather influenced both laying date and breeding success, and laying dates were only recorded for successful nests. After fitting the model to the simulation, the data estimated effects of weather matched the true effect. Therefore, despite the missing date, using only the laying date of successful nests provided a reasonable estimate for the effects of weather variables on the breeding timing. 
+
+### Directed acyclic graphs (DAGs)
 
 A set of directed acyclic graphs (DAGs) was constructed to support causal inference by providing clarity on the assumed relationships between weather variables, time (year), unobserved ecological processed and the different breeding responses, which ultimately were used to help interpret the model decisions (McElreath 2018). Each DAG represents a plausible causal structure of how different variables could influence the breeding response. 
 
@@ -167,7 +197,7 @@ In Figure 1b, the scenario represented how the temporal structure (Y) influenced
 
 ![](figures/trend_mediator_dag.pdf){#fig:trend-mediator width=65% fig-align="center"}
 
-Figure 1c:  Directed acyclic graph showing a mediated causal structure between the number of active nests (N), year (Y), and weather (W)
+Figure 1c:  Directed acyclic graph showing a mediated causal structure between the number of active nests (N), year (Y), and weather (W). 
 
 In Figure 1c, the scenario represented how the temporal structure (Y) acted as a mediator of the weather effects on the number of active nests, where weather influenced year and and in turn, year influenced the number of active nests. Because year is in between weather and the number of active nests in the causal pathway, controlling for year would have blocked a part of the effects of interest. Therefore, to estimate the total effects of weather on the number of active nests, year should'nt be included as a control. 
 
@@ -205,11 +235,11 @@ Figure 2d:  Directed acyclic graph showing a causal structure between the breedi
 In Figure 2d, an unobserved variable (X), population size, influences both breeding timing of successful nests (T) and the breeding success (S). Because population size effects both timing of successful nests and breeding success, it acted as a confounder and the way in which weather effects the observed timing (T*) cannot be identified without accounting for the shared influence, 
 
 
-### Results 
+# Results 
 
 In this chapter, the results of the analyses determining the effects of weather on the number of active nests, success, and outcome of White-backed vultures are presented. The results are structured by objectives, with each based on model selection using an information-theoretic framework. Supporting information and analyses are provided in the appendix. 
 
-*Objective 1: Number of Active Nests*
+## Objective 1: Number of Active Nests
 
 The number of active nests shows clear fluctuations across the years, however, the long-term increase in number of active nests remains evident (Figure 8). 
 
@@ -218,31 +248,31 @@ Figure 8: The number of active nests recorded for each breeding season across th
 
 The number of active nests has increased from fewer than 50 nests per breeding season in the early years of sampling to 138 nests recorded for the 2024 breeding season. Despite the general increasing trend, there were a few years that deviated substantially from the general trend, such as 2009, when the number of active nests dropped from 90 active nests in 2008 to 57 active nests.
 
+
+
+
 The strong temporal signal observed in Figure 1 was reflected in the model selection results (Table 1). Year accounted for the majority of the variation in the number of active nests, with the selected weather variables accounting for minimal additional explanatory power. 
 
 
 
 ```{=latex}
+
 \begingroup
-\setlength{\LTleft}{-0.4cm}
-\setlength{\LTright}{\fill}
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{1.05}
 
-% ---- Caption as normal text, paper style ----
-\noindent\textbf{Table 1.} Model selection results relating to annual weather variation and the number of active nests at Dronfield (1993--2024). Models were fitted using linear regressions. Results for models with and without a linear year effect are shown to reflect causal assumptions regarding temporal trends. A `+' indicates additive effects and `$\times$' indicates an interaction. K is the number of parameters; AICc is Akaike's Information Criterion; $\Delta$AICc is relative to the best model; $w$ is the Akaike weight; adjusted $R^2$ is variance explained. Slopes (SE) are reported for simple predictor models only.
+\begin{longtable}{@{}p{6.2cm} c c c c c c p{3.2cm}@{}}
 
-\vspace{-8pt} % <<< THIS NOW WORKS because it's between caption + table
+\caption{The model selection results relating to annual weather variation and the number of active nests at Dronfield (1993--2024) for models including a linear year effect. Models were fitted using linear regressions. A `+' indicates additive effects and `$\times$' indicates an interaction. $K$ is the number of parameters which includes the residual standard error, AICc is Akaike's Information Criterion; $\Delta$AICc is relative to the best model within this model set; $w$ is the Akaike weight; $R^2$ is variance explained. Slopes (SE) are reported for simple predictor models only.}
+\label{tab:active-nests-year} \\
 
-\noindent
-\begin{longtable}{@{}p{6.5cm} c c c c c c p{3.2cm}@{}}
 \toprule
-Model & K & Deviance & AICc & $\Delta$AICc & $w$ & Adj.\ $R^2$ & slope (SE) \\
+Model & K & Deviance & AICc & $\Delta$AICc & $w$ & $R^2$ & slope (SE) \\
 \midrule
 \endfirsthead
 
-\toprule
-Model & K & Deviance & AICc & $\Delta$AICc & $w$ & Adj.\ $R^2$ & slope (SE) \\
+\toprule 
+Model & K & Deviance & AICc & $\Delta$AICc & $w$ & $R^2$ & slope (SE) \\
 \midrule
 \endhead
 
@@ -250,87 +280,118 @@ Model & K & Deviance & AICc & $\Delta$AICc & $w$ & Adj.\ $R^2$ & slope (SE) \\
 \endfoot
 
 \textbf{Models including year trend} & & & & & & & \\
+
 \textbf{Baseline} & & & & & & & \\
-Year (baseline) & 3 & 0.6 & -28.43 & 0.64 & 0.14 & 0.759 & \\
+Year (baseline) & 3 & -35.32 & -28.43 & 0.64 & 0.14 & 0.767 & \\
 
 \textbf{Rain} & & & & & & & \\
-Maximum daily rainfall & 4 & 0.5 & -29.07 & 0 & 0.193 & 0.775 & -0.002 (0.001) \\
-Total rainfall & 4 & 0.5 & -27.49 & 1.58 & 0.088 & 0.764 & 0 (0) \\
-Previous year's total rainfall & 4 & 0.6 & -25.81 & 3.27 & 0.038 & 0.751 & 0 (0) \\
-Rainy days & 4 & 0.6 & -25.78 & 3.29 & 0.037 & 0.75 & 0 (0.002) \\
+Maximum daily rainfall & 4 & -38.61 & -29.07 & 0.00 & 0.193 & 0.790 & -0.002 (0.001) \\
+Total rainfall & 4 & -37.03 & -27.49 & 1.58 & 0.088 & 0.779 & 0 (0) \\
+Previous year's total rainfall & 4 & -35.35 & -25.81 & 3.27 & 0.038 & 0.767 & 0 (0) \\
+Rainy days & 4 & -35.32 & -25.78 & 3.29 & 0.037 & 0.767 & 0 (0.002) \\
 
 \textbf{Temperature} & & & & & & & \\
-Minimum temperature & 4 & 0.6 & -26.68 & 2.39 & 0.058 & 0.757 & 0.016 (0.017) \\
-Mean temperature & 4 & 0.6 & -26.59 & 2.48 & 0.056 & 0.757 & 0.026 (0.03) \\
-Maximum temperature & 4 & 0.6 & -26.42 & 2.65 & 0.051 & 0.755 & 0.01 (0.013) \\
+Minimum temperature & 4 & -36.22 & -26.68 & 2.39 & 0.058 & 0.774 & 0.016 (0.017) \\
+Mean temperature & 4 & -36.13 & -26.59 & 2.48 & 0.056 & 0.773 & 0.026 (0.030) \\
+Maximum temperature & 4 & -35.96 & -26.42 & 2.65 & 0.051 & 0.772 & 0.010 (0.013) \\
 
 \textbf{Wind} & & & & & & & \\
-Maximum wind speed & 4 & 0.6 & -25.9 & 3.18 & 0.039 & 0.751 & -0.002 (0.006) \\
-Mean wind speed & 4 & 0.6 & -25.87 & 3.21 & 0.039 & 0.751 & -0.019 (0.07) \\
+Maximum wind speed & 4 & -35.43 & -25.90 & 3.18 & 0.039 & 0.768 & -0.002 (0.006) \\
+Mean wind speed & 4 & -35.41 & -25.87 & 3.21 & 0.039 & 0.768 & -0.019 (0.070) \\
 
 \textbf{Hail} & & & & & & & \\
-Hail days & 4 & 0.6 & -25.88 & 3.19 & 0.039 & 0.751 & 0.006 (0.02) \\
+Hail days & 4 & -35.42 & -25.88 & 3.19 & 0.039 & 0.768 & 0.006 (0.020) \\
 
 \textbf{Joint effects} & & & & & & & \\
-Min temperature + max daily rainfall & 5 & 0.5 & -27.44 & 1.63 & 0.085 & 0.776 & \\
-Max daily rainfall + max wind speed & 5 & 0.5 & -26.41 & 2.66 & 0.051 & 0.769 & \\
-Min temperature + total rainfall & 5 & 0.5 & -25.04 & 4.03 & 0.026 & 0.758 & \\
-Min temperature + max wind speed & 5 & 0.6 & -23.83 & 5.24 & 0.014 & 0.749 & \\
-Max temperature + rainy days & 5 & 0.6 & -23.78 & 5.29 & 0.014 & 0.748 & \\
-Hail days + max wind speed & 5 & 0.6 & -23.12 & 5.95 & 0.01 & 0.743 & \\
-Hail days + rainy days & 5 & 0.6 & -23.03 & 6.04 & 0.009 & 0.742 & \\
+Min temperature + max daily rainfall & 5 & -39.84 & -27.44 & 1.63 & 0.085 & 0.799 & \\
+Max daily rainfall + max wind speed & 5 & -38.81 & -26.41 & 2.66 & 0.051 & 0.792 & \\
+Min temperature + total rainfall & 5 & -37.44 & -25.04 & 4.03 & 0.026 & 0.782 & \\
+Min temperature + max wind speed & 5 & -36.23 & -23.83 & 5.24 & 0.014 & 0.774 & \\
+Max temperature + rainy days & 5 & -36.18 & -23.78 & 5.29 & 0.014 & 0.773 & \\
+Hail days + max wind speed & 5 & -35.52 & -23.12 & 5.95 & 0.010 & 0.768 & \\
+Hail days + rainy days & 5 & -35.43 & -23.03 & 6.04 & 0.009 & 0.768 & \\
 
 \textbf{Interactions} & & & & & & & \\
-Prev. rainfall $\times$ max temperature & 6 & 0.6 & -21.36 & 7.71 & 0.004 & 0.744 & \\
-Min temperature $\times$ mean wind speed & 6 & 0.6 & -21.3 & 7.77 & 0.004 & 0.744 & \\
-Min temperature $\times$ rainy days & 6 & 0.6 & -21.04 & 8.03 & 0.003 & 0.741 & \\
-
-\textbf{Models without year trend} & & & & & & & \\
-\textbf{Baseline} & & & & & & & \\
-Intercept only & 2 & 2.5 & 14.26 & 2.22 & 0.057 & 0 & \\
-
-\textbf{Rain} & & & & & & & \\
-Total rainfall & 3 & 2.2 & 12.83 & 0.79 & 0.117 & 0.088 & -0.001 (0) \\
-Previous year's total rainfall & 3 & 2.4 & 15.07 & 3.03 & 0.038 & 0.019 & 0 (0) \\
-Maximum daily rainfall & 3 & 2.4 & 15.74 & 3.7 & 0.027 & -0.002 & -0.003 (0.003) \\
-Rainy days & 3 & 2.5 & 16.72 & 4.68 & 0.017 & -0.034 & 0 (0.003) \\
-
-\textbf{Temperature} & & & & & & & \\
-Maximum temperature & 3 & 2.2 & 12.77 & 0.74 & 0.12 & 0.089 & 0.046 (0.023) \\
-Mean temperature & 3 & 2.5 & 16.46 & 4.42 & 0.019 & -0.026 & 0.031 (0.062) \\
-Minimum temperature & 3 & 2.5 & 16.61 & 4.58 & 0.018 & -0.031 & 0.011 (0.036) \\
-
-\textbf{Wind} & & & & & & & \\
-Maximum wind speed & 3 & 2.3 & 14.39 & 2.35 & 0.054 & 0.041 & -0.016 (0.011) \\
-Mean wind speed & 3 & 2.3 & 14.84 & 2.81 & 0.043 & 0.026 & -0.18 (0.134) \\
-
-\textbf{Hail} & & & & & & & \\
-Hail days & 3 & 2.1 & 12.04 & 0 & 0.174 & 0.111 & 0.076 (0.035) \\
-
-\textbf{Joint effects} & & & & & & & \\
-Hail days + max wind speed & 4 & 2 & 13.16 & 1.12 & 0.099 & 0.123 & \\
-Max temperature + rainy days & 4 & 2.1 & 14.37 & 2.33 & 0.054 & 0.088 & \\
-Hail days + rainy days & 4 & 2.1 & 14.44 & 2.4 & 0.052 & 0.086 & \\
-Min temperature + total rainfall & 4 & 2.2 & 15.45 & 3.41 & 0.032 & 0.056 & \\
-Max daily rainfall + max wind speed & 4 & 2.2 & 15.84 & 3.81 & 0.026 & 0.044 & \\
-Min temperature + max wind speed & 4 & 2.3 & 17.03 & 5 & 0.014 & 0.006 & \\
-Min temperature + max daily rainfall & 4 & 2.4 & 18.24 & 6.2 & 0.008 & -0.033 & \\
-
-\textbf{Interactions} & & & & & & & \\
-Prev. rainfall $\times$ max temperature & 5 & 2 & 15.71 & 3.67 & 0.028 & 0.1 & \\
-Min temperature $\times$ mean wind speed & 5 & 2.3 & 20.27 & 8.23 & 0.003 & -0.043 & \\
-Min temperature $\times$ rainy days & 5 & 2.5 & 21.95 & 9.92 & 0.001 & -0.101 & \\
+Prev.\ rainfall $\times$ max temperature & 6 & -36.86 & -21.36 & 7.71 & 0.004 & 0.778 & \\
+Min temperature $\times$ mean wind speed & 6 & -36.80 & -21.30 & 7.77 & 0.004 & 0.778 & \\
+Min temperature $\times$ rainy days & 6 & -36.54 & -21.04 & 8.03 & 0.003 & 0.776 & \\
 
 \end{longtable}
 \endgroup
-
 ``` 
 
-Model selection represented by Table 1, indicated that the number of active nests was weakly associated with weather variables. The single predictor model including maximum daily rainfall was best supported among models including the year effect (∆AICc = 0.00, w = 0.19) despite its small effect size (slope = -0.002). The year-only model (baseline model) was comparably supported. The baseline model that included only year showed similar support compared to the top-supported model (∆AICc =0.64, w = 0.14). The number of rain days and the lagged rainfall (based on the previous year’s rainfall) showed limited support (∆AICc > 2). Models that included temperature predictors indicated moderate support, with all predictor variables ranging within ∆AICc = 2.3 and 2.7. Single models, including wind and hail, showed poor performance. Neither the interaction effect nor the additive models improved the model fit compared to single predictor models, with interactive models showing poor received little support (∆AICc > 7). Candidate models that excluded the effect of year indicated weak support. Additionally, increasing model complexity did not improve the model support, with single predictor models performing better than the poorly supported interactive, and additive models (∆AICc > 7).
+
+```{=latex}
+\begingroup
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+
+\begin{longtable}{@{}p{6.2cm} c c c c c c p{3.2cm}@{}}
+
+\caption{Model selection results relating to annual weather variation and the number of active nests at Dronfield (1993--2024) for models excluding a linear year effect (corresponding to Fig.~1b--c). Models were fitted using linear regressions. A `+' indicates additive effects and `$\times$' indicates an interaction. $K$ is the number of parameters which includes the residual standard error, AICc is Akaike's Information Criterion; $\Delta$AICc is relative to the best model within this model set; $w$ is the Akaike weight; $R^2$ is variance explained. Slopes (SE) are reported for simple predictor models only.}
+\label{tab:active-nests-no-year} \\
+
+\toprule
+Model & K & Deviance & AICc & $\Delta$AICc & $w$ & $R^2$ & slope (SE) \\
+\midrule
+\endfirsthead
+
+\toprule
+Model & K & Deviance & AICc & $\Delta$AICc & $w$ & $R^2$ & slope (SE) \\
+\midrule
+\endhead
+
+\bottomrule
+\endfoot
+
+\textbf{Models without year trend} & & & & & & & \\
+
+\textbf{Baseline} & & & & & & & \\
+Intercept only & 2 & 9.83 & 14.26 & 2.22 & 0.057 & 0 & \\
+
+\textbf{Rain} & & & & & & & \\
+Maximum daily rainfall & 3 & 8.85 & 15.74 & 3.70 & 0.027 & 0.031 & $-0.003$ (0.003) \\
+Total rainfall & 3 & 5.94 & 12.83 & 0.79 & 0.117 & 0.118 & $-0.001$ (0) \\
+Previous year's total rainfall & 3 & 8.18 & 15.07 & 3.03 & 0.038 & 0.052 & 0 (0) \\
+Rainy days & 3 & 9.83 & 16.72 & 4.68 & 0.017 & 0 & 0 (0.003) \\
+
+\textbf{Temperature} & & & & & & & \\
+Minimum temperature & 3 & 9.73 & 16.61 & 4.58 & 0.018 & 0.003 & 0.011 (0.036) \\
+Mean temperature & 3 & 9.57 & 16.46 & 4.42 & 0.019 & 0.008 & 0.031 (0.062) \\
+Maximum temperature & 3 & 5.88 & 12.77 & 0.74 & 0.120 & 0.120 & 0.046 (0.023) \\
+
+\textbf{Wind} & & & & & & & \\
+Maximum wind speed & 3 & 7.50 & 14.39 & 2.35 & 0.054 & 0.073 & $-0.016$ (0.011) \\
+Mean wind speed & 3 & 7.96 & 14.84 & 2.81 & 0.043 & 0.059 & $-0.18$ (0.134) \\
+
+\textbf{Hail} & & & & & & & \\
+Hail days & 3 & 5.15 & 12.04 & 0 & 0.174 & 0.140 & 0.076 (0.035) \\
+
+\textbf{Joint effects} & & & & & & & \\
+Min temperature + max daily rainfall & 4 & 8.70 & 18.24 & 6.20 & 0.008 & 0.036 & \\
+Max daily rainfall + max wind speed & 4 & 6.31 & 15.84 & 3.81 & 0.026 & 0.108 & \\
+Min temperature + total rainfall & 4 & 5.91 & 15.45 & 3.41 & 0.032 & 0.119 & \\
+Min temperature + max wind speed & 4 & 7.50 & 17.03 & 5.00 & 0.014 & 0.073 & \\
+Max temperature + rainy days & 4 & 4.83 & 14.37 & 2.33 & 0.054 & 0.149 & \\
+Hail days + max wind speed & 4 & 3.62 & 13.16 & 1.12 & 0.099 & 0.182 & \\
+Hail days + rainy days & 4 & 4.90 & 14.44 & 2.40 & 0.052 & 0.147 & \\
+
+\textbf{Interactions} & & & & & & & \\
+Prev.\ rainfall $\times$ max temperature & 5 & 3.31 & 15.71 & 3.67 & 0.028 & 0.190 & \\
+Min temperature $\times$ mean wind speed & 5 & 7.87 & 20.27 & 8.23 & 0.003 & 0.061 & \\
+Min temperature $\times$ rainy days & 5 & 9.55 & 21.95 & 9.92 & 0.001 & 0.009 & \\
+
+\end{longtable}
+\endgroup
+```
+
+Model selection represented by Table 1 and Table 2, indicated that the number of active nests was weakly associated with weather variables. Models including a linear year trend in Table 1 corresponds with the causal structure represented by Figure 1a, where year is treated as a confounder and should be accounted for. Models excluding the year trend (Table 2) corresponds with the causal structures represented by Figure 1b and 1c. Under these scenarios, time was not treated as a confounder and is not included in the model 
+
+The single predictor model including maximum daily rainfall was best supported among models including the year effect (∆AICc = 0.00, w = 0.19). The year-only model (baseline model) was comparably supported. The baseline model that included only year showed similar support compared to the top-supported model (∆AICc =0.64, w = 0.14). The number of rain days and the lagged rainfall (based on the previous year’s rainfall) showed limited support (∆AICc > 2). Models that included temperature predictors indicated moderate support, with all predictor variables ranging within ∆AICc = 2.3 and 2.7. Single models, including wind and hail, showed poor performance. Neither the interaction effect nor the additive models improved the model fit compared to single predictor models, with interactive models showing poor received little support (∆AICc > 7). Models excluding year (Table 2) adressed an alternative causal structure where the long-term temporal structures do not confound the relationship between weather and the number of active nests. In this scenario, the support for weather variables were still weak, with increasing model complexity, not improving explanatory power. Single predictor models performed similarly to the additive and interactive models (∆AICc > 7). When the effect o year was removed, the effect of maximum daily rainfall remained similar, but became uncertain while some other predictors including hail days and total rain became more important, however, none of the variables explained a substantial part of the variance. Additionally, inclduding weather covariates did not substantially increase $R^2$, which indicated that none of these variables explained a notable proportion of variance in the number of active nests.
 
 
 
-*Objective 2: Breeding success*
+## Objective 2: Breeding success
 
 
 ```{=latex}
@@ -412,7 +473,7 @@ Figure 9: The relationship between minimum temperature and breeding success, exp
 
 
 
-*Objective 3: Breeding timing of succesful nests*
+## Objective 3: Breeding timing of succesful nests
 
 The breeding timing of successful nests was strongly associated with pre-laying weather conditions, with interactive effects between weather variables being the strongest predictors of the laying date (Table 3). 
 
@@ -492,12 +553,30 @@ Laying dates of unsuccessful nests could not be estimated. A simulation examinin
 
 The interactive model of mean temperature and rainy days received much less support when population size was not accounted for (Table 3). By combining the interactive model with population size, the model became the best supported model (∆AICc = 0, w = 1). Additionally, adding population size to the interactive model indicated a weak increase in explanatory power, increasing with approximate 0.02% from the interactive-only model. 
 
-### Discussion 
+# Discussion 
 
-### References 
+The role of weather variability in shaping avian reproduction is increasingly recognised, with multiple studies showing that weather influences reproduction through several pathways, including increased energetic cost, limiting foraging abilities and through direct exposure of eggs and chicks to unfavourable conditions [@jenouvrier2013impacts; @sauve2021effects; @osborn2023climate; @mccloy2023short]. This study investigated the effects of inter annual weather variation on three components of the breeding cycle of the critically endangered African White-backed vulture, namely breeding effort, breeding success and breeding timing. 
 
+Our results suggest that weather variability influences each stage of the breeding cycle in distinct ways. The number of active nests indicated a long-term increase across the study period, with notable variability between years, with little variation explained by weather variables. Instead, longer-term temporal processes accounted for the majority of the observed variation in the number of active nests.  Breeding timing and breeding success indicated a stronger relationship with weather compared to the number of active nests, however, no single weather variable accounted for the majority of the between-year variation.  To interpret these patterns, alternative causal relationships between weather, time-trend and the three breeding variables were considered using directed acyclic graphs to align inference with different plausible causal scenarios. 
+
+Number of Active nests 
+
+The number of active nests increased over time and indicated a clear long-term upward trend in active nest numbers per breeding season, despite yearly fluctuations over the study period. In contrast to what was expected, variation in weather conditions between years explained only a small portion of the variation in the number of active nests compared to the amount of variation accounted for by the temporal structure. This finding suggests that the number of active nests during the breeding season of African White-backed vultures is more likely to be explained by long-term population-level processes, rather than weather variability. Similarly, a previous study conducted by Virani et al. (2012) on the seasonal variation in breeding of Rüppell’s vultures in Kenya noted that the number of occupied nests during the breeding season is shaped by the accumulation of long-term effects on the population. The number of nests of both Rüppell’s vulture and Lappet-faced vulture populations fluctuated independently of the population size, which suggests breeding participation of these species is more likely linked to individual condition and resource availability [@virani2012seasonal]. 
+
+Our finding is therefore best represented by the confounded causal structure (Figure 1a), where the temporal trends, influence both weather and the number of active nests. Year acts as a confounder in the relationship between weather and breeding effort, and associations between the weather and the number of active nests could be caused by the shared temporal structure rather than a direct effect of weather. The temporal trend in the number of active nests is more plausibly linked to possible long-term population-level processes, such as a shift in food abundance over time or a change in the body condition of adult birds [@nageli2022weather; @scopel2018predation].
+
+Although weather variation explained minimal variation in the number of active nests, it is interesting to note that models excluding year indicate an association between maximum daily rainfall and the number of active nests. While studying how rainfall affects the breeding effort of vultures in Namibia, Bridgeford (2003) found that the relationship between breeding effort and rainfall has an inverse relationship, with wetter years being followed by fewer nests. This relationship has, however, been directly linked to food availability, as drier conditions increase carcass availability and so, improving the body condition of adult birds for the breeding season [@bridgeford2003ten]. Consistent with our results, though, they also noted that rainfall alone does not explain variation in the number of active nests, but the time-trend and population level structures had a stronger influence than rainfall directly. 
+
+
+
+# Conclusion 
+
+
+# Appendix 
 
  
+# Bibliography 
+
 
 
 
