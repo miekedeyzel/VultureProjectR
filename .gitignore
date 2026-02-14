@@ -14,3 +14,11 @@ VultureProject.qmd
 VultureProject.html
 
 VultureAnalysis.html
+*.html
+*.pdf
+*.docx
+*.log
+*.aux
+*.out
+*.toc
+*.synctex.gz
