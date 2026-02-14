@@ -1444,7 +1444,7 @@ plot(best_with_year_E)
 summary(m_year)$adj.r.squared
 summary(best_with_year_E)$adj.r.squared
 
-# best no-year model
+# best no-year model 
 summary(best_no_year_E)$adj.r.squared
 ```
 
