@@ -73,7 +73,7 @@ check_overdispersion <- function(model) {
 vultures <- read.csv("data/93_24_cleaned.csv")
 ```
 
-## Clean Breeding Data
+### Clean Breeding Data
 
 ```{r}
 vultures.clean <- vultures |>
@@ -91,7 +91,7 @@ vultures.clean <- vultures |>
   
 ```
 
-## Explore Data
+### Explore Data
 
 ```{r}
 glimpse(vultures.clean)
@@ -99,7 +99,7 @@ summary(vultures.clean)
 colSums(is.na(vultures.clean))
 ```
 
-## Number of Active Nests
+### Number of Active Nests
 
 ```{r}
 active_nests_yearly <- vultures.clean |>
@@ -114,7 +114,7 @@ ggplot(active_nests_yearly, aes(x = year, y = active_nests)) +
   theme(panel.grid = element_blank())
 ```
 
-## Breeding success
+### Breeding success
 
 ```{r}
 success_yearly <- vultures.clean |>
@@ -139,7 +139,7 @@ ggplot(success_yearly, aes(x = success_prop)) +
   theme(panel.grid = element_blank())
 ```
 
-## Failed vs Successful nests
+### Failed vs Successful nests
 
 ```{r}
 mod_fail <- lm(fail_prop ~ active_nests, data = success_yearly)
@@ -184,7 +184,8 @@ ggplot() +
     axis.text  = element_text(face = "bold", size = 12)
   )
 ```
-## Weather data (GSOD)
+
+### Weather data (GSOD)
 
 ```{r}
 options(timeout = 600)                 
@@ -222,7 +223,7 @@ WeatherData <- weather_raw |>
   mutate(date = make_date(YEAR, MONTH, DAY))
 ```
 
-## Adding correct rainfall for 2004
+### Adding correct rainfall for 2004
 
 ```{r}
 lonlat <- tibble(lon = 24.81, lat = -28.62)
@@ -271,7 +272,7 @@ weather_daily <- WeatherData_clean  |>
     year = year(date)
   )
 
-# Fixed window: March 1–31
+# Fixed window
 weather_march_by_year <- weather_daily  |> 
   filter(month(date) == 3)  |>      # March
   group_by(year)  |> 
@@ -295,7 +296,7 @@ weather_march_by_year
 
 
 
-## Lagged weather summaries 
+### Lagged weather summaries 
 
 ```{r}
 weather_annual_by_year <- weather_daily  |> 
@@ -332,7 +333,7 @@ timing_df <- vultures.clean |>
   )
 ```
 
-## Creating 30-day window data 
+### Creating 30-day window data 
 
 ```{r}
 timing_by_year <- timing_df |>
@@ -366,9 +367,7 @@ obj3_year_df <- timing_by_year  |>
 obj3_year_df
 ```
 
-
-
-## Annual Weather Summaries
+### Annual Weather Summaries
 
 ```{r}
 weather_yearly <- WeatherData_clean |>
@@ -409,7 +408,7 @@ summary(lm(mean_wind ~ YEAR, data = weather_yearly))
 summary(lm(max_wind  ~ YEAR, data = weather_yearly))
 ```
 
-## Lagged Weather summaries
+### Lagged Weather summaries
 
 ```{r}
 weather_yearly_lag <- weather_yearly |>
@@ -422,7 +421,7 @@ weather_yearly_lag <- weather_yearly |>
   ))
 ```
 
-## Correlations between weather variables
+### Correlations between weather variables
 
 ```{r}
 vars <- weather_yearly |>
@@ -451,13 +450,13 @@ ggplot(cor_df, aes(x = var1, y = var2, fill = cor)) +
 
 ### Trends over time for breeding variables
 
-#### Number of Active nests
+### Number of Active nests
 
 ```{r}
 summary(lm(active_nests ~ year, data = active_nests_yearly))
 ```
 
-#### Breeding success
+### Breeding success
 
 ```{r}
 success_year <- glm(
@@ -470,7 +469,7 @@ summary(success_year)
 check_overdispersion(success_year)
 ```
 
-#### Breeding timing of succesful nests
+### Breeding timing of succesful nests
 
 ```{r}
 timing_yearly <- vultures.clean |>
@@ -491,7 +490,7 @@ timing_yearly_clean <- timing_yearly |>
 summary(lm(mean_lay_DOY ~ year, data = timing_yearly_clean))
 ```
 
-# Analysis 
+
 
 ## Objective 1: Number of Active nests
 
@@ -689,7 +688,7 @@ knitr::kable(
 ### Data for number of active nest models
 
 ```{r}
-# Annual effort: number of active nests per year
+# number of active nests per year
 active.nests <- vultures.clean |>
   mutate(year = year(ringing.date)) |>
   group_by(year) |>
@@ -776,9 +775,8 @@ m_minT_x_meanWind_year <- lm(log_active_nests ~ year + min_temp * mean_wind,    
 m_lagR_x_maxT_year     <- lm(log_active_nests ~ year + lag_total_rain * max_temp, data = effort_weather)
 ```
 
----
 
-Two separate AICc model selection runs
+### Two separate AICc model selection runs
 
 ```{r}
 ## AIC 1: without year
@@ -1754,10 +1752,6 @@ doc <- read_docx()  |>  body_add_flextable(ft)
 print(doc, target = "Table_2_Breeding_Success_WITH_PostHoc.docx")
 ```
 
-
-
-
-
 --------------------------------------------------------------------------------
 ## Objective 3
 
@@ -2236,7 +2230,6 @@ build_table <- function(model_list){
     )
 }
 
-# IMPORTANT: labels must match your cand_obj3 names (no maxT/maxR/maxW/hailD unless in cand_obj3)
 model_labels <- tribble(
   ~model_id, ~Group, ~Model,
 
@@ -2285,7 +2278,6 @@ df <- main_df |>
   arrange(Group, `ΔAICc`) |>
   select(Group, Model, K, Deviance, AICc, `ΔAICc`, w, `R²`, `slope (SE)`)
 
-# add post hoc pop-size models if they exist
 if (exists("m_lagR") && exists("m_pop") && exists("m_lagR_pop")) {
 
   posthoc_models <- list(
@@ -2355,10 +2347,6 @@ for (r in group_rows) {
 doc <- read_docx() |>
   body_add_par(
     paste0(
-      "Table X. Model selection results for breeding timing (annual median laying date, day of year). ",
-      "Weather cue predictors were summarised for a fixed March window (01–31 March) each year; lagged predictors represent annual conditions in the previous year. ",
-      "Models were fitted using linear regression. K = number of parameters; Deviance = -2 log-likelihood; AICc = small-sample AIC; ΔAICc = difference from the best model; w = Akaike weight; R² = variance explained. ",
-      "Slope (SE) is shown for single-predictor models only. Population size models (if included) were fitted post hoc and are shown for comparison."
     ),
     style = "Normal"
   ) |>
