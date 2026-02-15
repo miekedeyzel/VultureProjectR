@@ -623,7 +623,7 @@ The breeding timing of successful nests indicated the strongest association with
 \renewcommand{\arraystretch}{1.05}
 
 \begin{longtable}{@{}p{5.6cm} c c c c c c >{\centering\arraybackslash}p{2.7cm}@{}}
-\caption{The model selection results for the breeding timing using 30-day pre-laying cues and lagged weather effects from the previous year at Dronfield (1993-2025). The models were fitted using linear regression models. A + indicates additive effects and $\times$ indicates an interaction. $K$ is the number of parameters. AICc is Akaike's Information Criterion; $\Delta$AICc is relative to the best model within this model set; $w$ is the Akaike weight. R^2 represents the proportion of between-year variance explained by the weather variables.}\label{tab:timing-aic}\\
+\caption{The model selection results for the breeding timing using 30-day pre-laying cues and lagged weather effects from the previous year at Dronfield (1993-2025). The models were fitted using linear regression models. A + indicates additive effects and $\times$ indicates an interaction. $K$ is the number of parameters. AICc is Akaike's Information Criterion; $\Delta$AICc is relative to the best model within this model set; $w$ is the Akaike weight. R$^2$ represents the proportion of between-year variance explained by the weather variables.}\label{tab:timing-aic}\\
 \toprule
 Model & K & Deviance & AICc & $\Delta$AICc & $w$ & $R^2$ & slope (SE) \\
 \midrule
@@ -676,7 +676,7 @@ Mean temperature $\times$ rainy days (March) & 5 & 169.56 & 181.87 & 8.35 & 0.00
 \renewcommand{\arraystretch}{1.05}
 
 \begin{longtable}{@{}p{5.6cm} c c c c c c >{\centering\arraybackslash}p{2.7cm}@{}}
-\caption{The model selection results for a postoriori models including population size and the effects of the lagged rainfall on the the breeding timing at Dronfield (1993-2025). Models were fitted using linear regressions. A `+` indicates additive effects and `$\times$' indicates an interaction. $K$ is the number of parameters. AICc is Akaike's Information Criterion; $\Delta$AICc is relative to the best model within this model set; $w$ is the Akaike weight. R^2 represents the proportion of between-year variance explained by the weather variables.}\label{tab:timing-popsize}\\
+\caption{The model selection results for a postoriori models including population size and the effects of the lagged rainfall on the the breeding timing at Dronfield (1993-2025). Models were fitted using linear regressions. A `+` indicates additive effects and `$\times$' indicates an interaction. $K$ is the number of parameters. AICc is Akaike's Information Criterion; $\Delta$AICc is relative to the best model within this model set; $w$ is the Akaike weight. R$^2$ represents the proportion of between-year variance explained by the weather variables.}\label{tab:timing-popsize}\\
 \toprule
 Model & K & Deviance & AICc & $\Delta$AICc & $w$ & $R^2$ & slope (SE) \\
 \midrule
