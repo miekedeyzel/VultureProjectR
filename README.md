@@ -1,4 +1,4 @@
-# The Effects of Climate Change on the Breeding Ecology of African White-backed Vultures: Analyses  
+# The Effects of Climate Change on the Breeding Ecology of African White-backed Vultures: Analysis  
 ### MSc in Conservation Biology – University of Cape Town  
 **Author:** Mieke Deyzel  
 
