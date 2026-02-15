@@ -1,4 +1,4 @@
-# The Effects of Climate Change on the Breeding Ecology of African White-backed Vultures: Analysis  
+# The Effects of Weather on the Breeding Ecology of African White-backed Vultures: Analysis  
 ### MSc in Conservation Biology – University of Cape Town  
 **Author:** Mieke Deyzel  
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-This repository accompanies my MSc research examining how climate change influences the breeding ecology of African White-backed Vultures (*Gyps africanus*) at Dronfield Nature Reserve (1993–2024).
+This repository accompanies my MSc research examining how weather influences the breeding ecology of African White-backed Vultures (*Gyps africanus*) at Dronfield Nature Reserve (1993–2024).
 
 The project integrates long-term breeding monitoring data with climatic variables to assess how weather affects:
 
