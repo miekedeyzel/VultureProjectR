@@ -1,0 +1,2461 @@
+---
+title: "The Effects of Climate Change on the Breeding Ecology of African White-backed Vultures: Analyses"
+author: "Mieke Deyzel"
+
+format:
+  pdf:
+    toc: false
+    number-sections: true
+    include-in-header:
+      text: |
+        \usepackage{graphicx}
+        \usepackage{hyperref}
+
+        % --- Wrap long code lines in PDF ---
+        \usepackage{fvextra}
+        \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+          breaklines=true,
+          breakanywhere=true,
+          commandchars=\\\{\},
+          fontsize=\small
+        }
+
+execute:
+  echo: true
+  warning: false
+---
+
+::: {.panel-tabset}
+
+```{r}
+#| label: setup
+#| include: false
+
+
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(stringr)
+library(AICcmodavg)
+library(lme4)
+library(showtext)
+library(sysfonts)
+
+# Needed for data retrieval (GSOD / CHIRPS)
+library(rnoaa)
+library(GSODR)
+library(chirps)
+
+# Needed for correlation p-values
+library(Hmisc)
+
+# used later
+library(conflicted)
+library(performance)
+library(kableExtra)
+library(DiagrammeR)
+library(DiagrammeRsvg)
+library(rsvg)
+library(officer)
+library(flextable)
+
+conflicted::conflict_prefer("select", "dplyr")
+conflicted::conflict_prefer("filter", "dplyr")
+conflicted::conflict_prefer("lag",    "dplyr")
+
+prep_aictab_bar <- function(aic_obj, panel_label) {
+  df <- as.data.frame(aic_obj)
+
+  if (!("dAICc" %in% names(df))) {
+    if ("Delta_AICc" %in% names(df)) df$dAICc <- df$Delta_AICc
+    else stop("Can't find dAICc / Delta_AICc.")
+  }
+
+  if (!("label" %in% names(df))) {
+    if ("Modnames" %in% names(df)) df$label <- df$Modnames
+    else df$label <- rownames(df)
+  }
+
+  best <- min(df$dAICc, na.rm = TRUE)
+
+  df |>
+    mutate(panel = panel_label, is_best = dAICc == best) |>
+    select(panel, label, dAICc, is_best)
+}
+
+check_overdispersion <- function(model) {
+  rp <- residuals(model, type = "pearson")
+  sum(rp^2) / model$df.residual
+}
+```
+
+```{r}
+library(showtext)
+library(sysfonts)
+library(systemfonts)
+
+# Find the actual font file on your system
+mf <- systemfonts::match_font("Times New Roman")
+
+# Register it for plotting
+sysfonts::font_add(family = "Times", regular = mf$path)
+
+# Turn on showtext so PDF devices embed it safely
+showtext::showtext_auto(enable = TRUE)
+```
+
+
+## Load Data
+
+```{r}
+vultures <- read.csv("data/93_24_cleaned.csv")
+```
+
+### Clean Breeding Data
+
+```{r}
+vultures.clean <- vultures |>
+  clean_names() |>
+  rename_with(~ gsub("_", ".", .x)) |>
+  mutate(
+    ringing.date = ringing.date |> as.character() |> str_trim(),
+    ringing.date = if_else(ringing.date %in% c("", "NA", "?"), NA_character_, ringing.date),
+    ringing.date = ymd(gsub("/", "-", ringing.date)),
+
+    laying.date  = laying.date |> as.character() |> str_trim(),
+    laying.date  = if_else(laying.date %in% c("", "NA", "?"), NA_character_, laying.date),
+    laying.date  = ymd(gsub("/", "-", laying.date))
+  )
+  
+```
+
+### Explore Data
+
+```{r}
+glimpse(vultures.clean)
+summary(vultures.clean)
+colSums(is.na(vultures.clean))
+```
+
+### Number of Active Nests
+
+```{r}
+active_nests_yearly <- vultures.clean |>
+  mutate(year = year(ringing.date)) |>
+  filter(!is.na(year)) |>
+  count(year, name = "active_nests")
+
+ggplot(active_nests_yearly, aes(x = year, y = active_nests)) +
+  geom_col(fill = "grey", alpha = 0.85) +
+  labs(x = "Year", y = "Number of active nests") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+```
+
+### Breeding success
+
+```{r}
+success_yearly <- vultures.clean |>
+  mutate(year = year(ringing.date)) |>
+  filter(!is.na(year)) |>
+  summarise(
+    active_nests  = n(),
+    success_nests = sum(!is.na(laying.date)),
+    .by = year
+  ) |>
+  mutate(
+    failed_nests = active_nests - success_nests,
+    success_prop = success_nests / active_nests,
+    fail_prop    = 1 - success_prop
+  ) |>
+  filter(active_nests > 0)
+
+ggplot(success_yearly, aes(x = success_prop)) +
+  geom_histogram(bins = 15, fill = "grey") +
+  labs(x = "Breeding success proportion", y = "Count") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+```
+
+### Failed vs Successful nests
+
+```{r}
+mod_fail <- lm(fail_prop ~ active_nests, data = success_yearly)
+
+newdat <- tibble(
+  active_nests = seq(
+    min(success_yearly$active_nests, na.rm = TRUE),
+    max(success_yearly$active_nests, na.rm = TRUE),
+    length.out = 200
+  )
+)
+
+pr <- predict(mod_fail, newdata = newdat, interval = "confidence") |> as.data.frame()
+pred_fail <- bind_cols(newdat, pr) |>
+  rename(fit = fit, lwr = lwr, upr = upr)
+
+ggplot() +
+  geom_point(
+    data = success_yearly,
+    aes(x = active_nests, y = fail_prop),
+    colour = "#B1BD8C",
+    alpha = 0.7,
+    size = 2.6
+  ) +
+  geom_ribbon(
+    data = pred_fail,
+    aes(x = active_nests, ymin = lwr, ymax = upr),
+    fill = "#D5D6D2",
+    alpha = 0.4
+  ) +
+  geom_line(
+    data = pred_fail,
+    aes(x = active_nests, y = fit),
+    colour = "#D5D6D2",
+    linewidth = 1.2
+  ) +
+  labs(x = "Number of active nests", y = "Proportion of nests failing") +
+  theme_bw(base_family = "Times New Roman") +
+  theme(
+    panel.grid = element_blank(),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text  = element_text(face = "bold", size = 12)
+  )
+```
+
+### Weather data (GSOD)
+
+```{r}
+options(timeout = 600)                 
+options(download.file.method = "libcurl")  
+
+kim_station <- "684380-99999"
+
+weather_raw <- NULL
+for (i in 1:5) {
+  message("GSOD download attempt: ", i)
+  weather_raw <- try(
+    GSODR::get_GSOD(station = kim_station, years = 1992:2024),
+    silent = TRUE
+  )
+  if (!inherits(weather_raw, "try-error")) break
+  Sys.sleep(2 * i)
+}
+
+if (inherits(weather_raw, "try-error")) {
+  stop("GSOD download failed after 5 attempts. Run this chunk interactively or use cached data (see below).")
+}
+
+WeatherData <- weather_raw |>
+  transmute(
+    YEAR, MONTH, DAY,
+    TEMP  = as.numeric(TEMP),
+    MAX   = as.numeric(MAX),
+    MIN   = as.numeric(MIN),
+    PRCP  = as.numeric(PRCP),
+    WDSP  = as.numeric(WDSP),
+    MXSPD = as.numeric(MXSPD),
+    I_HAIL = as.numeric(I_HAIL)
+  ) |>
+  arrange(YEAR, MONTH, DAY) |>
+  mutate(date = make_date(YEAR, MONTH, DAY))
+```
+
+### Adding correct rainfall for 2004
+
+```{r}
+lonlat <- tibble(lon = 24.81, lat = -28.62)
+
+kimberley_chirps_2004 <- get_chirps(
+  object    = lonlat,
+  dates     = c("2004-01-01", "2004-12-31"),
+  server    = "ClimateSERV",
+  as.matrix = FALSE
+)
+
+daily_chirps_2004 <- tibble(
+  date    = as.Date(kimberley_chirps_2004$date),
+  rain_mm = as.numeric(kimberley_chirps_2004$chirps)
+)
+
+annual_chirps_2004 <- daily_chirps_2004 |>
+  mutate(YEAR = year(date)) |>
+  summarise(
+    total_rain_2004 = sum(rain_mm, na.rm = TRUE),
+    max_rain_2004   = max(rain_mm, na.rm = TRUE),
+    rain_days_2004  = sum(rain_mm > 0, na.rm = TRUE)
+  )
+
+annual_chirps_2004
+```
+
+```{r}
+WeatherData_clean <- WeatherData |>
+  left_join(daily_chirps_2004, by = "date") |>
+  mutate(
+    PRCP = if_else(YEAR == 2004 & !is.na(rain_mm), rain_mm, PRCP)
+  ) |>
+  select(-rain_mm)
+```
+
+```{r}
+library(dplyr)
+library(lubridate)
+library(tibble)
+
+# Daily weather
+weather_daily <- WeatherData_clean  |> 
+  mutate(
+    date = as.Date(date),
+    year = year(date)
+  )
+
+# Fixed window
+weather_march_by_year <- weather_daily  |> 
+  filter(month(date) == 3)  |>      # March
+  group_by(year)  |> 
+  summarise(
+    mean_temp_win  = mean(TEMP,  na.rm = TRUE),
+    max_temp_win   = max(MAX,    na.rm = TRUE),
+    min_temp_win   = min(MIN,    na.rm = TRUE),
+    total_rain_win = sum(PRCP,   na.rm = TRUE),
+    max_rain_win   = max(PRCP,   na.rm = TRUE),
+    rain_days_win  = sum(PRCP > 0, na.rm = TRUE),
+    mean_wind_win  = mean(WDSP,  na.rm = TRUE),
+    max_wind_win   = max(MXSPD,  na.rm = TRUE),
+    hail_days_win  = sum(I_HAIL, na.rm = TRUE),
+    n_days         = n(),
+    .groups = "drop"
+  )  |> 
+  arrange(year)
+
+weather_march_by_year
+```
+
+
+
+### Lagged weather summaries 
+
+```{r}
+weather_annual_by_year <- weather_daily  |> 
+  group_by(year)  |> 
+  summarise(
+    mean_temp_annual  = mean(TEMP, na.rm = TRUE),
+    min_temp_annual   = mean(MIN, na.rm = TRUE),
+    total_rain_annual = sum(PRCP, na.rm = TRUE),
+    rain_days_annual  = sum(PRCP > 0, na.rm = TRUE),
+    mean_wind_annual  = mean(WDSP, na.rm = TRUE),
+    .groups = "drop"
+  )  |> 
+  arrange(year)
+
+weather_annual_by_year <- weather_annual_by_year  |> 
+  mutate(
+    lag_mean_temp_annual  = lag(mean_temp_annual, 1),
+    lag_total_rain_annual = lag(total_rain_annual, 1),
+    lag_rain_days_annual  = lag(rain_days_annual, 1)
+  )
+```
+
+```{r}
+summary(weather_annual_by_year)
+```
+
+
+```{r}
+timing_df <- vultures.clean |>
+  dplyr::filter(!is.na(laying.date)) |>
+  dplyr::mutate(
+    year    = lubridate::year(laying.date),
+    lay_DOY = lubridate::yday(laying.date)
+  )
+```
+
+### Creating 30-day window data 
+
+```{r}
+timing_by_year <- timing_df |>
+  dplyr::mutate(year = as.integer(year)) |>
+  dplyr::filter(!is.na(year), year != 1900) |>
+  dplyr::group_by(year) |>
+  dplyr::summarise(
+    lay_DOY_median = median(lay_DOY, na.rm = TRUE),
+    lay_DOY_mean   = mean(lay_DOY, na.rm = TRUE),
+    n_nests        = sum(!is.na(lay_DOY)),
+    first_DOY      = min(lay_DOY, na.rm = TRUE),
+    last_DOY       = max(lay_DOY, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(year)
+
+timing_by_year
+```
+
+```{r}
+nrow(timing_by_year)           
+n_distinct(timing_by_year$year) 
+summary(timing_by_year$n_nests) 
+```
+
+```{r}
+obj3_year_df <- timing_by_year  |> 
+  left_join(weather_march_by_year, by = "year")  |> 
+  arrange(year)
+
+obj3_year_df
+```
+
+### Annual Weather Summaries
+
+```{r}
+weather_yearly <- WeatherData_clean |>
+  group_by(YEAR) |>
+  summarise(
+    mean_temp  = mean(TEMP, na.rm = TRUE),
+    max_temp   = max(MAX,  na.rm = TRUE),
+    min_temp   = min(MIN,  na.rm = TRUE),
+    total_rain = sum(PRCP, na.rm = TRUE),
+    max_rain   = max(PRCP, na.rm = TRUE),
+    rain_days  = sum(PRCP > 0, na.rm = TRUE),
+    mean_wind  = mean(WDSP, na.rm = TRUE),
+    max_wind   = max(MXSPD, na.rm = TRUE),
+    hail_days  = sum(I_HAIL, na.rm = TRUE),
+    .groups    = "drop"
+  )
+
+weather_yearly |>
+  filter(YEAR == 2004) |>
+  select(YEAR, total_rain, max_rain, rain_days)
+```
+
+### Weather trends over time
+
+```{r}
+# Temperature trends
+summary(lm(mean_temp ~ YEAR, data = weather_yearly))
+summary(lm(max_temp  ~ YEAR, data = weather_yearly))
+summary(lm(min_temp  ~ YEAR, data = weather_yearly))
+
+# Rainfall trends
+summary(lm(total_rain ~ YEAR, data = weather_yearly))
+summary(lm(rain_days  ~ YEAR, data = weather_yearly))
+summary(lm(max_rain   ~ YEAR, data = weather_yearly))
+
+# Wind trends
+summary(lm(mean_wind ~ YEAR, data = weather_yearly))
+summary(lm(max_wind  ~ YEAR, data = weather_yearly))
+```
+
+### Lagged Weather summaries
+
+```{r}
+weather_yearly_lag <- weather_yearly |>
+  arrange(YEAR) |>
+  mutate(across(
+    c(mean_temp, max_temp, min_temp, total_rain, max_rain, rain_days,
+      mean_wind, max_wind, hail_days),
+    ~ lag(.x, 1),
+    .names = "lag_{.col}"
+  ))
+```
+
+### Correlations between weather variables
+
+```{r}
+vars <- weather_yearly |>
+  select(mean_temp, max_temp, min_temp,
+         total_rain, max_rain, rain_days,
+         mean_wind, max_wind, hail_days)
+
+res <- rcorr(as.matrix(vars), type = "pearson")
+
+cor_df <- as.data.frame(res$r) |>
+  rownames_to_column("var1") |>
+  pivot_longer(-var1, names_to = "var2", values_to = "cor") |>
+  mutate(p = as.vector(res$P)) 
+
+ggplot(cor_df, aes(x = var1, y = var2, fill = cor)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "#b2182b", mid = "white", high = "#2166ac",
+                       midpoint = 0, limits = c(-1, 1)) +
+  labs(x = "", y = "", fill = "Correlation") +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid  = element_blank()
+  )
+```
+
+### Trends over time for breeding variables
+
+### Number of Active nests
+
+```{r}
+summary(lm(active_nests ~ year, data = active_nests_yearly))
+```
+
+### Breeding success
+
+```{r}
+success_year <- glm(
+  cbind(success_nests, failed_nests) ~ year,
+  family = binomial,
+  data   = success_yearly
+)
+
+summary(success_year)
+check_overdispersion(success_year)
+```
+
+### Breeding timing of succesful nests
+
+```{r}
+timing_yearly <- vultures.clean |>
+  mutate(
+    year    = year(ringing.date),
+    lay_DOY = yday(laying.date)
+  ) |>
+  filter(!is.na(year), !is.na(lay_DOY)) |>
+  group_by(year) |>
+  summarise(
+    mean_lay_DOY = mean(lay_DOY, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+timing_yearly_clean <- timing_yearly |>
+  filter(year >= 1992)
+
+summary(lm(mean_lay_DOY ~ year, data = timing_yearly_clean))
+```
+
+
+
+## Objective 1: Number of Active nests
+
+### DAGS
+
+### Scenario A
+
+```{r}
+
+dir.create("figures", showWarnings = FALSE)
+
+export_dag_pdf <- function(dag, filename, w = 8, h = 4) {
+  svg_txt <- DiagrammeRsvg::export_svg(dag)
+  rsvg::rsvg_pdf(
+    charToRaw(svg_txt),
+    file = file.path("figures", filename),
+    width = w, height = h
+  )
+  file.info(file.path("figures", filename))[, "size"]
+}
+
+trend_confounded_dag <- DiagrammeR::grViz("
+digraph trend_confounded {
+  graph [
+    layout = neato,
+    splines = false,
+    overlap = false
+  ]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    shape = box,
+    margin = 0.25
+  ]
+
+  edge [
+    penwidth = 1.8,
+    arrowsize = 0.55
+  ]
+
+  Y [label = 'Y', pos = '2.5,2!']
+  W [label = 'W', pos = '1.2,0!']
+  N [label = 'N', pos = '4.0,0!']
+
+  Y -> W
+  Y -> N
+  W -> N
+}
+")
+
+export_dag_pdf(trend_confounded_dag, "trend_confounded_dag.pdf", 8, 4)
+```
+
+### Scenario B
+
+```{r}
+trend_W_B_dag <- DiagrammeR::grViz("
+digraph trend_W_B {
+  graph [
+    layout = neato,
+    splines = false,
+    overlap = false
+  ]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    shape = box,
+    margin = 0.25
+  ]
+
+  edge [
+    penwidth = 1.8,
+    arrowsize = 0.55
+  ]
+
+  Y [label = 'Y', pos = '0,0!']
+  W [label = 'W', pos = '3,0!']
+  N [label = 'N', pos = '6,0!']
+
+  Y -> W
+  W -> N
+}
+")
+
+export_dag_pdf(trend_W_B_dag, "trend_W_B_dag.pdf", 8, 4)
+```
+
+### Scenario C 
+
+```{r}
+trend_mediator_dag <- DiagrammeR::grViz("
+digraph trend_mediator {
+  graph [
+    layout = neato,
+    splines = false,
+    overlap = false
+  ]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    shape = box,
+    margin = 0.25
+  ]
+
+  edge [
+    penwidth = 1.8,
+    arrowsize = 0.55
+  ]
+
+  W [label = 'W', pos = '0,0!']
+  Y [label = 'Y', pos = '3,0!']
+  N [label = 'N', pos = '6,0!']
+
+  W -> Y
+  Y -> N
+}
+")
+
+export_dag_pdf(trend_mediator_dag, "trend_mediator_dag.pdf", 8, 4)
+```
+
+### Models
+
+```{r}
+objective1_table <- tribble(
+  ~`Hypothesis / justification`, ~Model,
+
+  "**Temp**", NA,
+  "Warmer years increase energetic cost of adult birds, reducing likelihood to breed.",
+  "active_nests ~ mean_temp",
+  "Extreme heat events cause thermal stress, reducing breeding effort (active cooling is energetically costly and may reduce adult condition).",
+  "active_nests ~ max_temp",
+  "Cold extremes increase thermoregulatory demand (often increasing time spent foraging), reducing effort put into breeding",
+  "active_nests ~ min_temp",
+
+  "**Rain**", NA,
+  "High rainfall reduces foraging efficiency and adult condition, reducing breeding effort.",
+  "active_nests ~ total_rain",
+  "Prolonged rainfall conditions reduce breeding effort by limiting foraging opportunity (fewer or weaker thermals for soaring)",
+  "active_nests ~ rain_days",
+  "Intense rainfall events decrease foraging efficiency and nest attendance, reducing breeding effort.",
+  "active_nests ~ max_rain",
+  "Previous year’s rainfall influences food availability and adult condition, affecting breeding effort in the following year.",
+  "active_nests ~ lag_total_rain",
+
+  "**Wind**", NA,
+  "Persistent windy conditions increase the cost of flying, limiting foraging and the energy available for reproduction, reducing breeding effort",
+  "active_nests ~ mean_wind",
+  "Extreme winds increase nest damage risk, reducing the likelihood that adults will attempt breeding (WBV often reuse nests from previous years) ",
+  "active_nests ~ max_wind",
+
+  "**Hail**", NA,
+  "Severe storm events increase disturbance and nest damage risk, reducing breeding effort",
+  "active_nests ~ hail_days",
+
+  "**Joint effects**", NA,
+  "Cold stress combined with prolonged wet conditions jointly limit breeding effort",
+  "active_nests ~ min_temp + total_rain",
+  "Cold stress combined with intense rainfall events reduces breeding effort",
+  "active_nests ~ min_temp + max_rain",
+  "Cold extremes combined with extreme wind increase energetic costs and breeding risk, reducing breeding effort",
+  "active_nests ~ min_temp + max_wind",
+  "Severe storm exposure combined with extreme wind increases nest disturbance, reducing breeding effort",
+  "active_nests ~ hail_days + max_wind",
+  "Reduced thermals for soaring combined with high flight costs limit breeding effort",
+  "active_nests ~ max_rain + max_wind",
+  "Heat stress combined with prolonged wet conditions jointly reduce breeding effort by increasing energetic costs while limiting foraging",
+  "active_nests ~ max_temp + rain_days",
+  "High annual rainfall and frequent hail events each impose energetic and disturbance costs that reduce breeding effort.",
+  "active_nests ~ hail_days + rain_days",
+
+  "**Interactive effects**", NA,
+  "The negative effect of cold extremes on breeding effort is increased in persistently wet years.",
+  "active_nests ~ min_temp * rain_days",
+  "Cold-related energetic stress is amplified in windy years due to increased heat loss and flight costs",
+  "active_nests ~ min_temp * mean_wind",
+  "Adult condition resulting from the previous year interacts with current-year heat stress to influence breeding effort",
+  "active_nests ~ lag_total_rain * max_temp"
+) |>
+  mutate(Model = if_else(is.na(Model), "", Model))
+
+knitr::kable(
+  objective1_table,
+  align = c("l", "l"),
+  caption = "Objective 1 candidate model set for breeding effort (active nests)"
+)
+```
+
+### Data for number of active nest models
+
+```{r}
+# number of active nests per year
+active.nests <- vultures.clean |>
+  mutate(year = year(ringing.date)) |>
+  group_by(year) |>
+  summarise(active_nests = n(), .groups = "drop")
+
+
+# Join to weather, create log effort response
+effort_weather <- active.nests |>
+  left_join(weather_yearly_lag, by = c("year" = "YEAR")) |>
+  filter(!is.na(lag_total_rain)) |>
+  mutate(
+    log_active_nests = log(active_nests)
+  )
+
+```
+
+### Fitting the no-year models
+
+```{r}
+# Baseline 
+m_null <- lm(log_active_nests ~ 1, data = effort_weather)
+
+# Single predictor models 
+m_mean_temp      <- lm(log_active_nests ~ mean_temp,      data = effort_weather)
+m_max_temp       <- lm(log_active_nests ~ max_temp,       data = effort_weather)
+m_min_temp       <- lm(log_active_nests ~ min_temp,       data = effort_weather)
+
+m_total_rain     <- lm(log_active_nests ~ total_rain,     data = effort_weather)
+m_rain_days      <- lm(log_active_nests ~ rain_days,      data = effort_weather)
+m_max_rain       <- lm(log_active_nests ~ max_rain,       data = effort_weather)
+m_lag_total_rain <- lm(log_active_nests ~ lag_total_rain, data = effort_weather)
+
+m_mean_wind      <- lm(log_active_nests ~ mean_wind,      data = effort_weather)
+m_max_wind       <- lm(log_active_nests ~ max_wind,       data = effort_weather)
+m_hail_days      <- lm(log_active_nests ~ hail_days,      data = effort_weather)
+
+# Joint effects 
+m_minT_totalR    <- lm(log_active_nests ~ min_temp + total_rain,  data = effort_weather)
+m_minT_maxR      <- lm(log_active_nests ~ min_temp + max_rain,    data = effort_weather)
+m_minT_maxW      <- lm(log_active_nests ~ min_temp + max_wind,    data = effort_weather)
+m_hail_maxW      <- lm(log_active_nests ~ hail_days + max_wind,   data = effort_weather)
+m_maxR_maxW      <- lm(log_active_nests ~ max_rain + max_wind,    data = effort_weather)
+m_maxT_rainDays  <- lm(log_active_nests ~ max_temp + rain_days,   data = effort_weather)
+m_hail_rainDays  <- lm(log_active_nests ~ hail_days + rain_days,  data = effort_weather)
+
+# Interactions 
+m_minT_x_rainDays <- lm(log_active_nests ~ min_temp * rain_days,      data = effort_weather)
+m_minT_x_meanWind <- lm(log_active_nests ~ min_temp * mean_wind,      data = effort_weather)
+m_lagR_x_maxT     <- lm(log_active_nests ~ lag_total_rain * max_temp, data = effort_weather)
+```
+
+### Fit with year models 
+
+```{r}
+# Baseline 
+m_year <- lm(log_active_nests ~ year, data = effort_weather)
+
+# Single predictor models 
+m_mean_temp_year      <- lm(log_active_nests ~ year + mean_temp,      data = effort_weather)
+m_max_temp_year       <- lm(log_active_nests ~ year + max_temp,       data = effort_weather)
+m_min_temp_year       <- lm(log_active_nests ~ year + min_temp,       data = effort_weather)
+
+m_total_rain_year     <- lm(log_active_nests ~ year + total_rain,     data = effort_weather)
+m_rain_days_year      <- lm(log_active_nests ~ year + rain_days,      data = effort_weather)
+m_max_rain_year       <- lm(log_active_nests ~ year + max_rain,       data = effort_weather)
+m_lag_total_rain_year <- lm(log_active_nests ~ year + lag_total_rain, data = effort_weather)
+
+m_mean_wind_year      <- lm(log_active_nests ~ year + mean_wind,      data = effort_weather)
+m_max_wind_year       <- lm(log_active_nests ~ year + max_wind,       data = effort_weather)
+m_hail_days_year      <- lm(log_active_nests ~ year + hail_days,      data = effort_weather)
+
+# Joint effects 
+m_minT_totalR_year    <- lm(log_active_nests ~ year + min_temp + total_rain, data = effort_weather)
+m_minT_maxR_year      <- lm(log_active_nests ~ year + min_temp + max_rain,   data = effort_weather)
+m_minT_maxW_year      <- lm(log_active_nests ~ year + min_temp + max_wind,   data = effort_weather)
+m_hail_maxW_year      <- lm(log_active_nests ~ year + hail_days + max_wind,  data = effort_weather)
+m_maxR_maxW_year      <- lm(log_active_nests ~ year + max_rain + max_wind,   data = effort_weather)
+m_maxT_rainDays_year  <- lm(log_active_nests ~ year + max_temp + rain_days,  data = effort_weather)
+m_hail_rainDays_year  <- lm(log_active_nests ~ year + hail_days + rain_days, data = effort_weather)
+
+# Interactions 
+m_minT_x_rainDays_year <- lm(log_active_nests ~ year + min_temp * rain_days,      data = effort_weather)
+m_minT_x_meanWind_year <- lm(log_active_nests ~ year + min_temp * mean_wind,      data = effort_weather)
+m_lagR_x_maxT_year     <- lm(log_active_nests ~ year + lag_total_rain * max_temp, data = effort_weather)
+```
+
+
+### Two separate AICc model selection runs
+
+```{r}
+## AIC 1: without year
+cand_effort_no_year <- list(
+  null            = m_null,
+
+  mean_temp       = m_mean_temp,
+  max_temp        = m_max_temp,
+  min_temp        = m_min_temp,
+  total_rain      = m_total_rain,
+  rain_days       = m_rain_days,
+  max_rain        = m_max_rain,
+  lag_total_rain  = m_lag_total_rain,
+  mean_wind       = m_mean_wind,
+  max_wind        = m_max_wind,
+  hail_days       = m_hail_days,
+
+  minT_totalR     = m_minT_totalR,
+  minT_maxR       = m_minT_maxR,
+  minT_maxW       = m_minT_maxW,
+  hail_maxW       = m_hail_maxW,
+  maxR_maxW       = m_maxR_maxW,
+  maxT_rainDays   = m_maxT_rainDays,
+  hail_rainDays   = m_hail_rainDays,
+
+  minT_x_rainDays = m_minT_x_rainDays,
+  minT_x_meanWind = m_minT_x_meanWind,
+  lagR_x_maxT     = m_lagR_x_maxT
+)
+
+aic_effort_no_year <- aictab(cand.set = cand_effort_no_year, modnames = names(cand_effort_no_year))
+aic_effort_no_year
+```
+
+```{r}
+## AIC 2: with year
+cand_effort_with_year <- list(
+  year               = m_year,
+
+  mean_temp          = m_mean_temp_year,
+  max_temp           = m_max_temp_year,
+  min_temp           = m_min_temp_year,
+  total_rain         = m_total_rain_year,
+  rain_days          = m_rain_days_year,
+  max_rain           = m_max_rain_year,
+  lag_total_rain     = m_lag_total_rain_year,
+  mean_wind          = m_mean_wind_year,
+  max_wind           = m_max_wind_year,
+  hail_days          = m_hail_days_year,
+
+  minT_totalR        = m_minT_totalR_year,
+  minT_maxR          = m_minT_maxR_year,
+  minT_maxW          = m_minT_maxW_year,
+  hail_maxW          = m_hail_maxW_year,
+  maxR_maxW          = m_maxR_maxW_year,
+  maxT_rainDays      = m_maxT_rainDays_year,
+  hail_rainDays      = m_hail_rainDays_year,
+
+  minT_x_rainDays    = m_minT_x_rainDays_year,
+  minT_x_meanWind    = m_minT_x_meanWind_year,
+  lagR_x_maxT        = m_lagR_x_maxT_year
+)
+
+aic_effort_with_year <- aictab(cand.set = cand_effort_with_year, modnames = names(cand_effort_with_year))
+aic_effort_with_year
+```
+
+```{r}
+## Best model (no year)
+best_no_year_name <- aic_effort_no_year$Modnames[1]
+best_no_year_model <- cand_effort_no_year[[best_no_year_name]]
+
+par(mfrow = c(2,2))
+plot(best_no_year_model)
+
+## Best model (with year)
+best_with_year_name <- aic_effort_with_year$Modnames[1]
+best_with_year_model <- cand_effort_with_year[[best_with_year_name]]
+
+par(mfrow = c(2,2))
+plot(best_with_year_model)
+
+## Adjusted R² summaries (as you had)
+summary(m_year)$adj.r.squared
+summary(best_with_year_model)$adj.r.squared
+summary(best_no_year_model)$adj.r.squared
+```
+
+### Annual breeding effort over time
+
+```{r}
+ggplot(effort_weather, aes(x = year, y = active_nests)) +
+  geom_point(
+    size = 2.4,
+    colour = "#B1BD8C",
+    alpha = 0.9
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = TRUE,
+    colour = "#D5D6D2",
+    fill   = "#D5D6D2",
+    alpha  = 0.25,
+    linewidth = 1.8
+  ) +
+  scale_x_continuous(
+    breaks = seq(
+      min(effort_weather$year),
+      max(effort_weather$year),
+      by = 5
+    )
+  ) +
+  labs(
+    x = "Year",
+    y = "Number of active nests"
+  ) +
+  theme_bw(base_family = "Times New Roman") +
+  theme(
+    panel.grid = element_blank(),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text  = element_text(face = "bold", size = 10)
+  )
+```
+### AIC tables: with and without year 
+```{r}
+
+library(dplyr)
+library(tibble)
+library(officer)
+library(flextable)
+
+if (requireNamespace("conflicted", quietly = TRUE)) {
+  conflicted::conflicts_prefer(flextable::compose)
+}
+
+stopifnot(exists("aic_effort_with_year"))
+stopifnot(exists("cand_effort_with_year"))
+stopifnot(exists("aic_effort_no_year"))
+stopifnot(exists("cand_effort_no_year"))
+
+
+group_order <- c("Baseline","Rain","Temperature","Wind","Hail","Joint effects","Interactions")
+
+model_group <- function(m){
+  dplyr::case_when(
+    m %in% c("null", "year") ~ "Baseline",
+    m %in% c("total_rain","rain_days","max_rain","lag_total_rain") ~ "Rain",
+    m %in% c("mean_temp","max_temp","min_temp") ~ "Temperature",
+    m %in% c("mean_wind","max_wind") ~ "Wind",
+    m %in% c("hail_days") ~ "Hail",
+    m %in% c("minT_totalR","minT_maxR","minT_maxW","hail_maxW","maxR_maxW","maxT_rainDays","hail_rainDays") ~ "Joint effects",
+    m %in% c("minT_x_rainDays","minT_x_meanWind","lagR_x_maxT") ~ "Interactions",
+    TRUE ~ "Joint effects"
+  )
+}
+
+label_model <- function(x){
+  dplyr::recode(
+    x,
+    "null"            = "Intercept only",
+    "year"            = "Year (baseline)",
+    "total_rain"      = "Total rainfall",
+    "rain_days"       = "Rainy days",
+    "max_rain"        = "Maximum daily rainfall",
+    "lag_total_rain"  = "Previous year's total rainfall",
+    "mean_temp"       = "Mean temperature",
+    "max_temp"        = "Maximum temperature",
+    "min_temp"        = "Minimum temperature",
+    "mean_wind"       = "Mean wind speed",
+    "max_wind"        = "Maximum wind speed",
+    "hail_days"       = "Hail days",
+    "minT_totalR"     = "Min temperature + total rainfall",
+    "minT_maxR"       = "Min temperature + max daily rainfall",
+    "minT_maxW"       = "Min temperature + max wind speed",
+    "hail_maxW"       = "Hail days + max wind speed",
+    "maxR_maxW"       = "Max daily rainfall + max wind speed",
+    "maxT_rainDays"   = "Max temperature + rainy days",
+    "hail_rainDays"   = "Hail days + rainy days",
+    "minT_x_rainDays" = "Min temperature × rainy days",
+    "minT_x_meanWind" = "Min temperature × mean wind speed",
+    "lagR_x_maxT"     = "Prev. rainfall × max temperature",
+    .default = x
+  )
+}
+
+single_weather_models <- c(
+  "total_rain","rain_days","max_rain","lag_total_rain",
+  "mean_temp","max_temp","min_temp",
+  "mean_wind","max_wind",
+  "hail_days"
+)
+
+get_slope_se_single_weather <- function(mod, model_id){
+  slope_se <- ""
+  if (model_id %in% single_weather_models) {
+    cn <- names(coef(mod))
+    cn <- setdiff(cn, "(Intercept)")
+    cn_weather <- cn[!grepl("^year$|^year\\b|\\byear\\b", cn)]
+    if (length(cn_weather) == 1) {
+      term <- cn_weather[1]
+      est <- coef(mod)[term]
+      se  <- sqrt(diag(vcov(mod)))[term]
+      slope_se <- paste0(round(est, 3), " (", round(se, 3), ")")
+    }
+  }
+  slope_se
+}
+
+prep_aic_set <- function(aic_obj){
+  aic_df <- as.data.frame(aic_obj)
+
+  if ("Modnames" %in% names(aic_df)) {
+    aic_df <- aic_df  |>  mutate(model_id = Modnames)
+  } else {
+    aic_df <- tibble::rownames_to_column(aic_df, "model_id")
+  }
+
+  if (!("AICc" %in% names(aic_df))) stop("Could not find an AICc column in the AIC table.")
+
+  if (!("K" %in% names(aic_df))) {
+    if ("k" %in% names(aic_df)) aic_df$K <- aic_df$k
+    if ("df" %in% names(aic_df)) aic_df$K <- aic_df$df
+  }
+  if (!("K" %in% names(aic_df))) stop("Could not find K (number of parameters) in the AIC table.")
+
+  aic_df  |> 
+    mutate(
+      AICc = as.numeric(AICc),
+      `ΔAICc` = AICc - min(AICc, na.rm = TRUE),
+      w = {
+        rel <- exp(-0.5 * (AICc - min(AICc, na.rm = TRUE)))
+        rel / sum(rel, na.rm = TRUE)
+      }
+    )  |> 
+    select(model_id, K, AICc, `ΔAICc`, w)  |> 
+    arrange(`ΔAICc`)
+}
+
+get_deviance_original <- function(model_id, aic_obj, cand_list){
+  aic_df <- as.data.frame(aic_obj)
+
+  if ("Modnames" %in% names(aic_df)) {
+    aic_df$model_id <- aic_df$Modnames
+  } else if (!"model_id" %in% names(aic_df)) {
+    aic_df <- tibble::rownames_to_column(aic_df, "model_id")
+  }
+
+  row <- aic_df[aic_df$model_id == model_id, , drop = FALSE]
+
+  if (nrow(row) == 1) {
+    if ("Deviance" %in% names(row) && is.finite(row$Deviance)) return(as.numeric(row$Deviance))
+    if ("LL" %in% names(row) && is.finite(row$LL)) return(as.numeric(row$LL))
+  }
+
+  as.numeric(-2 * stats::logLik(cand_list[[model_id]]))
+}
+
+build_df <- function(tab, cand_list, aic_obj){
+  tab  |> 
+    mutate(
+      Deviance = sapply(model_id, function(mn) get_deviance_original(mn, aic_obj, cand_list)),
+      `R²`     = sapply(model_id, function(mn) summary(cand_list[[mn]])$r.squared),
+      `slope (SE)` = sapply(model_id, function(mn) get_slope_se_single_weather(cand_list[[mn]], mn)),
+      Group = factor(model_group(model_id), levels = group_order),
+      Model = label_model(model_id),
+      K = as.integer(K)
+    )  |> 
+    mutate(
+      Deviance = round(Deviance, 2), 
+      AICc     = round(AICc, 2),
+      `ΔAICc`  = round(`ΔAICc`, 2),
+      w        = round(w, 3),
+      `R²`     = round(`R²`, 3)
+    )  |> 
+    arrange(Group, `ΔAICc`)  |> 
+    select(Group, Model, K, Deviance, AICc, `ΔAICc`, w, `R²`, `slope (SE)`)
+}
+
+add_headers <- function(df, trend_label){
+  df <- df  |>  mutate(Group = factor(Group, levels = group_order))
+
+  groups_here <- levels(droplevels(df$Group))
+  groups_here <- groups_here[groups_here %in% unique(as.character(df$Group))]
+
+  empty_row <- df[0, ]
+
+  trend_row <- empty_row
+  trend_row[1, ] <- NA
+  trend_row$Group <- NA
+  trend_row$Model <- trend_label
+
+  out <- trend_row
+  is_trend <- TRUE
+  is_group <- FALSE
+
+  for (g in groups_here) {
+    gh <- empty_row
+    gh[1, ] <- NA
+    gh$Group <- NA
+    gh$Model <- g
+
+    rows_g <- df  |>  filter(as.character(Group) == g)  |>  mutate(Group = NA)
+
+    out <- bind_rows(out, gh, rows_g)
+    is_trend <- c(is_trend, FALSE, rep(FALSE, nrow(rows_g)))
+    is_group <- c(is_group, TRUE,  rep(FALSE, nrow(rows_g)))
+  }
+
+  df_print <- out  |>  select(-Group)
+  df_print[is.na(df_print)] <- ""
+
+  list(
+    df_print = df_print,
+    trend_rows = which(is_trend),
+    group_rows = which(is_group)
+  )
+}
+
+tab_wy <- prep_aic_set(aic_effort_with_year)
+tab_ny <- prep_aic_set(aic_effort_no_year)
+
+df_wy <- build_df(tab_wy, cand_effort_with_year, aic_effort_with_year)
+df_ny <- build_df(tab_ny, cand_effort_no_year,  aic_effort_no_year)
+
+hdr_wy <- add_headers(df_wy, "a) Models including year trend")
+hdr_ny <- add_headers(df_ny, "b) Models without year trend")
+
+df_print_1a <- hdr_wy$df_print
+df_print_1b <- hdr_ny$df_print
+
+
+make_ft <- function(df_print, trend_rows, group_rows){
+
+  ft <- flextable(df_print)  |> 
+    font(fontname = "Times New Roman", part = "all")  |> 
+    fontsize(size = 12, part = "all")  |> 
+    bold(part = "header")  |> 
+    bg(part = "header", bg = "#f2f2f2")  |> 
+    align(j = 1, align = "left", part = "all")  |> 
+    align(j = 2:ncol(df_print), align = "center", part = "all")  |> 
+    bg(i = trend_rows, bg = "#d9d9d9", part = "body")  |> 
+    bold(i = trend_rows, part = "body")  |> 
+    bg(i = group_rows, bg = "#e6e6e6", part = "body")  |> 
+    bold(i = group_rows, part = "body")  |> 
+    autofit()
+
+  ft <- flextable::compose(
+    ft,
+    i = trend_rows,
+    j = 1,
+    part = "body",
+    value = as_paragraph(
+      as_chunk(
+        df_print[trend_rows, 1],
+        props = fp_text(underline = TRUE, bold = TRUE)
+      )
+    )
+  )
+
+  ft
+}
+
+ft_1a <- make_ft(df_print_1a, hdr_wy$trend_rows, hdr_wy$group_rows)
+ft_1b <- make_ft(df_print_1b, hdr_ny$trend_rows, hdr_ny$group_rows)
+
+caption_1a <- paste0(
+  "Table 1a. Model selection results relating to annual weather variation and the number of active nests at Dronfield (1993–2024) for models including a linear year effect (corresponding to Fig. 1a). ",
+  "Models were fitted using linear regressions. A '+' indicates additive effects and '×' indicates an interaction. ",
+  "K is the number of parameters; AICc is Akaike's Information Criterion; ΔAICc is relative to the best model within this model set; w is the Akaike weight; R² is variance explained. ",
+  "Slopes (SE) are reported for simple predictor models only."
+)
+
+caption_1b <- paste0(
+  "Table 1b. Model selection results relating to annual weather variation and the number of active nests at Dronfield (1993–2024) for models excluding a linear year effect (corresponding to Figs. 1b–c). ",
+  "Models were fitted using linear regressions. A '+' indicates additive effects and '×' indicates an interaction. ",
+  "K is the number of parameters; AICc is Akaike's Information Criterion; ΔAICc is relative to the best model within this model set; w is the Akaike weight; R² is variance explained. ",
+  "Slopes (SE) are reported for simple predictor models only."
+)
+
+doc <- read_docx()  |> 
+  body_add_par(caption_1a, style = "Normal")  |> 
+  body_add_par("", style = "Normal")  |> 
+  body_add_flextable(ft_1a)  |> 
+  body_add_par("", style = "Normal")  |> 
+  body_add_par(caption_1b, style = "Normal")  |> 
+  body_add_par("", style = "Normal")  |> 
+  body_add_flextable(ft_1b) 
+
+print(doc, target = "Table_1a_1b_Active_Nests.docx")
+
+```
+
+
+## Objective 2: Breeding success
+
+### Candidate model set
+
+```{r}
+objective2_table <- tribble(
+  ~`Hypothesis / justification`, ~Model,
+
+  "**Temp**", "",
+  "Extreme heat events cause chick heat stress and dehydration, reducing fledging success",
+  "success ~ max_temp + (1 | year)",
+  "Cold extremes increase thermoregulatory demand in chicks, increasing mortality risk",
+  "success ~ min_temp + (1 | year)",
+
+  "**Rain**", "",
+  "Prolonged rainfall reduces adult foraging efficiency, limiting food delivery to chicks and reducing breeding success",
+  "success ~ rain_days + (1 | year)",
+  "Intense rainfall events cause acute nest disturbance and chick exposure, reducing breeding success",
+  "success ~ max_rain + (1 | year)",
+  "Overall wet years reduce provisioning efficiency across the breeding season, lowering breeding success",
+  "success ~ total_rain + (1 | year)",
+
+  "**Wind**", "",
+  "Extreme winds increase nest exposure and disrupt provisioning, reducing chick survival",
+  "success ~ max_wind + (1 | year)",
+
+  "**Hail**", "",
+  "Severe hail events increase nest destruction and chick mortality, reducing breeding success",
+  "success ~ hail_days + (1 | year)",
+
+  "**Joint effects**", "",
+  "Severe storm exposure increases nest destruction and chick mortality, reducing breeding success",
+  "success ~ hail_days + max_wind + (1 | year)",
+  "Prolonged wet conditions combined with storm events increase chick exposure and limit provisioning, reducing breeding success",
+  "success ~ rain_days + hail_days + (1 | year)",
+  "Heat stress combined with prolonged wet conditions reduces chick thermoregulation and food delivery, lowering breeding success",
+  "success ~ max_temp + rain_days + (1 | year)",
+
+  "**Interactive effects**", "",
+  "The negative effect of heat stress on breeding success is amplified during persistently wet conditions that limit adult foraging",
+  "success ~ max_temp * rain_days + (1 | year)",
+  "Cold stress on chicks is amplified during extreme wind events due to increased exposure and heat loss, reducing breeding success",
+  "success ~ min_temp * max_wind + (1 | year)"
+)
+
+knitr::kable(
+  objective2_table,
+  align = c("l", "l"),
+  caption = "Objective 2 candidate model set for breeding success. All models are fitted as binomial GLMMs: cbind(success_nests, failed_nests) with a random intercept for year (1 | year)."
+)
+```
+
+### Data used
+
+```{r}
+success_df <- vultures.clean |>
+  dplyr::mutate(year = lubridate::year(ringing.date)) |>
+  dplyr::filter(!is.na(year)) |>
+  dplyr::group_by(year) |>
+  dplyr::summarise(
+    active_nests  = dplyr::n(),
+    success_nests = sum(!is.na(laying.date)),
+    failed_nests  = active_nests - success_nests,
+    success_prop  = success_nests / active_nests,
+    .groups       = "drop"
+  ) |>
+  dplyr::filter(active_nests > 0) |>
+  dplyr::left_join(weather_yearly, by = c("year" = "YEAR")) |>
+  dplyr::mutate(
+    year = factor(year),
+
+    z_max_temp    = as.numeric(scale(max_temp)),
+    z_min_temp    = as.numeric(scale(min_temp)),
+    z_rain_days   = as.numeric(scale(rain_days)),
+    z_max_rain    = as.numeric(scale(max_rain)),
+    z_total_rain  = as.numeric(scale(total_rain)),
+    z_max_wind    = as.numeric(scale(max_wind)),
+    z_hail_days   = as.numeric(scale(hail_days))
+  )
+
+success_cc <- success_df |>
+  dplyr::select(
+    year, success_nests, failed_nests,
+    z_max_temp, z_min_temp,
+    z_rain_days, z_max_rain, z_total_rain,
+    z_max_wind, z_hail_days
+  ) |>
+  tidyr::drop_na()
+
+nrow(success_df)
+nrow(success_cc)
+```
+
+### Checking overdispersion 
+
+```{r}
+success_year_glm <- glm(
+  cbind(success_nests, failed_nests) ~ year,
+  family = binomial,
+  data   = success_cc
+)
+
+summary(success_year_glm)
+
+performance::check_overdispersion(success_year_glm)
+```
+
+
+### Fitting the models 
+
+```{r}
+library(lme4)
+
+success_df <- success_df |> dplyr::mutate(year = factor(year))
+
+# Baseline (null) model
+
+m0_success <- glmer(
+  cbind(success_nests, failed_nests) ~ 1 + (1 | year),
+  family = binomial,
+  data = success_df
+)
+
+# Single predictor models
+
+m_succ_maxT <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_temp + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_minT <- glmer(
+  cbind(success_nests, failed_nests) ~ z_min_temp + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_rainD <- glmer(
+  cbind(success_nests, failed_nests) ~ z_rain_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_maxR <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_rain + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_totR <- glmer(
+  cbind(success_nests, failed_nests) ~ z_total_rain + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_maxW <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_wind + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_hail <- glmer( 
+  cbind(success_nests, failed_nests) ~ z_hail_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+# Joint effects
+
+m_succ_hailW <- glmer(
+  cbind(success_nests, failed_nests) ~ z_hail_days + z_max_wind + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_rainH <- glmer(
+  cbind(success_nests, failed_nests) ~ z_rain_days + z_hail_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_heatR <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_temp + z_rain_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+# Interactions
+
+m_succ_int_heat_rain <- glmer(
+  cbind(success_nests, failed_nests) ~ z_max_temp * z_rain_days + (1 | year),
+  family = binomial, data = success_df
+)
+
+m_succ_int_cold_wind <- glmer(
+  cbind(success_nests, failed_nests) ~ z_min_temp * z_max_wind + (1 | year),
+  family = binomial, data = success_df
+)
+
+```
+
+
+### AIC model selection
+
+```{r}
+cand_success <- list(
+  null_re      = m0_success,
+
+  max_temp     = m_succ_maxT,
+  min_temp     = m_succ_minT,
+  rain_days    = m_succ_rainD,
+  max_rain     = m_succ_maxR,
+  total_rain   = m_succ_totR,
+  max_wind     = m_succ_maxW,
+  hail_days    = m_succ_hail,
+
+  hail_maxW    = m_succ_hailW,
+  rain_hail    = m_succ_rainH,
+  maxT_rainD   = m_succ_heatR,
+
+  int_heatRain = m_succ_int_heat_rain,
+  int_coldWind = m_succ_int_cold_wind
+)
+
+aic_success <- aictab(
+  cand.set  = cand_success,
+  modnames  = names(cand_success)
+)
+
+aic_success
+```
+
+```{r}
+vc_year <- function(mod) {
+  vc <- as.data.frame(VarCorr(mod))
+  vc$vcov[vc$grp == "year"][1]
+}
+
+v0     <- vc_year(m0_success)
+v_minT <- vc_year(m_succ_minT)
+
+prop_between_year_explained <- (v0 - v_minT) / v0
+prop_between_year_explained
+
+```
+
+### Best models
+
+```{r}
+aic_df_success <- as.data.frame(aic_success)
+
+best_success_id <- if ("Modnames" %in% names(aic_df_success)) {
+  aic_df_success$Modnames[1]
+} else {
+  rownames(aic_df_success)[1]
+}
+
+best_success_mod <- cand_success[[best_success_id]]
+
+best_success_id
+summary(best_success_mod)
+```
+
+### Adding population size to the best supported models:
+
+```{r}
+success_df <- success_df |>
+  mutate(z_active_nests = scale(active_nests))
+
+```
+
+```{r}
+m_succ_pop <- glmer(
+  cbind(success_nests, failed_nests) ~ z_active_nests + (1 | year),
+  family = binomial,
+  data = success_df
+)
+
+```
+
+```{r}
+m_succ_minT_pop <- glmer(
+  cbind(success_nests, failed_nests) ~ z_min_temp + z_active_nests + (1 | year),
+  family = binomial,
+  data = success_df
+)
+
+```
+
+
+```{r}
+summary(m_succ_pop)
+summary(m_succ_minT)
+summary(m_succ_minT_pop)
+
+```
+
+```{r}
+aictab(list(
+  min_temp      = m_succ_minT,
+  min_temp_pop  = m_succ_minT_pop,
+  pop_only      = m_succ_pop
+))
+
+```
+
+```{r}
+summary(m_succ_minT_pop)
+
+```
+```{r}
+vc_year <- function(mod) {
+  vc <- as.data.frame(VarCorr(mod))
+  vc$vcov[vc$grp == "year"][1]
+}
+
+v0 <- vc_year(m0_success)
+v1 <- vc_year(m_succ_minT_pop)
+
+prop_between_year_explained <- (v0 - v1) / v0
+prop_between_year_explained
+
+```
+
+```{r}
+v_minT <- vc_year(m_succ_minT)
+
+prop_minT <- (v0 - v_minT) / v0
+prop_minT
+
+```
+
+```{r}
+coef(summary(m_succ_minT_pop))["z_min_temp", c("Estimate", "Std. Error")]
+```
+
+
+```{r}
+v_pop <- vc_year(m_succ_pop)
+
+prop_pop <- (v0 - v_pop) / v0
+prop_pop
+
+```
+
+```{r}
+vc_year <- function(mod) {
+  vc <- as.data.frame(VarCorr(mod))
+  out <- vc$vcov[vc$grp == "year"][1]
+  if (length(out) == 0) NA_real_ else out
+}
+
+slope_se_single <- function(mod, digits = 3){
+  fe <- lme4::fixef(mod)
+
+  if (length(fe) == 2) {
+    cf <- summary(mod)$coefficients
+    paste0(
+      round(cf[2, 1], digits),
+      " (", round(cf[2, 2], digits), ")"
+    )
+  } else {
+    ""
+  }
+}
+
+annual_var_expl_factory <- function(null_mod){
+  v0 <- vc_year(null_mod)
+  function(mod){
+    v_mod <- vc_year(mod)
+    if (is.finite(v_mod) && is.finite(v0) && v0 > 0) max(0, (v0 - v_mod)/v0) else NA_real_
+  }
+}
+
+aic_df <- as.data.frame(aic_success)
+
+if ("Modnames" %in% names(aic_df)) {
+  aic_df <- aic_df  |>  mutate(model_id = Modnames)
+} else {
+  aic_df <- tibble::rownames_to_column(aic_df, "model_id")
+}
+
+table_success <- aic_df  |> 
+  rename(`ΔAICc` = Delta_AICc, w = AICcWt)  |> 
+  select(model_id, K, AICc, `ΔAICc`, w)  |> 
+  arrange(`ΔAICc`)
+
+var_expl_fun <- annual_var_expl_factory(m0_success)
+
+stats_df <- table_success  |> 
+  mutate(
+    `Between-year variance explained` =
+      sapply(model_id, function(mn) var_expl_fun(cand_success[[mn]])),
+    `slope (SE)` =
+      sapply(model_id, function(mn) slope_se_single(cand_success[[mn]]))
+  )
+
+table_success2 <- table_success  |> 
+  left_join(stats_df  |>  select(model_id, `Between-year variance explained`, `slope (SE)`),
+            by = "model_id")  |> 
+  mutate(
+    AICc = round(AICc, 2),
+    `ΔAICc` = round(`ΔAICc`, 2),
+    w = round(w, 3),
+    `Between-year variance explained` = round(`Between-year variance explained`, 3)
+  )
+
+group_order <- c("Baseline", "Temperature", "Rain", "Wind", "Hail", "Joint effects", "Interactions")
+
+model_group_success <- function(m){
+  dplyr::case_when(
+    m %in% c("null_re") ~ "Baseline",
+    m %in% c("max_temp", "min_temp") ~ "Temperature",
+    m %in% c("rain_days", "max_rain", "total_rain") ~ "Rain",
+    m %in% c("max_wind") ~ "Wind",
+    m %in% c("hail_days") ~ "Hail",
+    m %in% c("hail_maxW", "rain_hail", "maxT_rainD") ~ "Joint effects",
+    m %in% c("int_heatRain", "int_coldWind") ~ "Interactions",
+    TRUE ~ "Joint effects"
+  )
+}
+
+pretty_model_success <- function(x){
+  dplyr::recode(
+    x,
+    "null_re"      = "Intercept only",
+    "max_temp"     = "Maximum temperature",
+    "min_temp"     = "Minimum temperature",
+    "rain_days"    = "Rainy days",
+    "max_rain"     = "Maximum daily rainfall",
+    "total_rain"   = "Total rainfall",
+    "max_wind"     = "Maximum wind speed",
+    "hail_days"    = "Hail days",
+    "hail_maxW"    = "Hail days + max wind speed",
+    "rain_hail"    = "Rainy days + hail days",
+    "maxT_rainD"   = "Max temperature + rainy days",
+    "int_heatRain" = "Max temperature × rainy days",
+    "int_coldWind" = "Min temperature × max wind speed",
+    .default = x
+  )
+}
+
+df <- table_success2  |> 
+  mutate(
+    Group = factor(model_group_success(model_id), levels = group_order),
+    Model = pretty_model_success(model_id)
+  )  |> 
+  arrange(Group, `ΔAICc`)  |> 
+  select(Group, Model, K, AICc, `ΔAICc`, w, `Between-year variance explained`, `slope (SE)`)
+
+groups <- levels(droplevels(df$Group))
+groups <- groups[groups %in% unique(as.character(df$Group))]
+
+make_group_block <- function(g) {
+  header <- df[0, ]
+  header[1, ] <- NA
+  header$Group <- g
+  header$Model <- g
+  header$is_group <- TRUE
+
+  rows <- df  |>  filter(as.character(Group) == g)
+  rows$is_group <- FALSE
+
+  bind_rows(header, rows)
+}
+
+df2 <- bind_rows(lapply(groups, make_group_block))
+group_rows <- which(df2$is_group)
+
+df_print <- df2  |>  select(-Group, -is_group)
+
+ft <- flextable(df_print)  |> 
+  font(fontname = "Times New Roman", part = "all")  |> 
+  fontsize(size = 12, part = "all")  |> 
+  bold(part = "header")  |> 
+  bg(part = "header", bg = "#f2f2f2")  |> 
+  align(j = 1, align = "left", part = "all")  |> 
+  align(j = 2:ncol(df_print), align = "center", part = "all")  |> 
+  bg(i = group_rows, bg = "#e6e6e6", part = "body")  |> 
+  bold(i = group_rows, part = "body")  |> 
+  autofit()
+
+doc <- read_docx()  |>  body_add_flextable(ft)
+print(doc, target = "Table_2_Breeding_Success_REBUILT.docx")
+```
+
+
+```{r}
+
+sens_tbl <- tibble(
+  Model = c(
+    "Minimum temperature",
+    "Population size",
+    "Minimum temperature + population size"
+  ),
+  `ΔAICc` = c(6.91, 5.44, 0.00),
+  `AIC weight` = c(0.03, 0.06, 0.91),
+  `Between-year variance explained` = c(0.21, 0.24, 0.50)
+)
+
+
+ft <- flextable(sens_tbl)
+
+ft <- ft |>
+  font(fontname = "Times New Roman", part = "all") |>
+  fontsize(size = 12, part = "all") |>
+  bold(part = "header") |>
+  bg(part = "header", bg = "#f2f2f2") |>
+  align(j = 1, align = "left", part = "all") |>
+  align(j = 2:ncol(sens_tbl), align = "center", part = "all") |>
+  autofit()
+
+
+doc <- read_docx() |>
+  body_add_flextable(ft)
+
+print(doc, target = "Sensitivity_Table.docx")
+
+```
+
+### Combines table
+
+```{r}
+sens_tbl <- tibble(
+  Model = c(
+    "Minimum temperature",
+    "Population size",
+    "Minimum temperature + population size"
+  ),
+  `ΔAICc` = c(6.91, 5.44, 0.00),
+  w = c(0.03, 0.06, 0.91),
+  `Between-year variance explained` = c(0.21, 0.24, 0.50)
+)
+
+align_to_template <- function(x, template_names) {
+  missing <- setdiff(template_names, names(x))
+  if (length(missing) > 0) x[missing] <- NA
+  x <- x[, template_names, drop = FALSE]
+  x
+}
+
+variance_targets <- c(
+  "Between-year variance explained",
+  "Annual variance explained",
+  "Variance explained",
+  "Deviance explained"
+)
+target_var_col <- intersect(variance_targets, names(df_print))[1]
+
+sens_tbl2 <- sens_tbl
+
+if (!is.na(target_var_col) && target_var_col != "Between-year variance explained") {
+  sens_tbl2 <- sens_tbl2  |> 
+    rename(!!target_var_col := `Between-year variance explained`)  |> 
+    select(-`Between-year variance explained`)
+}
+
+sens_tbl2 <- align_to_template(sens_tbl2, names(df_print))
+
+sens_header <- df_print[0, ]
+sens_header[1, ] <- NA
+sens_header$Model <- "A posteriori models: population size"
+sens_header$is_group <- TRUE
+
+main_tbl <- df_print  |>  mutate(is_group = FALSE)
+sens_tbl2 <- sens_tbl2  |>  mutate(is_group = FALSE)
+
+df_final_print <- bind_rows(
+  main_tbl,
+  sens_header,
+  sens_tbl2
+)  |> 
+  select(-is_group)
+
+group_rows_combined <- c(group_rows, nrow(main_tbl) + 1)
+
+
+ft <- flextable(df_final_print)  |> 
+  font(fontname = "Times New Roman", part = "all")  |> 
+  fontsize(size = 12, part = "all")  |> 
+  bold(part = "header")  |> 
+  bg(part = "header", bg = "#f2f2f2")  |> 
+  align(j = 1, align = "left", part = "all")  |> 
+  align(j = 2:ncol(df_final_print), align = "center", part = "all")  |> 
+  bg(i = group_rows_combined, bg = "#e6e6e6", part = "body")  |> 
+  bold(i = group_rows_combined, part = "body")  |> 
+  autofit()
+
+doc <- read_docx()  |>  body_add_flextable(ft)
+print(doc, target = "Table_2_Breeding_Success_WITH_PostHoc.docx")
+```
+
+--------------------------------------------------------------------------------
+## Objective 3: Breeding Timing of Successful Nests
+
+### DAGS 
+
+### Scenario A
+
+```{r}
+
+dir.create("figures", showWarnings = FALSE)
+
+export_dag_pdf <- function(dag, filename, w = 8, h = 4) {
+  svg_txt <- DiagrammeRsvg::export_svg(dag)
+  rsvg::rsvg_pdf(
+    charToRaw(svg_txt),
+    file = file.path("figures", filename),
+    width = w, height = h
+  )
+  file.info(file.path("figures", filename))[, "size"]
+}
+
+timing_simple_dag <- DiagrammeR::grViz("
+digraph timing_simple {
+  graph [
+    layout = neato,
+    splines = false,
+    overlap = false
+  ]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    margin = 0.25
+  ]
+
+  edge [
+    penwidth = 1.8,
+    arrowsize = 0.55
+  ]
+
+  W     [label = 'W',  shape = box,    pos = '1.4,1.5!']
+
+  T [label = 'T',
+     shape = circle,
+     fixedsize = true,
+     width = 1,
+     pos = '2.8,1.5!'
+  ]
+
+  S     [label = 'S',  shape = box,    pos = '1.4,0!']
+  Tstar [label = 'T*', shape = box,    pos = '2.8,0!']
+
+  W -> T
+  T -> Tstar
+  S -> Tstar
+}
+")
+
+export_dag_pdf(timing_simple_dag, "timing_simple_dag.pdf", 8, 4)
+
+
+```
+
+### Scenario B
+
+```{r}
+timing_B_dag <- DiagrammeR::grViz("
+digraph timing_B {
+  graph [
+    layout = neato,
+    splines = false,
+    overlap = false
+  ]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    margin = 0.25
+  ]
+
+  edge [
+    penwidth = 1.8,
+    arrowsize = 0.55
+  ]
+
+  W     [label = 'W',  shape = box,    pos = '1.0,1.5!']
+
+  T [label = 'T',
+     shape = circle,
+     fixedsize = true,
+     width = 1,
+     pos = '2.8,1.5!'
+  ]
+
+  S     [label = 'S',  shape = box,    pos = '1.0,0!']
+  Tstar [label = 'T*', shape = box,    pos = '2.8,0!']
+
+  W -> T
+  W -> S
+  T -> Tstar
+  S -> Tstar
+}
+")
+
+export_dag_pdf(timing_B_dag, "timing_B_dag.pdf", 8, 4)
+
+```
+
+### Scenario C
+
+```{r}
+timing_C_dag <- DiagrammeR::grViz("
+digraph timing_C {
+  graph [
+    layout = neato,
+    splines = false,
+    overlap = false
+  ]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    margin = 0.25
+  ]
+
+  edge [
+    penwidth = 1.8,
+    arrowsize = 0.55
+  ]
+
+  W     [label = 'W',  shape = box,    pos = '1.0,1.5!']
+
+  T [label = 'T',
+     shape = circle,
+     fixedsize = true,
+     width = 1,
+     pos = '2.8,1.5!'
+  ]
+
+  S     [label = 'S',  shape = box,    pos = '1.0,0!']
+  Tstar [label = 'T*', shape = box,    pos = '2.8,0!']
+
+  W -> T
+  T -> Tstar
+  S -> Tstar
+  T -> S
+}
+")
+
+export_dag_pdf(timing_C_dag, "timing_C_dag.pdf", 8, 4)
+
+```
+
+### Scenario D
+
+```{r}
+timing_D_dag <- DiagrammeR::grViz("
+digraph timing_D {
+  graph [
+    layout = neato,
+    splines = false,
+    overlap = false
+  ]
+
+  node [
+    fontname = Helvetica,
+    fontsize = 22,
+    penwidth = 2,
+    margin = 0.25
+  ]
+
+  edge [
+    penwidth = 1.8,
+    arrowsize = 0.55
+  ]
+
+  W     [label = 'W',  shape = box,    pos = '1.0,1.5!']
+
+  T [label = 'T',
+     shape = circle, 
+     fixedsize = true,
+     width = 1,
+     pos = '2.8,1.5!'
+  ]
+
+  S     [label = 'S',  shape = box,    pos = '1.0,0!']
+  Tstar [label = 'T*', shape = box,    pos = '2.8,0!']
+
+  X [label = 'X',
+     shape = circle,
+     fixedsize = true,
+     width = 0.9,
+     pos = '2.0,0.75!'
+  ]
+
+  W -> T
+  T -> Tstar
+  S -> Tstar
+  X -> T
+  X -> S
+}
+")
+
+export_dag_pdf(timing_D_dag, "timing_D_dag.pdf", 8, 4)
+
+```
+
+### Models
+
+### Candidate model set
+
+```{r}
+objective3_table <- tribble(
+  ~`Hypothesis / justification`, ~Model,
+
+  # Temperature (pre-laying cues)
+  "**Temp (pre-laying)**", "",
+  "Short-term warm conditions prior to laying may act as a cue for the initiation of breeding.",
+  "lay_DOY ~ mean_temp_30",
+
+  "Cold pre-laying conditions delay breeding due to increased energetic costs",
+  "lay_DOY ~ min_temp_30",
+
+
+  # Rain (pre-laying cues)
+  "**Rain (pre-laying)**", "",
+  "Prolonged wet conditions prior to laying delay breeding by limiting foraging efficiency",
+  "lay_DOY ~ rain_days_30",
+
+  "Higher rainfall prior to laying signals improved food availability and advances breeding timing",
+  "lay_DOY ~ total_rain_30",
+
+  # Wind (pre-laying flight conditions)
+  "**Wind (pre-laying)**", "",
+  "Persistent windy conditions prior to laying increase flight costs and delay breeding timing",
+  "lay_DOY ~ mean_wind_30",
+
+  # Lagged effects (carry-over cues) 
+  "**Lagged effects (previous year)**", "",
+  "Higher rainfall in the previous year improves food availability and adult condition entering the breeding season, allowing vultures to initiate breeding earlier",
+  "lay_DOY ~ lag_total_rain",
+
+  "Prolonged wet conditions in the previous year may influence adult condition and carry over to affect laying timing",
+  "lay_DOY ~ lag_rain_days",
+
+  "Thermal conditions in the previous year influence physiological state entering the breeding season",
+  "lay_DOY ~ lag_mean_temp",
+
+  #Joint effects 
+  "**Joint effects**", "",
+  "Temperature and rainfall cues prior to laying jointly influence breeding timing",
+  "lay_DOY ~ mean_temp_30 + rain_days_30",
+
+  "Carry-over effects from the previous year interact with current pre-laying rainfall cues",
+  "lay_DOY ~ lag_total_rain + rain_days_30",
+
+  "Previous-year rainfall and current temperature jointly influence breeding timing",
+  "lay_DOY ~ lag_total_rain + mean_temp_30",
+
+  # Interactive effects
+  "**Interactive effects**", "",
+  "The effect of temperature cues on breeding timing depends on pre-laying rainfall conditions",
+  "lay_DOY ~ mean_temp_30 * rain_days_30",
+
+  "Carry-over effects from the previous year modify responses to current pre-laying temperature cues",
+  "lay_DOY ~ lag_total_rain * mean_temp_30"
+)
+
+kable(
+  objective3_table,
+  align = c("l", "l"),
+  caption = "Objective 3 candidate model set for breeding timing (laying date, day of year)."
+)
+```
+
+### Timing data used 
+
+```{r}
+
+timing_df <- vultures.clean |>
+  dplyr::filter(!is.na(laying.date)) |>
+  dplyr::mutate(
+    year    = as.integer(lubridate::year(laying.date)),
+    lay_DOY = lubridate::yday(laying.date)
+  ) |>
+  dplyr::filter(!is.na(year), year != 1900)
+
+# One value per year
+timing_by_year <- timing_df |>
+  dplyr::group_by(year) |>
+  dplyr::summarise(
+    lay_DOY_median = median(lay_DOY, na.rm = TRUE),
+    lay_DOY_mean   = mean(lay_DOY, na.rm = TRUE),
+    n_nests        = sum(!is.na(lay_DOY)),
+    first_DOY      = min(lay_DOY, na.rm = TRUE),
+    last_DOY       = max(lay_DOY, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(year)
+
+timing_by_year
+
+
+ggplot(timing_by_year, aes(x = year, y = lay_DOY_median)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  labs(x = "Year", y = "Median laying date (DOY)") +
+  theme_bw() +
+  theme(panel.grid = element_blank())
+```
+
+```{r}
+obj3_year_df <- timing_by_year |>
+  left_join(weather_march_by_year, by = "year") |>
+  left_join(
+    weather_annual_by_year |>
+      dplyr::select(year,
+                    lag_mean_temp_annual,
+                    lag_total_rain_annual,
+                    lag_rain_days_annual),
+    by = "year"
+  ) |>
+  arrange(year)
+
+obj3_year_df
+```
+
+v
+`
+
+```{r}
+timing_by_year <- timing_df |>
+  dplyr::filter(!is.na(year), year != 1900) |>
+  dplyr::mutate(year = as.integer(year)) |>
+  dplyr::group_by(year) |>
+  dplyr::summarise(
+    lay_DOY_median = median(lay_DOY, na.rm = TRUE),
+    lay_DOY_mean   = mean(lay_DOY, na.rm = TRUE),
+    n_nests        = sum(!is.na(lay_DOY)),
+    first_DOY      = min(lay_DOY, na.rm = TRUE),
+    last_DOY       = max(lay_DOY, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(year)
+```
+
+
+```{r}
+vars_obj3 <- c(
+  "year",
+  "lay_DOY_median",
+  "mean_temp_win", "min_temp_win",
+  "rain_days_win", "total_rain_win",
+  "mean_wind_win",
+  "lag_mean_temp_annual",
+  "lag_total_rain_annual",
+  "lag_rain_days_annual"
+)
+
+obj3_cc <- obj3_year_df |>
+  dplyr::select(all_of(vars_obj3)) |>
+  tidyr::drop_na()
+```
+
+
+```{r}
+nrow(obj3_year_df)
+summary(obj3_year_df$lay_DOY_median)
+summary(obj3_year_df$mean_temp_win)
+```
+
+```{r}
+cand_obj3 <- list(
+  null = lm(lay_DOY_median ~ 1, data = obj3_cc),
+
+  meanT = lm(lay_DOY_median ~ mean_temp_win, data = obj3_cc),
+  minT  = lm(lay_DOY_median ~ min_temp_win,  data = obj3_cc),
+
+  rainD = lm(lay_DOY_median ~ rain_days_win,  data = obj3_cc),
+  totR  = lm(lay_DOY_median ~ total_rain_win, data = obj3_cc),
+
+  wind  = lm(lay_DOY_median ~ mean_wind_win, data = obj3_cc),
+
+  lagMeanT = lm(lay_DOY_median ~ lag_mean_temp_annual,  data = obj3_cc),
+  lagTotR  = lm(lay_DOY_median ~ lag_total_rain_annual, data = obj3_cc),
+  lagRainD = lm(lay_DOY_median ~ lag_rain_days_annual,  data = obj3_cc),
+
+  cue_plus_lagR =
+    lm(lay_DOY_median ~ mean_temp_win + rain_days_win + lag_total_rain_annual,
+       data = obj3_cc),
+
+  lagR_plus_cueRain =
+    lm(lay_DOY_median ~ lag_total_rain_annual + rain_days_win,
+       data = obj3_cc),
+
+  int_TR =
+    lm(lay_DOY_median ~ mean_temp_win * rain_days_win,
+       data = obj3_cc),
+
+  lagR_x_meanT =
+    lm(lay_DOY_median ~ lag_total_rain_annual * mean_temp_win,
+       data = obj3_cc)
+)
+
+aictab(cand.set = cand_obj3, modnames = names(cand_obj3))
+```
+
+
+### Adding population size to best fit model
+
+```{r}
+obj3_pop_df <- obj3_cc |>
+  left_join(
+    success_df |>
+      mutate(year = as.integer(as.character(year))) |>
+      group_by(year) |>
+      summarise(active_nests = first(active_nests), .groups = "drop"),
+    by = "year"
+  ) |>
+  mutate(z_active_nests = as.numeric(scale(active_nests)))
+```
+
+```{r}
+summary(obj3_pop_df$active_nests)
+summary(obj3_pop_df$z_active_nests)
+```
+
+```{r}
+m_lagR     <- lm(lay_DOY_median ~ lag_total_rain_annual, data = obj3_pop_df)
+m_pop      <- lm(lay_DOY_median ~ z_active_nests, data = obj3_pop_df)
+m_lagR_pop <- lm(lay_DOY_median ~ lag_total_rain_annual + z_active_nests,
+                 data = obj3_pop_df)
+
+aictab(cand.set = list(
+  lagR = m_lagR,
+  pop = m_pop,
+  lagR_plus_pop = m_lagR_pop
+))
+```
+
+```{r}
+
+dev_m2ll <- function(mod) -2 * as.numeric(logLik(mod))
+get_K    <- function(mod) attr(logLik(mod), "df")
+r2_fun   <- function(mod) summary(mod)$r.squared
+
+slope_se_single <- function(mod, digits = 3){
+  cf <- summary(mod)$coefficients
+  if (nrow(cf) == 2) paste0(round(cf[2,1], digits), " (", round(cf[2,2], digits), ")") else ""
+}
+
+build_table <- function(model_list){
+  bind_rows(lapply(names(model_list), function(nm){
+    mod <- model_list[[nm]]
+    tibble(
+      model_id = nm,
+      K = get_K(mod),
+      Deviance = dev_m2ll(mod),
+      AICc = AICc(mod),
+      `R²` = r2_fun(mod),
+      `slope (SE)` = slope_se_single(mod)
+    )
+  })) |>
+    arrange(AICc) |>
+    mutate(
+      `ΔAICc` = AICc - min(AICc, na.rm = TRUE),
+      w = exp(-0.5 * `ΔAICc`) / sum(exp(-0.5 * `ΔAICc`)),
+      Deviance = round(Deviance, 2),
+      AICc = round(AICc, 2),
+      `ΔAICc` = round(`ΔAICc`, 2),
+      w = round(w, 3),
+      `R²` = round(`R²`, 3)
+    )
+}
+
+model_labels <- tribble(
+  ~model_id, ~Group, ~Model,
+
+  "null", "Baseline", "Intercept only",
+
+  "meanT", "Temperature", "Mean temperature (March)",
+  "minT",  "Temperature", "Minimum temperature (March)",
+
+  "rainD", "Rain", "Rainy days (March)",
+  "totR",  "Rain", "Total rainfall (March)",
+
+  "wind",  "Wind", "Mean wind speed (March)",
+
+  "lagMeanT", "Lagged effects", "Previous year mean temperature",
+  "lagTotR",  "Lagged effects", "Previous year total rainfall",
+  "lagRainD", "Lagged effects", "Previous year rainy days",
+
+  "cue_plus_lagR",     "Joint effects", "March cues + previous year rainfall",
+  "lagR_plus_cueRain", "Joint effects", "Previous year rainfall + March rainy days",
+
+  "int_TR",       "Interactions", "Mean temperature × rainy days (March)",
+  "lagR_x_meanT", "Interactions", "Lag rainfall × March mean temperature"
+)
+
+group_order <- c(
+  "Baseline",
+  "Temperature",
+  "Rain",
+  "Wind",
+  "Lagged effects",
+  "Joint effects",
+  "Interactions",
+  "A posteriori models: population size",
+  "Other"
+)
+
+main_df <- build_table(cand_obj3)
+
+df <- main_df |>
+  left_join(model_labels, by = "model_id") |>
+  mutate(
+    Group = coalesce(Group, "Other"),
+    Model = coalesce(Model, model_id),
+    Group = factor(Group, levels = group_order)
+  ) |>
+  arrange(Group, `ΔAICc`) |>
+  select(Group, Model, K, Deviance, AICc, `ΔAICc`, w, `R²`, `slope (SE)`)
+
+if (exists("m_lagR") && exists("m_pop") && exists("m_lagR_pop")) {
+
+  posthoc_models <- list(
+    lagR = m_lagR,
+    pop  = m_pop,
+    lagR_plus_pop = m_lagR_pop
+  )
+
+  posthoc_df <- build_table(posthoc_models) |>
+    mutate(
+      Group = "A posteriori models: population size",
+      Model = dplyr::recode(
+        model_id,
+        "lagR" = "Previous year total rainfall",
+        "pop"  = "Number of active nests",
+        "lagR_plus_pop" = "Previous year rainfall + number of active nests",
+        .default = model_id
+      ),
+      Group = factor(Group, levels = group_order)
+    ) |>
+    arrange(`ΔAICc`) |>
+    select(Group, Model, K, Deviance, AICc, `ΔAICc`, w, `R²`, `slope (SE)`)
+
+  df <- bind_rows(df, posthoc_df) |>
+    arrange(Group, `ΔAICc`)
+}
+
+# group header rows
+groups_present <- df |>
+  mutate(Group_chr = as.character(Group)) |>
+  pull(Group_chr) |>
+  unique()
+
+make_group_block <- function(g) {
+  header <- df[0, ]
+  header[1, ] <- NA
+  header$Group <- g
+  header$Model <- g
+  header$is_group <- TRUE
+
+  rows <- df |> filter(as.character(Group) == g)
+  rows$is_group <- FALSE
+
+  bind_rows(header, rows)
+}
+
+df2 <- bind_rows(lapply(groups_present, make_group_block))
+group_rows <- which(df2$is_group)
+df_print <- df2 |> select(-Group, -is_group)
+
+ft <- flextable(df_print) |>
+  font(fontname = "Times New Roman", part = "all") |>
+  fontsize(size = 12, part = "all") |>
+  bold(part = "header") |>
+  bg(part = "header", bg = "#f2f2f2") |>
+  align(j = 1, align = "left", part = "all") |>
+  align(j = 2:ncol(df_print), align = "center", part = "all") |>
+  bg(i = group_rows, bg = "#e6e6e6", part = "body") |>
+  bold(i = group_rows, part = "body") |>
+  autofit()
+
+for (r in group_rows) {
+  ft <- merge_at(ft, i = r, j = 1:ncol(df_print), part = "body")
+  ft <- align(ft, i = r, j = 1, align = "left", part = "body")
+}
+
+doc <- read_docx() |>
+  body_add_par(
+    paste0(
+    ),
+    style = "Normal"
+  ) |>
+  body_add_flextable(ft)
+
+print(doc, target = "Table_Obj3_Timing_OrderedLikeObj2.docx")
+cat("Saved: Table_Obj3_Timing_OrderedLikeObj2.docx\n")
+```
+### Figures 
+
+```{r}
+ggplot(obj3_cc, aes(x = year, y = lay_DOY_median)) +
+  geom_point(
+    size = 2.4,
+    colour = "#B1BD8C",
+    alpha = 0.9
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = TRUE,
+    colour = "#D5D6D2",
+    fill   = "#A9AAA7",
+    alpha  = 0.25,
+    linewidth = 1.8
+  ) +
+  scale_x_continuous(
+    breaks = seq(
+      min(obj3_cc$year),
+      max(obj3_cc$year),
+      by = 5
+    )
+  ) +
+  labs(
+    x = "Year",
+    y = "Median laying date (day of year)"
+  ) +
+  theme_bw(base_family = "Times New Roman") +
+  theme(
+    panel.grid = element_blank(),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text  = element_text(face = "bold", size = 10)
+  )
+```
+
+```{r}
+ggplot(obj3_cc, aes(x = lag_total_rain_annual, y = lay_DOY_median)) +
+  geom_point(
+    size = 2.4,
+    colour = "#B1BD8C",
+    alpha = 0.9
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = TRUE,
+    colour = "#D5D6D2",
+    fill   = "#A9AAA7",
+    alpha  = 0.25,
+    linewidth = 1.8
+  ) +
+  labs(
+    x = "Previous-year total rainfall (mm)",
+    y = "Median laying date (day of year)"
+  ) +
+  theme_bw(base_family = "Times New Roman") +
+  theme(
+    panel.grid = element_blank(),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text  = element_text(face = "bold", size = 10)
+  )
+```
+
+
+
+
