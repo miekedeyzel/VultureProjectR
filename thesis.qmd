@@ -668,7 +668,7 @@ Mean temperature $\times$ rainy days (March) & 5 & 169.56 & 181.87 & 8.35 & 0.00
 \endgroup
 ```
 
-
+ 
 ```{=latex}
 \pagebreak
 \begingroup
