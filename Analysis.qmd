@@ -1,23 +1,27 @@
 ---
-title: "The Effects of Climate Change on the Breeding Ecology of African White-backed Vultures: Analyses"
-author: "Mieke Deyzel"
-
 format:
   pdf:
     toc: false
     number-sections: true
+    geometry:
+      - left=1cm
+      - right=1cm
+      - top=1cm
+      - bottom=1cm
     include-in-header:
       text: |
         \usepackage{graphicx}
         \usepackage{hyperref}
+        \usepackage{setspace}
+        \setstretch{1.0}
 
-        % --- Wrap long code lines in PDF ---
+        % wrap + shrink code blocks
         \usepackage{fvextra}
         \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
           breaklines=true,
           breakanywhere=true,
           commandchars=\\\{\},
-          fontsize=\small
+          fontsize=\footnotesize
         }
 
 execute:
@@ -25,7 +29,57 @@ execute:
   warning: false
 ---
 
-::: {.panel-tabset}
+```{=latex}
+\appendix
+```
+
+# Supplementary Figures 
+
+![](A1.png) Figure A1: The temporal trends of the weather variables included in the analysis. Data is derived from the Kimbereley meteorological station (1993 - 2024). Annual values are represented by the grey lines with the green lines representing the fitted linear trend.
+
+![](Corr.png) Figure A2: A correlation matrix showing the persons correlation coeficients between all weather variables included in the analyses on the effects of weather on the breeding ecology of African white-backed vultures at Dronfield (1993-2025). 
+
+```{=latex}
+\begin{table}[H]
+\centering
+\caption{Codes used to describe nest and breeding status during field surveys at Dronfield Nature Reserve, Kimberley.}
+\label{tab:nest_codes}
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{p{1.5cm} p{11cm}}
+\hline
+\textbf{Code} & \textbf{Description} \\
+\hline
+1  & Chick ringed. \\
+2  & Chick too small to ring. \\
+3  & Chick too big to ring. \\
+4  & Chick fledged. \\
+5  & Nest new lining (for this breeding season). \\
+6  & Nest egg shell fragments (for this breeding season). \\
+8  & Nest with white wash. \\
+10 & Nest inactive. \\
+11 & Nest collapsed. \\
+13 & Nest gone. \\
+14 & Other bird species nesting. \\
+15 & Egg (for this breeding season). \\
+16 & Nest rebuilt, lined with dead chick, bones or feathers (for this breeding season). \\
+17 & Nest rebuilt, not lined (for this breeding season). \\
+18 & Nest under construction (for this breeding season). \\
+19 & Found in August, not checked in October. \\
+20 & Found in October, not seen in August. \\
+-- & Nest tree, used for the first time this year. \\
+-- & Pylon nest. \\
+\hline
+\end{tabular}
+\end{table}
+```
+
+```{=latex}
+\clearpage
+
+```
+
+# Full Statistical Analyses
 
 ```{r}
 #| label: setup
@@ -139,7 +193,7 @@ colSums(is.na(vultures.clean))
 
 ### Number of Active Nests
 
-```{r}
+```{r fig.cap="The number of active nests at Dronfield (1993–2024)."}
 active_nests_yearly <- vultures.clean |>
   mutate(year = year(ringing.date)) |>
   filter(!is.na(year)) |>
@@ -154,7 +208,7 @@ ggplot(active_nests_yearly, aes(x = year, y = active_nests)) +
 
 ### Breeding success
 
-```{r}
+```{r fig.cap="Histogram showing the distribution of annual breeding success proportions at Dronfield (1993–2024)."}
 success_yearly <- vultures.clean |>
   mutate(year = year(ringing.date)) |>
   filter(!is.na(year)) |>
@@ -179,7 +233,7 @@ ggplot(success_yearly, aes(x = success_prop)) +
 
 ### Failed vs Successful nests
 
-```{r}
+```{r fig.cap="The proportion of failed nests vs successfull nests at Dronfield (1993-2024)"}
 mod_fail <- lm(fail_prop ~ active_nests, data = success_yearly)
 
 newdat <- tibble(
@@ -198,7 +252,7 @@ ggplot() +
   geom_point(
     data = success_yearly,
     aes(x = active_nests, y = fail_prop),
-    colour = "#B1BD8C",
+    colour = "black",
     alpha = 0.7,
     size = 2.6
   ) +
@@ -263,7 +317,7 @@ WeatherData <- weather_raw |>
 
 ### Adding correct rainfall for 2004
 
-```{r}
+```{r weather-load, cache=TRUE}
 lonlat <- tibble(lon = 24.81, lat = -28.62)
 
 kimberley_chirps_2004 <- get_chirps(
@@ -331,8 +385,6 @@ weather_march_by_year <- weather_daily  |>
 
 weather_march_by_year
 ```
-
-
 
 ### Lagged weather summaries 
 
@@ -474,16 +526,9 @@ cor_df <- as.data.frame(res$r) |>
   pivot_longer(-var1, names_to = "var2", values_to = "cor") |>
   mutate(p = as.vector(res$P)) 
 
-ggplot(cor_df, aes(x = var1, y = var2, fill = cor)) +
-  geom_tile() +
-  scale_fill_gradient2(low = "#b2182b", mid = "white", high = "#2166ac",
-                       midpoint = 0, limits = c(-1, 1)) +
-  labs(x = "", y = "", fill = "Correlation") +
-  theme_bw() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    panel.grid  = element_blank()
-  )
+cor_df
+
+
 ```
 
 ### Trends over time for breeding variables
@@ -903,13 +948,13 @@ summary(best_with_year_model)$adj.r.squared
 summary(best_no_year_model)$adj.r.squared
 ```
 
-### Annual breeding effort over time
+### Number of Active nests over time
 
-```{r}
+```{r fig.cap="The number of active nests at Dronfield, over time (1993-2024)"}
 ggplot(effort_weather, aes(x = year, y = active_nests)) +
   geom_point(
     size = 2.4,
-    colour = "#B1BD8C",
+    colour = "black",
     alpha = 0.9
   ) +
   geom_smooth(
@@ -938,6 +983,7 @@ ggplot(effort_weather, aes(x = year, y = active_nests)) +
     axis.text  = element_text(face = "bold", size = 10)
   )
 ```
+
 ### AIC tables: with and without year 
 ```{r}
 
@@ -2005,72 +2051,76 @@ export_dag_pdf(timing_D_dag, "timing_D_dag.pdf", 8, 4)
 ### Candidate model set
 
 ```{r}
+library(tibble)
+library(knitr)
+
 objective3_table <- tribble(
   ~`Hypothesis / justification`, ~Model,
 
-  # Temperature (pre-laying cues)
-  "**Temp (pre-laying)**", "",
-  "Short-term warm conditions prior to laying may act as a cue for the initiation of breeding.",
-  "lay_DOY ~ mean_temp_30",
+  # ---- Baseline ----
+  "**Baseline**", "",
+  "Baseline (null / intercept-only) model for breeding timing (laying date, day of year).",
+  "lay_DOY ~ 1",
 
-  "Cold pre-laying conditions delay breeding due to increased energetic costs",
-  "lay_DOY ~ min_temp_30",
+  # ---- Temperature (March cues) ----
+  "**Temperature**", "",
+  "Warmer conditions in March may act as a cue for the initiation of breeding, advancing laying dates.",
+  "lay_DOY ~ meanT",
 
+  "Colder March conditions may delay breeding due to increased energetic costs and reduced adult condition.",
+  "lay_DOY ~ minT",
 
-  # Rain (pre-laying cues)
-  "**Rain (pre-laying)**", "",
-  "Prolonged wet conditions prior to laying delay breeding by limiting foraging efficiency",
-  "lay_DOY ~ rain_days_30",
+  # ---- Rain (March cues) ----
+  "**Rain**", "",
+  "Prolonged wet conditions in March may delay breeding by limiting foraging efficiency.",
+  "lay_DOY ~ rainD",
 
-  "Higher rainfall prior to laying signals improved food availability and advances breeding timing",
-  "lay_DOY ~ total_rain_30",
+  "Higher March rainfall may signal improved food availability and advance breeding timing.",
+  "lay_DOY ~ totR",
 
-  # Wind (pre-laying flight conditions)
-  "**Wind (pre-laying)**", "",
-  "Persistent windy conditions prior to laying increase flight costs and delay breeding timing",
-  "lay_DOY ~ mean_wind_30",
+  # ---- Wind (March cues) ----
+  "**Wind**", "",
+  "Persistent windy conditions in March increase flight costs and may delay breeding timing.",
+  "lay_DOY ~ wind",
 
-  # Lagged effects (carry-over cues) 
-  "**Lagged effects (previous year)**", "",
-  "Higher rainfall in the previous year improves food availability and adult condition entering the breeding season, allowing vultures to initiate breeding earlier",
-  "lay_DOY ~ lag_total_rain",
+  # ---- Lagged effects (previous year) ----
+  "**Lagged effects**", "",
+  "Thermal conditions in the previous year may influence physiological state entering the breeding season and affect laying timing.",
+  "lay_DOY ~ lagMeanT",
 
-  "Prolonged wet conditions in the previous year may influence adult condition and carry over to affect laying timing",
-  "lay_DOY ~ lag_rain_days",
+  "Higher rainfall in the previous year may improve food availability and adult condition entering the breeding season, allowing earlier laying.",
+  "lay_DOY ~ lagTotR",
 
-  "Thermal conditions in the previous year influence physiological state entering the breeding season",
-  "lay_DOY ~ lag_mean_temp",
+  "Prolonged wet conditions in the previous year may influence adult condition and carry over to affect laying timing.",
+  "lay_DOY ~ lagRainD",
 
-  #Joint effects 
+  # ---- Joint effects ----
   "**Joint effects**", "",
-  "Temperature and rainfall cues prior to laying jointly influence breeding timing",
-  "lay_DOY ~ mean_temp_30 + rain_days_30",
+  "March cues and previous-year rainfall may jointly influence breeding timing.",
+  "lay_DOY ~ cue_plus_lagR",
 
-  "Carry-over effects from the previous year interact with current pre-laying rainfall cues",
-  "lay_DOY ~ lag_total_rain + rain_days_30",
+  "Previous-year rainfall and March rainy days may jointly influence breeding timing.",
+  "lay_DOY ~ lagR_plus_cueRain",
 
-  "Previous-year rainfall and current temperature jointly influence breeding timing",
-  "lay_DOY ~ lag_total_rain + mean_temp_30",
+  # ---- Interactions ----
+  "**Interactions**", "",
+  "The effect of March temperature cues on laying timing may depend on March rainfall conditions.",
+  "lay_DOY ~ int_TR",
 
-  # Interactive effects
-  "**Interactive effects**", "",
-  "The effect of temperature cues on breeding timing depends on pre-laying rainfall conditions",
-  "lay_DOY ~ mean_temp_30 * rain_days_30",
-
-  "Carry-over effects from the previous year modify responses to current pre-laying temperature cues",
-  "lay_DOY ~ lag_total_rain * mean_temp_30"
+  "Carry-over effects from the previous year may modify responses to March temperature cues.",
+  "lay_DOY ~ lagR_x_meanT"
 )
 
 kable(
   objective3_table,
   align = c("l", "l"),
-  caption = "Objective 3 candidate model set for breeding timing (laying date, day of year)."
+  caption = "Objective 3 candidate model set for breeding timing (laying date, day of year). March weather cues and lagged (previous-year) effects."
 )
 ```
 
 ### Timing data used 
 
-```{r}
+```{r fig.cap="Variation in breeding timing (laying date) across the study period in Dronfield (1993-2024)." }
 
 timing_df <- vultures.clean |>
   dplyr::filter(!is.na(laying.date)) |>
@@ -2393,47 +2443,13 @@ doc <- read_docx() |>
 print(doc, target = "Table_Obj3_Timing_OrderedLikeObj2.docx")
 cat("Saved: Table_Obj3_Timing_OrderedLikeObj2.docx\n")
 ```
-### Figures 
 
-```{r}
-ggplot(obj3_cc, aes(x = year, y = lay_DOY_median)) +
-  geom_point(
-    size = 2.4,
-    colour = "#B1BD8C",
-    alpha = 0.9
-  ) +
-  geom_smooth(
-    method = "lm",
-    se = TRUE,
-    colour = "#D5D6D2",
-    fill   = "#A9AAA7",
-    alpha  = 0.25,
-    linewidth = 1.8
-  ) +
-  scale_x_continuous(
-    breaks = seq(
-      min(obj3_cc$year),
-      max(obj3_cc$year),
-      by = 5
-    )
-  ) +
-  labs(
-    x = "Year",
-    y = "Median laying date (day of year)"
-  ) +
-  theme_bw(base_family = "Times New Roman") +
-  theme(
-    panel.grid = element_blank(),
-    axis.title = element_text(face = "bold", size = 12),
-    axis.text  = element_text(face = "bold", size = 10)
-  )
-```
 
-```{r}
+```{r fig.cap="The relationship between the total annual rainfall in the previous year and breeding timing (media. laying date)"}
 ggplot(obj3_cc, aes(x = lag_total_rain_annual, y = lay_DOY_median)) +
   geom_point(
     size = 2.4,
-    colour = "#B1BD8C",
+    colour = "black",
     alpha = 0.9
   ) +
   geom_smooth(
