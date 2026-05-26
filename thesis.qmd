@@ -105,8 +105,8 @@ cite-method: citeproc
 p {
   text-align: justify;
 }
-</style>
-```
+</style> 
+``` 
 
 ```{=latex}
 \begin{titlepage}
@@ -181,34 +181,34 @@ Acknowledgements
 
 I would like to express my sincerest gratitude to Professor Res Altwegg, who supervised this project and for his guidance throughout this project. Completing this thesis would not have been possible without his suggestions and constructive guidance through complex statistical concepts. A special thank you to the team at Dronfield, who have dedicated many years to collecting the data used in this project, and to BirdLife South Africa, who has granted me permission to use the data to do this project. To Angus, it was an honour to have had your guidance throughout this project and thank you for your willingness to help whenever I had any questions regarding the vulture colony at Dronfield. Thank you to my friends and family who have supported me during all of the highs and the lows, your words of encouragement did not go unnoticed. Lastly, I dedicate this thesis to my Lord and Saviour, who has equipped me with the strength to fulfill this dream.  
 
-**Declarations**
+*Declarations*
 
-**Plagiarism declaration**
+*Plagiarism declaration*
 
-**I, Mieke Deyzel, hereby declare that the work on which this thesis is based is my original work (except where acknowledgements indicate otherwise) and that neither the whole work nor any part of it has been, is being, or is to be submitted for another degree in this or any other university. I authorise the University to reproduce for the purpose of research either the whole or any portion of the contents in any manner whatsoever.**
+*I, Mieke Deyzel, hereby declare that the work on which this thesis is based is my original work (except where acknowledgements indicate otherwise) and that neither the whole work nor any part of it has been, is being, or is to be submitted for another degree in this or any other university. I authorise the University to reproduce for the purpose of research either the whole or any portion of the contents in any manner whatsoever.*
 
-**Signature:**
+*Signature:*
 
-**Date: 12/02/2026**
-
-
-
-**I, Mieke Deyzel, hereby declare that the work presented by me in this thesis is entirely my own original creation, and I have not utilized any form of artificial intelligence (AI) or any other automated tools to generate, modify, or enhance any part of this work with the exception to what is listed below and adherence to the Department's guidelines.**
-
-**I affirm that: **
-**1.⁠ ⁠The ideas, concepts, and content presented in this work are the result of my own intellectual efforts and creativity.**
-
-**2. ⁠Declaration of AI use I, Mieke Deyzel, hereby declare that I have not used AI-generated content, algorithms, or tools to assist in generating text or image manipulation. AI tools were used according to the Department guidelines for assisting in editing, and fixing code errors in R statistical computing environment.**
-
-**3.⁠ ⁠I understand that if it is discovered that any part of this work has been plagiarized, fabricated, or otherwise misrepresented, I may face severe academic or professional consequences, including the possibility of failing the assignment, course, or examination, as well as potential disciplinary actions by my institution or organization.**
-
-**I acknowledge that the integrity of this work is of utmost importance, and I take full responsibility for its originality and adherence to ethical standards.**
+*Date: 12/02/2026*
 
 
-**Signature:**
+
+*I, Mieke Deyzel, hereby declare that the work presented by me in this thesis is entirely my own original creation, and I have not utilized any form of artificial intelligence (AI) or any other automated tools to generate, modify, or enhance any part of this work with the exception to what is listed below and adherence to the Department's guidelines.* 
+
+*I affirm that: *
+*1.⁠ ⁠The ideas, concepts, and content presented in this work are the result of my own intellectual efforts and creativity.*
+
+*2. ⁠Declaration of AI use I, Mieke Deyzel, hereby declare that I have not used AI-generated content, algorithms, or tools to assist in generating text or image manipulation. AI tools were used according to the Department guidelines for assisting in editing, and fixing code errors in R statistical computing environment.*
+
+*3.⁠ ⁠I understand that if it is discovered that any part of this work has been plagiarized, fabricated, or otherwise misrepresented, I may face severe academic or professional consequences, including the possibility of failing the assignment, course, or examination, as well as potential disciplinary actions by my institution or organization.* 
+
+*I acknowledge that the integrity of this work is of utmost importance, and I take full responsibility for its originality and adherence to ethical standards.*
 
 
-**Date: 12/02/2026**
+*Signature:*
+
+
+*Date: 12/02/2026*
 
 
 The link to GitHub repo, including my full analyses can be found here: \href{https://github.com/miekedeyzel/VultureProjectR}{https://github.com/miekedeyzel/VultureProjectR}
@@ -259,7 +259,7 @@ The white-backed vulture (*Gyps africanus*), hereafter white-backed vulture, is 
 
 Conway et al. (2015) predicted that southern Africa will experience significant shifts in climatic conditions, including increased temperatures and changing rainfall patterns, causing major shifts in climatically suitable habitats for numerous species. Additionally, projections show a general drying of many parts of southern Africa, including summer rainfall areas, most relevant to White-backed vultures [@conway2015climate; @engelbrecht2024projections]. Similar to other large-bodied birds, vultures rely on atmospheric thermals for efficient soaring to locate food, which could become constrained when there is an increase in rainfall that suppresses the formation of these thermals [@virani2012seasonal]. Constraints such as these could cause vultures to reduce their breeding activity and therefore alter their population dynamics because food availability is one of the most important factors that cause variation in the reproductive success of avian species, as they often time their breeding to correspond with high food availability [@harriman2017seasonal]. These effects are typically seen in years that are known for prolonged rainfall events, and the lasting effects of reduced foraging efficiency are reflected throughout the breeding season.
 
-## Aims and Objectives 
+## Aims and Objectives
 
 This study aims to assess how inter annual weather variation influenced the breeding ecology of white-backed vultures by using 31 years of breeding data from Dronfield Nature Reserve in Kimberley, South Africa. Three components of the breeding cycle will be assessed for a comprehensive overview what influence weather has, namely, the number of active nests, proportion of successful nests and the breeding timing of successful nests. The study will adress three objectives:
 

@@ -37,7 +37,7 @@ execute:
 
 ![](A1.png) Figure A1: The temporal trends of the weather variables included in the analysis. Data is derived from the Kimbereley meteorological station (1993 - 2024). Annual values are represented by the grey lines with the green lines representing the fitted linear trend.
 
-![](Corr.png) Figure A2: A correlation matrix showing the persons correlation coeficients between all weather variables included in the analyses on the effects of weather on the breeding ecology of African white-backed vultures at Dronfield (1993-2025). 
+![](Corr.png) Figure A2: A correlation matrix showing the persons correlation coeficients between all weather variables included in the analyses on the effects of weather on the breeding ecology of African white-backed vultures at Dronfield (1993-2025).  
 
 ```{=latex}
 \begin{table}[H]
