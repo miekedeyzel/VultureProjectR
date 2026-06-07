@@ -1,0 +1,621 @@
+---
+title: "Thesis Corrections"
+
+format:
+  pdf:
+    geometry:
+      - left=2.4cm
+      - right=2.4cm
+      - top=2.4cm
+      - bottom=2.4cm
+    toc: false
+    number-sections: false
+    include-in-header:
+      text: |
+        \usepackage{graphicx}
+        \usepackage{hyperref}
+        \usepackage{setspace}
+        \setstretch{1.5}
+
+        \usepackage{titlesec}
+        \titleformat{\section}
+          {\rmfamily\bfseries\fontsize{14}{16}\selectfont}
+          {\thesection}{1em}{}
+        \titleformat{\subsection}
+          {\rmfamily\bfseries\fontsize{12}{14}\selectfont}
+          {\thesubsection}{1em}{}
+        \titleformat{\subsubsection}
+          {\rmfamily\bfseries\fontsize{12}{14}\selectfont}
+          {\thesubsubsection}{1em}{}
+
+        \AtBeginDocument{%
+          \hypersetup{
+            colorlinks=true,
+            linkcolor=black,
+            citecolor=black,
+            urlcolor=black
+          }%
+        }
+
+execute:
+  python: false
+  echo: false
+  warning: false
+  message: false
+
+mainfont: "Times New Roman"
+---
+
+## General comments
+
+Most Journals use the active voice and increasingly the past tense throughout, as you have already done the work.
+
+Generally, for Table and Figure legends, the 1st part is in bold.
+
+Check spacing before and after a paragraph is zero. Either add a line between paragraphs or indent them. Add a line before subheadings - some of which you do not have.
+
+Most Journals use sentence case for headings and subheadings. You have a mixture-standardise. The exception is when you have proper nouns or in a heading or subheading.
+
+You have mainly used UK English, except for some words that need to change from ‘iz’ to ‘is’. Check and change throughout.
+
+You need to be consistent with capitalising common names of birds. Some Journals start each word of the common names with a capital. Alternatively, use lowercase for all except proper nouns. But do not use both. P11 para 3 – for example, you use two variations of capitalizing the common name. This is incorrect.
+
+Most Journals use sentence case and bold for headings in Tables. You have a mixture-standardise.
+
+
+**1: Use plurals for your headings where appropriate, e.g. “Conclusions”.**
+
+“Conclusion” was corrected to “Conclusions” in the thesis.
+
+**2: Replace ‘compared to/ in comparison to’ with ‘compared with/ in comparison with’ throughout, but sometimes you can use ‘than’ instead.**
+
+Throughout the thesis, ‘compared to/ in comparison to’ was revised to ‘compared with/in comparison with’ respectively. In some cases, ‘than’ was used where more appropriate.
+
+**3: Use “Due to” at the beginning of the sentence, and “because of” everywhere else in sentences.**
+
+Where ‘due to’ was used in a sentence (occurred five times), it was revised to ‘because of’ except for when it occurred at the beginning of a sentence (occurred two times).
+
+**4: Avoid using ‘like’ but rather use ‘, such as xxxx..’**
+
+In the six instances where ‘like’ was used, it was revised to “such as” instead.
+
+**5: I suggest you replace ‘current/ currently’ with ‘present/presently’.**
+
+The 3 instances where ‘current/currently’ were used were revised to ‘present/presently’ throughout the thesis.
+
+**6: Southern is usually written in lowercase, unless it is at the beginning of a sentence.**
+
+The inconsistent capitalisation of ‘southern’ was revised by using lowercase throughout.
+
+**7: Sometimes you use ‘African white-backed vulture’ and other times ‘white-backed vulture’. Perhaps after the 1st mention of the full name, say hereafter white-backed vulture.**
+
+Added ‘hereafter white-backed vulture’ after the first mention of ‘African white-backed vulture’ and revised further mention of the full name to white-backed vulture throughout the thesis. Additionally, inconstant capitalisation was addressed in the mention of the white-backed vulture throughout.
+
+## Specific comments
+
+### Title page
+
+Thesis title - Fine
+
+### Acknowledgements
+
+**1: Sentence 2 and 3 – add some commas.**
+
+Commas were added to improve sentence readability.
+
+**2: Last line change ‘equip’ to ‘equipped’.**
+
+‘equip’ was revised to ‘equipped’.
+
+### Declarations
+
+**1: Perhaps bold Declarations.**
+
+Declarations section was changed to bold.
+
+**2: Change ‘have not used employed’ either delete ‘used’ or ‘employed’.**
+
+‘employed’ was deleted from this sentence.
+
+**3: Correct ‘imagime’ to ‘image’.**
+
+The error ‘imagime’ was corrected to ‘image’.
+
+### Abstract
+
+Fair summary.
+
+**1: Correct ‘especially’.**
+
+Corrected.
+
+**2: L8 Correct ‘Gyps Africanus’ to ‘Gyps africanus’.**
+
+Inconsistent capitalisation of the ‘africanus’ in the scientific name was corrected.
+
+**3: L8 Add ‘, South Africa’ after ‘Kimberley’.**
+
+This study investigated how weather influences the different breeding stages of white-backed vultures (*Gyps africanus*), by using 31 years of breeding data from Dronfield in Kimberley, South Africa.
+
+South Africa was added to the sentence.
+
+**4: ~L15 change to ‘..showed high annual variability, mainly explained by long-term temporal trends, with weather accounting for minimal additional explanatory power’.**
+
+L15 has been adjusted according to the suggestion:
+
+The number of active nests showed high annual variability, mainly explained by long-term temporal trends, with weather accounting for minimal additional explanatory power.
+
+**5: ~L18 change to ‘..explaining 21% of the between-year variability after accounting for ..’.**
+
+L18 has been adjusted according to the suggestion:
+
+Breeding success showed a positive association with minimum temperature, explaining 21% of the between-year variability after accounting for the temporal structure.
+
+**6: Add a concluding sentence.**
+
+A concluding sentence was added to the abstract:
+
+‘These findings contribute to understanding how white-backed vultures could respond to increasing climatic variability and implications thereof on the reproductive ecology of these long-lived scavengers.’
+
+### Introduction
+
+This is a general introduction that outlines the study's background and aims. This section also reviews and synthesises the relevant literature as a background for the study.
+
+**1: 2nd sentence change ‘having effects on’ to ‘affecting’.**
+
+‘having effects on’ was revised to ‘affecting’.
+
+Sæther et al. (2004) summarised evidence across many bird populations to show that weather influences population dynamics by affecting key demographic rates such as survival and reproduction.
+
+**2: P5 2nd para 1st sentence change ‘it’ to ‘this’.**
+
+‘it’ was corrected to ‘this’.
+
+Most organisms are adapted to specific temperature and precipitation ranges, and as weather conditions move away from the optimum, this often leads to consequences for the species distribution, growth, reproductive success and survival [@elkins2010weather].
+
+**3: P5 2nd para 2nd sentence ‘muration’?**
+
+**4: Try to avoid using ‘adapt’. In this instance, maybe say ‘Although these phenological shifts or behavioural plasticity could help animals to persist in changing environments, they often cause other ecological processes or food availability to fall out of sync with breeding, which can reduce the fitness and reproductive success…’**
+
+The sentence was fixed based on the examiner’s suggestion:
+
+Although these phenological shifts or behavioural plasticity could help animals to persist in changing environments, they often cause other ecological processes or food availability to fall out of sync with breeding, which can reduce the fitness and reproductive success of individuals [@carey2009impacts; @visser2004global; @mcdermott2016long; @inouye2022climate].
+
+**5: P5 3rd para 2nd sentence change to ‘..can directly and indirectly affect avian populations through life-history processes..’.**
+
+The sentence was fixed based on the examiner’s suggestion:
+
+Thus, global climate can directly and indirectly affect avian populations through life-history processes [@cockrem2022individual].
+
+**6: P5 3rd para 3rd sentence Try to avoid using ‘adapt’.**
+
+Instead of using ‘adapt’, the sentence was revised to use ‘..cost associated with..’
+
+Additionally, weather conditions affect the metabolic rate of many bird species by typically increasing the energetic cost associated with fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events [@crick2004impact].
+
+**7: Add a recent reference.**
+
+**8: P6 2nd para 3rd sentence Change ‘with limited gain’ to ‘with little gain’.**
+
+‘limited’ corrected to ‘little’.
+
+If the climatic conditions limit resource availability, reproduction increases in energetic cost with little gain, which poses significant challenges to the successful egg laying, incubation and parental care [@andreasson2020avian].
+
+**9: P6 2nd para 5th sentence Change ‘has’ to ‘have’.**
+
+‘has’ corrected to ‘have’.
+
+The effects of temperature on the reproductive output of avian species have largely been the focus point of how weather affects reproduction, however, the effects of varying rainfall patterns are also important [@fogarty2020associations; @sparks2002birds].
+
+**10: P6 2nd para 6th sentence Add a comma after ‘Similarly’. Delete ‘to’.**
+
+Grammatical errors corrected by adding a comma and deleting ‘to’.
+
+Similarly, the high energetic cost of thermal stress, unpredictable rainfall regimes can directly affect foraging efficiency, food availability and cause prolonged periods of energetic expenditure [@larson2015does].
+
+**11: P6 3rd para 3rd sentence Correct spelling of ‘servere’.**
+
+Corrected ‘servere’ to ‘severe’.
+
+**12: P7 1st para 1st sentence Change ‘key component to’ to ‘key component of’.**
+
+Corrected ‘key component to’ to ‘key component of’.
+
+The decision of when to initiate breeding is a key component of the life-history of many avian species…
+
+**13: P7 1st para 2nd sentence Change ‘shorter and longer-term conditions’ to ‘short- and long-term conditions’.**
+
+Corrected ‘shorter and longer-term conditions’ to ‘short- and long-term conditions’.
+
+Weather conditions during the pre-breeding period, both short- and long-term conditions, often influence breeding initiation [@grudinskaya2022effects].
+
+**14: P7 1st para 5th sentence Change ‘likelihood to breeding’ to ‘likelihood of breeding’.**
+
+Corrected ‘likelihood to breeding’ to ‘likelihood of breeding’.
+
+At the start of each breeding season, the body condition of the breeding birds may vary depending on the conditions they have experienced throughout the year, which could affect breeding timing or the likelihood of breeding [@blums2005individual].
+
+**15: P7 1st para 6th sentence Change ‘as’ to ‘whereas’, delete ‘the’ and change ‘reproduction’ to ‘reproductive’.**
+
+Corrected ‘as’ to ‘whereas’, delete ‘the’ and change ‘reproduction’ to ‘reproductive’.
+
+…the ability to delay or skip breeding is predominantly seen in longer-lived birds, whereas birds with lower adult survival are unlikely to skip a breeding season even when conditions are poor because of limited future reproductive opportunities [@verhulst2008timing].
+
+**16: P7 1st para 7th sentence Add a recent reference.**
+
+**17: P7 1st para 8th sentence Change ‘know’ to ‘known’.**
+
+Corrected ‘know’ to ‘known’.
+
+Presently, relatively little is known about the drivers of
+
+**18: P7 1st para 10th sentence Change ‘effected’ to ‘affected’.**
+
+Corrected ‘effected’ to ‘affected’.
+
+**19: P7 2nd para 1st sentence Change to ‘If adult birds are in poor body condition, they are more likely to delay breeding or not initiate breeding at all during ..’.**
+
+If adult birds are in poor body condition, they are more likely to delay breeding or not initiate breeding at all during the breeding season [@de2022relative].
+
+**20: P7 2nd para 2nd sentence Change ‘lead to delaying’ to ‘delay’.**
+
+Corrected ‘lead to delaying’ to ‘delay’.
+
+…more frequent or prolonged storm events often delay the laying date…
+
+**21: P7 2nd para 3rd sentence Change ‘lead to delayed’ to ‘delay’.**
+
+Corrected ‘lead to delayed’ to ‘delay’.
+
+Intense wind speeds could delay breeding timing by reducing the foraging efficiency…
+
+**22: P7 2nd para 3rd sentence Change ‘there is often high variability in climatic conditions’ to ‘climatic conditions are often highly variable’.**
+
+Corrected the sentence by changing ‘there is often high variability in climatic conditions’ to ‘climatic conditions are often highly variable’.
+
+This is especially the case in arid systems, where climatic conditions are often highly variable and is typically characterised by sporadic rainfall events.
+
+**23: P8 2nd para 1st sentence Change ‘the population could’ to ‘it may’.**
+
+Corrected ‘the population could’ to ‘it may’.
+
+When a population experiences low breeding investment, decreased breeding success or the loss of entire breeding seasons, it may face a drastic decline…
+
+**24: P8 last sentence Add a space before the 1st bracket.**
+
+**25: P8 3rd para 2nd sentence Change to ‘..their specialised terrestrial scavenging and recycling large amounts of organic waste..’.**
+
+Removed ‘recycling large amounts of organic waste within an ecosystem’ and replaced it with ‘recycling large amounts of organic waste’.
+
+Vultures are considered to play a vital role in maintaining the health of entire ecosystems through their specialised terrestrial scavenging and recycling large amounts of organic waste.
+
+**26: Next sentence Add a recent reference.**
+
+**27: P8 3rd para 4th sentence Change to ‘ …focusing on long-term survival, growth, and parental investment, and including delayed..’.**
+
+Removed ‘and’ after ‘growth,’ and changed ‘include delayed’ to ‘and including delayed’.
+
+In addition, vultures are also known for their slow life history strategy, focusing on long-term survival, growth, and parental investment, and including delayed maturity and low reproductive rates…
+
+**28: P8 3rd para 5th sentence Add a reference.**
+
+**29: P8 last line Change ‘bushfield’ to ‘bushveld’. Add a recent reference.**
+
+Changed ‘bushfield’ to ‘bushveld’ and added a more recent reference (Hounnouvi et al., 2025).
+
+**30: P9 1st sentence Change to ‘..listed as Critically Endangered on the IUCN Red List because of rapid population decline..’.**
+
+Reworded the sentence from:
+
+‘White-backed vultures are classified as critically endangered by the IUCN Redlist because of the rapidly declining population…’
+
+to
+
+‘White-backed vultures are listed as Critically Endangered on the IUCN Red List because of rapid population decline (IUCN 2021).’
+
+**31: P9 2nd sentence Add a recent reference.**
+
+**32: P9 3rd sentence Add a recent reference.**
+
+**33: P9 last para Change section to ‘..altered rainfall patterns, leading to major changes…’.**
+
+Corrected ‘will experience significant shifts in climatic conditions, including increased temperatures and changing rainfall patterns’ to:
+
+‘will experience significant shifts in climatic conditions, including increased temperatures and altered rainfall patterns, leading to major changes in climatically suitable habitats for numerous species.’
+
+**34: P10 2nd para use past tense. Change 2nd sentence to ‘Three components of the breeding cycle were assessed for a comprehensive overview of the influence weather has, namely, the number of active nests, …’.**
+
+Whole paragraph rewritten in the past tense and the second sentence was corrected.
+
+This study aimed to assess how inter annual weather variation influenced the breeding ecology of white-backed vultures by using 31 years of breeding data from Dronfield Nature Reserve in Kimberley, South Africa. Three components of the breeding cycle were assessed for a comprehensive overview of the influence weather has, namely, the number of active nests, proportion of successful nests and the breeding timing of successful nests. The study addressed three objectives:
+
+**35: P10 2nd para Correct ‘adress’.**
+
+‘adress’ corrected to ‘addressed’.
+
+Usually hypotheses indicate there will be an effect while the prediction indicates the direct of the effect.
+
+### Methods 
+
+**1: P11 3rd para Many of your statements need references.**
+
+You do not need the Latin name again if part of a manuscript. There are several breeding biology metrics, including clutch size, hatching rate, fledging rate, and productivity. The apparent nest survival rate can be estimated using MARK (White and Burnham 1999; Dinsmore et al. 2002; Dinsmore and Dinsmore 2007). Be careful in your use of the term ‘breeding success’.
+
+**2: P12 para 2 2nd sentence delete ‘the’.**
+
+Removed redundant ‘the’ from the 2nd sentence in paragraph 2.
+
+**3: Change ‘En route’ to ‘Enroute’ in English.**
+
+Changed “En route’ to ‘During the survey’ to avoid a non-English word.
+
+During the survey, the various teams visited and assessed each tree for vulture breeding activity.
+
+**4: P12 3rd para Change to ‘Active nests were defined as those with clear evidence of breeding activity during…’.**
+
+Corrected ‘Active nests were then defined as nests that had clear evidence of breeding activity…’ to:
+
+‘Active nests were defined as those with clear evidence of breeding activity during…’
+
+**5: P12 3rd para last sentence Change to ‘..and geographical coordinates were documented, along with the identification of nests as active or inactive within the reserve, to enable long-term nest use for each..’.**
+
+Corrected:
+
+‘The observation date, tree number and coordinates were documented alongside active or inactive identification of nests within the reserve to enable long-term nest use of each new or recurring nest.’
+
+to
+
+‘The observation date, tree number and geographical coordinates were documented, along with the identification of nests as active or inactive within the reserve, to enable long-term nest use for each new or recurring nest.’
+
+**6: P13 1st line is it the breeding success of the nests or of the vultures?**
+
+Clarified if it is the breeding outcome of the nests or vultures.
+
+The post-breeding survey was conducted in October and aimed to assess the breeding outcome of the active nests, following the number of active nests survey in August.
+
+**7: P13 2nd line Change ‘will’ to ‘would’.**
+
+Corrected ‘will’ to ‘would’.
+
+‘In October, the chicks were large enough to be fairly certain that they would fledge…’
+
+**8: P13 3rd sentence is a repetition.**
+
+Removed repetitive sentence.
+
+**9: P13 sentences 5 and 6 Reword for clarity. Instead of ‘weight’ use ‘body mass’.**
+
+Clarified the sentences by removing redundant words and changed ‘weight’ to ‘body mass’.
+
+The chicks in these nests were then carefully retrieved from their nests to conduct additional measurements. This included measuring the body mass and the wing length of each chick to establish an estimated laying date, used to analyse changes in the annual breeding timing.
+
+**10: P13 2nd para last sentence ‘inferred’. Correct elsewhere as well.**
+
+Corrected ‘infered’ to ‘inferred’ in all cases.
+
+**11: P14 4th line ‘models’.**
+
+Corrected ‘model’ to ‘models’.
+
+**12: P14 4th line add ‘the’ before ‘R’.**
+
+Added ‘the’ before ‘R’.
+
+All statistical analyses were conducted in the R statistical computing environment (R version 4.4.1).
+
+**13: P14 4th para “Pearson’.**
+
+Corrected ‘Peason’ to ‘Pearson correlation coefficients’.
+
+**14: P14 4th para ‘details’.**
+
+Corrected ‘detail’ to ‘details’.
+
+**15: P15 Correct the two typos in the legend.**
+
+Corrected ‘Africam’ to ‘African’ and ‘Kimbereley’ to ‘Kimberley’.
+
+**16: P16 Replace ‘fit’ with ‘appropriate’.**
+
+Replaced ‘fit’ with ‘appropriate’.
+
+The objectives were analysed separately by using specific statistical models deemed appropriate for the structure of the response variable.
+
+**17: P16 Change ‘has’ to ‘had’.**
+
+Corrected ‘has’ to ‘had’.
+
+‘Models that were thought of once the analyses had started…’
+
+**18: P17 2nd para Change ‘was’ to ‘were’.**
+
+Corrected ‘was’ to ‘were’.
+
+‘The number of active nests were log-transformed before conducting the analyses to adhere to model assumptions…’
+
+**19: P17 4th para Correct ‘numberical’ to ‘numerical’.**
+
+Corrected spelling error ‘numberical’ to ‘numerical’.
+
+**20: P17 last line ‘mediation’ does not seem correct.**
+
+Removed ‘mediation’ and corrected the sentence to:
+
+‘Models were then fitted with and without year to reflect these alternative causal structures and to compare the effects of weather under alternative assumptions regarding the confounding influence of the temporal trend.’
+
+**21: P18 Combine the two Figures into one with an a and b as well as only one legend.**
+
+**22: P19 Correct ‘istelf’.**
+
+Corrected typo from ‘istelf’ to ‘itself’.
+
+**23: P19 2nd para 4th sentence Add a space after the full stop.**
+
+Added space after the full stop.
+
+**24: P20 Combine the four Figures into one with an a, b, c and d as well as only one legend.**
+
+**25: P20 You start using the abbreviation DAG with putting it after the full name in the 1st instance.**
+
+**26: P20 1st para avoid ‘I’m’. Change ‘effects’ to ‘affects’.**
+
+Corrected ‘weather variable I’m interested in’ to ‘weather variable of interest’ to avoid using ‘I’m’.
+
+Corrected effects to affects.
+
+**27: P20 and 21 Avoid one sentence paragraphs.**
+
+**28: P21 Correct ‘timimg’.**
+
+Corrected typo ‘timimg’ to ‘timing’.
+
+**29: P21 Correct ‘struture’ and ‘Fgure’.**
+
+Corrected ‘struture’ to ‘structure’ and ‘Fgure’ to ‘Figure’.
+
+**30: P21 3rd para Correct ‘While is it’ to ‘While it is’.**
+
+Corrected to ‘While it is’.
+
+While it is plausible that the breeding timing could influence the breeding outcome…
+
+**31: P21 last para Correct ‘If a linear relationship can we assumes’ for clarity.**
+
+Corrected:
+
+‘If a linear relationship can we assumes between weather and timing…’
+
+to
+
+‘If a linear relationship can be assumed between weather and timing…’
+
+### Results
+
+**1: Use past tense throughout.**
+
+Results section was assessed and corrected where written in present tense.
+
+**2: Avoid starting sentence with Figure or Table X. Rather put a reference to the Figure or Table in parentheses at the end of a sentence.**
+
+Corrected table references to all be in parentheses at the end of the sentences they are referenced in.
+
+**3: Do not indent the legends for Tables if not indenting those for Figures.**
+
+**4: P23 para 1 remove comma after ‘nests’.**
+
+Comma removed after ‘nests’.
+
+**5: P24 correct spelling of ‘Kimberely’ here and throughout.**
+
+Corrected the spelling of ‘Kimberley’ throughout.
+
+**6: P27 Correct ‘adressed’.**
+
+Corrected ‘adressed’ to ‘addressed’.
+
+**7: P28 Avoid single sentence paragraphs. Refer to Figures in text.**
+
+**8: P32 Correct ‘succesful’.**
+
+Corrected ‘succesful’ to ‘successful’.
+
+**9: P32 Avoid one sentence paragraphs.**
+
+**10: P34 Delete the extra ‘the’ in the legend.**
+
+Removed the extra ‘the’.
+
+The model selection results for a postoriori models including population size and the effects of the lagged rainfall on the breeding timing at Dronfield (1993–2025).
+
+**11: P34 Correct ‘recieved’.**
+
+Corrected to ‘received’.
+
+**12: P34 Change ‘suggests’ to ‘suggest’.**
+
+Corrected ‘suggests’ to ‘suggest’.
+
+If the DAG in Figure 3a is plausible, which suggest breeding success is random in terms of the weather variables used to explain variation in breeding timing…
+
+**13: P37 last sentence Correct for clarity.**
+
+Clarified the last sentence:
+
+Therefore, the increasing trend noted at Dronfield could be attributed to site-specific conditions such as stable land management and increased food availability over the years, rather than birds migrating to Dronfield from different areas, as no tagged birds from different areas have been noted at Dronfield (A. Anthony pers. comm. 2026).
+
+**14: P38 2nd para 1st sentence Change ‘a’ to ‘an’.**
+
+Corrected ‘a’ to ‘an’.
+
+‘In Figure 3d, an unobserved variable, acting as a confounder…’
+
+**15: P38 2nd para 2nd sentence Add a space after ‘models,’.**
+
+Space added.
+
+### Discussion
+
+In this section, you use ‘Our’. Perhaps use this throughout rather than ‘I’. However, in the preface, you need to indicate the contributions of the other authors.
+
+Replaced “our” with “the” throughout the Discussion section to avoid personification.
+
+This section discusses and summarises the findings, outlines the limitations, and provides recommendations.
+
+**1: Perhaps include a summary Figure (e.g. graphical type abstract).**
+
+**2: See earlier comment about hypotheses and predictions.**
+
+**3: P39 1st para Change ‘Heever’ to “van den Heever’ here and in the references.**
+
+**4: P40 2nd para Change ‘acts’ to ‘act’.**
+
+Corrected ‘acts’ to ‘act’.
+
+**5: P40 3rd para Add space before ‘The’.**
+
+Added space before ‘The’.
+
+**6: P41 2nd para put the date ‘2000’ in parentheses.**
+
+Put ‘2000’ in parentheses.
+
+This is consistent with results found by Eeva et al. (2000) where they studied.
+
+### Conclusions
+
+**1: P42 Change ‘affects’ to ‘effects’.**
+
+Changed ‘affects’ to ‘effects’.
+
+…the results of the effects of weather conditions varied across the three stages of the breeding cycle assessed which…
+
+**2: P42 Change ‘he’ to ‘the’.**
+
+Corrected ‘he’ to ‘the’.
+
+…limit foraging ability and food availability, the use of strategic vulture restaurants…
+
+**3: P42 Correct ‘adress’.**
+
+Corrected to ‘address’.
+
+### Bibliography
+
+**1: Most Journals call this section ‘References’ or ‘Literature cited’.**
+
+Changed ‘Bibliography’ to ‘References’.
+
+Most formatting of references in the reference list is consistent.
+
+**2: Latin names need to be in italics. The genus name starts with a capital.**
+
+Corrected where Latin names were not in italics.
+
+**3: Correct proper nouns to start with capitals.**
+
+**4: Most Journals require DOIs for each reference these days.**
+
+### Appendices
+
+**1: Please correct spelling mistakes.**
+
