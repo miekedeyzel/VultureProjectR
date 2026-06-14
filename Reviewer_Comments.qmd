@@ -48,17 +48,26 @@ mainfont: "Times New Roman"
 
 ## General comments
 
-Most Journals use the active voice and increasingly the past tense throughout, as you have already done the work.
+**Most Journals use the active voice and increasingly the past tense throughout, as you have already done the work.**
+
+The thesis has been revised to use active voice and past tense where appropriate, particularly in the Methods and Results sections where the language was previously inconsistent.
+
 
 Generally, for Table and Figure legends, the 1st part is in bold.
 
 Check spacing before and after a paragraph is zero. Either add a line between paragraphs or indent them. Add a line before subheadings - some of which you do not have.
 
-Most Journals use sentence case for headings and subheadings. You have a mixture-standardise. The exception is when you have proper nouns or in a heading or subheading.
+**Most Journals use sentence case for headings and subheadings. You have a mixture-standardise. The exception is when you have proper nouns or in a heading or subheading.**
 
-You have mainly used UK English, except for some words that need to change from ‘iz’ to ‘is’. Check and change throughout.
+Corrected the headings ‘Aims and Objectives’, ‘Study area’, ‘Data Analyses’, and ‘Number of Active Nests’ to sentence case. 
 
-You need to be consistent with capitalising common names of birds. Some Journals start each word of the common names with a capital. Alternatively, use lowercase for all except proper nouns. But do not use both. P11 para 3 – for example, you use two variations of capitalizing the common name. This is incorrect.
+**You have mainly used UK English, except for some words that need to change from ‘iz’ to ‘is’. Check and change throughout.**
+
+Corrected this inconsistency by using UK English throughout and correcting words spelt with ‘iz’ instead of ‘is.’
+
+**You need to be consistent with capitalising common names of birds. Some Journals start each word of the common names with a capital. Alternatively, use lowercase for all except proper nouns. But do not use both. P11 para 3 – for example, you use two variations of capitalizing the common name. This is incorrect.**
+
+Corrected by consistently capitalising the common names of birds, especially 'white-backed vulture' which was capitalised inconsistently throughout the thesis.
 
 Most Journals use sentence case and bold for headings in Tables. You have a mixture-standardise.
 
