@@ -53,9 +53,12 @@ mainfont: "Times New Roman"
 The thesis has been revised to use active voice and past tense where appropriate, particularly in the Methods and Results sections where the language was previously inconsistent.
 
 
-Generally, for Table and Figure legends, the 1st part is in bold.
+**Generally, for Table and Figure legends, the 1st part is in bold.**
 
-Check spacing before and after a paragraph is zero. Either add a line between paragraphs or indent them. Add a line before subheadings - some of which you do not have.
+Revised Table and Figure legends and made the first part bold throughout. 
+
+**Check spacing before and after a paragraph is zero. Either add a line between paragraphs or indent them. Add a line before subheadings - some of which you do not have.**
+
 
 **Most Journals use sentence case for headings and subheadings. You have a mixture-standardise. The exception is when you have proper nouns or in a heading or subheading.**
 
@@ -69,8 +72,9 @@ Corrected this inconsistency by using UK English throughout and correcting words
 
 Corrected by consistently capitalising the common names of birds, especially 'white-backed vulture' which was capitalised inconsistently throughout the thesis.
 
-Most Journals use sentence case and bold for headings in Tables. You have a mixture-standardise.
+**Most Journals use sentence case and bold for headings in Tables. You have a mixture-standardise.**
 
+----------------------------------------------------------------------------------------------------------------------
 
 **1: Use plurals for your headings where appropriate, e.g. “Conclusions”.**
 
@@ -184,6 +188,8 @@ Most organisms are adapted to specific temperature and precipitation ranges, and
 
 **3: P5 2nd para 2nd sentence ‘muration’?**
 
+'muration' is an incorrect term and was removed from the sentence. 
+
 **4: Try to avoid using ‘adapt’. In this instance, maybe say ‘Although these phenological shifts or behavioural plasticity could help animals to persist in changing environments, they often cause other ecological processes or food availability to fall out of sync with breeding, which can reduce the fitness and reproductive success…’**
 
 The sentence was fixed based on the examiner’s suggestion:
@@ -203,6 +209,9 @@ Instead of using ‘adapt’, the sentence was revised to use ‘..cost associat
 Additionally, weather conditions affect the metabolic rate of many bird species by typically increasing the energetic cost associated with fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events [@crick2004impact].
 
 **7: Add a recent reference.**
+
+More recent reference (Andreasson *et al.* 2023) was added to:  Additionally, weather conditions affect the metabolic rate of many bird species by typically increasing the energetic cost associated with fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events [@crick2004impact, @andreasson2023measuring].
+
 
 **8: P6 2nd para 3rd sentence Change ‘with limited gain’ to ‘with little gain’.**
 
@@ -252,6 +261,8 @@ Corrected ‘as’ to ‘whereas’, delete ‘the’ and change ‘reproduction
 
 **16: P7 1st para 7th sentence Add a recent reference.**
 
+The older reference was kept for its relevance, and a more recent reference was added (Sutton *et al.* 2023).
+
 **17: P7 1st para 8th sentence Change ‘know’ to ‘known’.**
 
 Corrected ‘know’ to ‘known’.
@@ -292,6 +303,8 @@ When a population experiences low breeding investment, decreased breeding succes
 
 **24: P8 last sentence Add a space before the 1st bracket.**
 
+Space was added to the front of the bracket. 
+
 **25: P8 3rd para 2nd sentence Change to ‘..their specialised terrestrial scavenging and recycling large amounts of organic waste..’.**
 
 Removed ‘recycling large amounts of organic waste within an ecosystem’ and replaced it with ‘recycling large amounts of organic waste’.
@@ -300,6 +313,8 @@ Vultures are considered to play a vital role in maintaining the health of entire
 
 **26: Next sentence Add a recent reference.**
 
+More recent reference was added. Vultures can swiftly locate and consume carrion, and by doing so, they create competition for and control other often problematic scavenger populations such as jackals and rodents [@buechley2016vultures, @carucci2022ecosystem].
+
 **27: P8 3rd para 4th sentence Change to ‘ …focusing on long-term survival, growth, and parental investment, and including delayed..’.**
 
 Removed ‘and’ after ‘growth,’ and changed ‘include delayed’ to ‘and including delayed’.
@@ -307,6 +322,8 @@ Removed ‘and’ after ‘growth,’ and changed ‘include delayed’ to ‘an
 In addition, vultures are also known for their slow life history strategy, focusing on long-term survival, growth, and parental investment, and including delayed maturity and low reproductive rates…
 
 **28: P8 3rd para 5th sentence Add a reference.**
+
+Reference added to: These life-history traits make vultures especially vulnerable to reduced reproductive success, which has long-term consequences for future population stability [@gomez2025long].
 
 **29: P8 last line Change ‘bushfield’ to ‘bushveld’. Add a recent reference.**
 
@@ -324,7 +341,11 @@ to
 
 **31: P9 2nd sentence Add a recent reference.**
 
+Older reference was kept for its relevance but a newer (Cook *et al.* 2025) was added to the statement. 
+
 **32: P9 3rd sentence Add a recent reference.**
+
+Older references were kept for their relevance but a newer reference (Cook *et al.* 2025) was added to the statement. 
 
 **33: P9 last para Change section to ‘..altered rainfall patterns, leading to major changes…’.**
 
@@ -342,13 +363,19 @@ This study aimed to assess how inter annual weather variation influenced the bre
 
 ‘adress’ corrected to ‘addressed’.
 
-Usually hypotheses indicate there will be an effect while the prediction indicates the direct of the effect.
+**Usually hypotheses indicate there will be an effect while the prediction indicates the direct of the effect.**
+
+
 
 ### Methods 
 
 **1: P11 3rd para Many of your statements need references.**
 
-You do not need the Latin name again if part of a manuscript. There are several breeding biology metrics, including clutch size, hatching rate, fledging rate, and productivity. The apparent nest survival rate can be estimated using MARK (White and Burnham 1999; Dinsmore et al. 2002; Dinsmore and Dinsmore 2007). Be careful in your use of the term ‘breeding success’.
+
+
+**You do not need the Latin name again if part of a manuscript. There are several breeding biology metrics, including clutch size, hatching rate, fledging rate, and productivity. The apparent nest survival rate can be estimated using MARK (White and Burnham 1999; Dinsmore et al. 2002; Dinsmore and Dinsmore 2007). Be careful in your use of the term ‘breeding success’.**
+
+Latin name was removed from this sectionn. 
 
 **2: P12 para 2 2nd sentence delete ‘the’.**
 
@@ -466,6 +493,8 @@ Added space after the full stop.
 
 **25: P20 You start using the abbreviation DAG with putting it after the full name in the 1st instance.**
 
+The abbreviation DAG was first defined in this sentence: "Models that were thoughtof once the analyses had started, were treated separately and were clearly labeled as a-posteriori models. Aset of directed acyclic graphs (DAGs) was constructed to support causal inference by providing clarity on theassumed relationships between weather variables, time (year), unobserved ecological processed and the differ-ent breeding responses, which ultimately were used to help interpret the model decisions (McElreath, 2018)." After defining DAG, the abbreviation was used throughout. 
+
 **26: P20 1st para avoid ‘I’m’. Change ‘effects’ to ‘affects’.**
 
 Corrected ‘weather variable I’m interested in’ to ‘weather variable of interest’ to avoid using ‘I’m’.
@@ -473,6 +502,8 @@ Corrected ‘weather variable I’m interested in’ to ‘weather variable of i
 Corrected effects to affects.
 
 **27: P20 and 21 Avoid one sentence paragraphs.**
+
+Content was restructured to ensure that there are no single sentence paragraphs in the results section. 
 
 **28: P21 Correct ‘timimg’.**
 
@@ -510,6 +541,8 @@ Corrected table references to all be in parentheses at the end of the sentences 
 
 **3: Do not indent the legends for Tables if not indenting those for Figures.**
 
+Table legends were corrected to have no indent, consistant with the firgure captions. 
+
 **4: P23 para 1 remove comma after ‘nests’.**
 
 Comma removed after ‘nests’.
@@ -524,11 +557,15 @@ Corrected ‘adressed’ to ‘addressed’.
 
 **7: P28 Avoid single sentence paragraphs. Refer to Figures in text.**
 
+Content was restructured to ensure that there are no single sentence paragraphs in the results section (Adressed in previous comment)
+
 **8: P32 Correct ‘succesful’.**
 
 Corrected ‘succesful’ to ‘successful’.
 
 **9: P32 Avoid one sentence paragraphs.**
+
+Content was restructured to ensure that there are no single sentence paragraphs in the results section (Adressed in previous comment)
 
 **10: P34 Delete the extra ‘the’ in the legend.**
 
@@ -572,9 +609,15 @@ This section discusses and summarises the findings, outlines the limitations, an
 
 **1: Perhaps include a summary Figure (e.g. graphical type abstract).**
 
+
+
 **2: See earlier comment about hypotheses and predictions.**
 
+
+
 **3: P39 1st para Change ‘Heever’ to “van den Heever’ here and in the references.**
+
+Corrected 'Heever' to 'van den Heever' in the text, and reference list. 
 
 **4: P40 2nd para Change ‘acts’ to ‘act’.**
 
@@ -622,7 +665,11 @@ Corrected where Latin names were not in italics.
 
 **3: Correct proper nouns to start with capitals.**
 
+
+
 **4: Most Journals require DOIs for each reference these days.**
+
+
 
 ### Appendices
 
