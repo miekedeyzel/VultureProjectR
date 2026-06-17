@@ -1,6 +1,4 @@
 ---
-title: "Thesis Corrections"
-
 format:
   pdf:
     geometry:
@@ -46,6 +44,71 @@ execute:
 mainfont: "Times New Roman"
 ---
 
+```{=html}
+<style> 
+p {
+  text-align: justify;
+}
+</style>
+```
+
+
+```{=latex}
+\begin{titlepage}
+\thispagestyle{empty}
+\centering
+\vspace*{-1cm}
+
+% --- Title ---
+{\fontsize{21}{21}\selectfont \bfseries
+\makebox[\textwidth][c]{%
+  \begin{tabular}{c}
+  The Effects of Weather on the Breeding Ecology of\\
+  white-backed vultures (Reviewer Corrections)
+  \end{tabular}
+}\par
+}
+
+\vspace{0.5cm}
+
+% --- Author ---
+{\fontsize{17}{22}\selectfont
+\makebox[\textwidth][c]{Mieke Deyzel}\par
+}
+
+\vspace{0.2cm}
+
+% --- Institution ---
+{\fontsize{14}{20}\selectfont
+University of Cape Town\\
+Department of Biological Sciences\\
+Rondebosch 7701\\
+South Africa
+}
+
+% --- Supervisors ---
+{\fontsize{14}{20}\selectfont
+Supervisor: Professor Res Altwegg
+}
+
+\vspace{0.3cm}
+
+{\fontsize{14}{20}\selectfont
+Email: miekedeyzel1@icloud.com
+}
+
+% --- Date ---
+{\fontsize{14}{20}\selectfont
+June 2026
+}
+
+\end{titlepage}
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+```
+
 ## General comments
 
 **Most Journals use the active voice and increasingly the past tense throughout, as you have already done the work.**
@@ -59,6 +122,7 @@ Revised Table and Figure legends and made the first part bold throughout.
 
 **Check spacing before and after a paragraph is zero. Either add a line between paragraphs or indent them. Add a line before subheadings - some of which you do not have.**
 
+Formatting and spacing was checked throughout the thesis and consistent use of 1 line between headings and paragraphs were used. 
 
 **Most Journals use sentence case for headings and subheadings. You have a mixture-standardise. The exception is when you have proper nouns or in a heading or subheading.**
 
@@ -73,6 +137,8 @@ Corrected this inconsistency by using UK English throughout and correcting words
 Corrected by consistently capitalising the common names of birds, especially 'white-backed vulture' which was capitalised inconsistently throughout the thesis.
 
 **Most Journals use sentence case and bold for headings in Tables. You have a mixture-standardise.**
+
+Headings in tables were checked and standarised to be sentence case and bold. 
 
 ----------------------------------------------------------------------------------------------------------------------
 
@@ -104,6 +170,8 @@ The inconsistent capitalisation of ‘southern’ was revised by using lowercase
 
 Added ‘hereafter white-backed vulture’ after the first mention of ‘African white-backed vulture’ and revised further mention of the full name to white-backed vulture throughout the thesis. Additionally, inconstant capitalisation was addressed in the mention of the white-backed vulture throughout.
 
+--------------------------------------------------------------------------------
+
 ## Specific comments
 
 ### Title page
@@ -120,6 +188,8 @@ Commas were added to improve sentence readability.
 
 ‘equip’ was revised to ‘equipped’.
 
+--------------------------------------------------------------------------------
+
 ### Declarations
 
 **1: Perhaps bold Declarations.**
@@ -133,6 +203,8 @@ Declarations section was changed to bold.
 **3: Correct ‘imagime’ to ‘image’.**
 
 The error ‘imagime’ was corrected to ‘image’.
+
+--------------------------------------------------------------------------------
 
 ### Abstract
 
@@ -169,6 +241,8 @@ Breeding success showed a positive association with minimum temperature, explain
 A concluding sentence was added to the abstract:
 
 ‘These findings contribute to understanding how white-backed vultures could respond to increasing climatic variability and implications thereof on the reproductive ecology of these long-lived scavengers.’
+
+--------------------------------------------------------------------------------
 
 ### Introduction
 
@@ -355,7 +429,7 @@ Corrected ‘will experience significant shifts in climatic conditions, includin
 
 **34: P10 2nd para use past tense. Change 2nd sentence to ‘Three components of the breeding cycle were assessed for a comprehensive overview of the influence weather has, namely, the number of active nests, …’.**
 
-Whole paragraph rewritten in the past tense and the second sentence was corrected.
+The whole paragraph rewritten in the past tense and the second sentence was corrected.
 
 This study aimed to assess how inter annual weather variation influenced the breeding ecology of white-backed vultures by using 31 years of breeding data from Dronfield Nature Reserve in Kimberley, South Africa. Three components of the breeding cycle were assessed for a comprehensive overview of the influence weather has, namely, the number of active nests, proportion of successful nests and the breeding timing of successful nests. The study addressed three objectives:
 
@@ -365,15 +439,19 @@ This study aimed to assess how inter annual weather variation influenced the bre
 
 **Usually hypotheses indicate there will be an effect while the prediction indicates the direct of the effect.**
 
+The wording was revised to distinguish between hypotheses and predictions, and statements describing the expected direction of effects were rephrased as predictions. 
 
+--------------------------------------------------------------------------------
 
 ### Methods 
 
 **1: P11 3rd para Many of your statements need references.**
 
-
+References were added to paragraph 3. 
 
 **You do not need the Latin name again if part of a manuscript. There are several breeding biology metrics, including clutch size, hatching rate, fledging rate, and productivity. The apparent nest survival rate can be estimated using MARK (White and Burnham 1999; Dinsmore et al. 2002; Dinsmore and Dinsmore 2007). Be careful in your use of the term ‘breeding success’.**
+
+Breeding success was defined in the aims and objectives section of the introduction as the 'proportion of nests that produced a fledgling' and was used as such throughout the study. The apparent nest survival could not be estimated using MARK because the data required for this analysis were not available.
 
 Latin name was removed from this sectionn. 
 
@@ -481,6 +559,8 @@ Removed ‘mediation’ and corrected the sentence to:
 
 **21: P18 Combine the two Figures into one with an a and b as well as only one legend.**
 
+Combining the figures were considered, however, the figures were kept separately, as this format provides greater clarity and is easier to follow the conceptual framework. 
+
 **22: P19 Correct ‘istelf’.**
 
 Corrected typo from ‘istelf’ to ‘itself’.
@@ -490,6 +570,8 @@ Corrected typo from ‘istelf’ to ‘itself’.
 Added space after the full stop.
 
 **24: P20 Combine the four Figures into one with an a, b, c and d as well as only one legend.**
+
+Combining the figures were considered, however, the figures were kept separately, as this format provides greater clarity and is easier to follow the conceptual framework. 
 
 **25: P20 You start using the abbreviation DAG with putting it after the full name in the 1st instance.**
 
@@ -528,6 +610,8 @@ Corrected:
 to
 
 ‘If a linear relationship can be assumed between weather and timing…’
+
+--------------------------------------------------------------------------------
 
 ### Results
 
@@ -599,6 +683,8 @@ Corrected ‘a’ to ‘an’.
 
 Space added.
 
+--------------------------------------------------------------------------------
+
 ### Discussion
 
 In this section, you use ‘Our’. Perhaps use this throughout rather than ‘I’. However, in the preface, you need to indicate the contributions of the other authors.
@@ -609,10 +695,11 @@ This section discusses and summarises the findings, outlines the limitations, an
 
 **1: Perhaps include a summary Figure (e.g. graphical type abstract).**
 
-
+Including a graphical abstract will be done during the preparation of the manuscript for publication but a bit more time is needed to create a good summary figure for this discusson. 
 
 **2: See earlier comment about hypotheses and predictions.**
 
+Addressed in previous comment, however, Where hypotheses was incorrectly used in the discussion, it was addressed by using 'prediction' instead where applicable. 
 
 
 **3: P39 1st para Change ‘Heever’ to “van den Heever’ here and in the references.**
@@ -633,6 +720,8 @@ Put ‘2000’ in parentheses.
 
 This is consistent with results found by Eeva et al. (2000) where they studied.
 
+--------------------------------------------------------------------------------
+
 ### Conclusions
 
 **1: P42 Change ‘affects’ to ‘effects’.**
@@ -651,6 +740,8 @@ Corrected ‘he’ to ‘the’.
 
 Corrected to ‘address’.
 
+--------------------------------------------------------------------------------
+
 ### Bibliography
 
 **1: Most Journals call this section ‘References’ or ‘Literature cited’.**
@@ -665,13 +756,17 @@ Corrected where Latin names were not in italics.
 
 **3: Correct proper nouns to start with capitals.**
 
-
+Corrected the proper nouns to start with capital letters where applicable. 
 
 **4: Most Journals require DOIs for each reference these days.**
 
+DOI's are being added to the references. 
 
+--------------------------------------------------------------------------------
 
 ### Appendices
 
 **1: Please correct spelling mistakes.**
+
+Appendix was revised and the spelling errors were corrected as well as subheadings that were not written in sentence case as previously mentioned in reviewer comments. 
 
