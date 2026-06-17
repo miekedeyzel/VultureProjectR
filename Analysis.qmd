@@ -3,6 +3,7 @@ format:
   pdf:
     toc: false
     number-sections: true
+    mainfont: "Times New Roman"
     geometry:
       - left=1cm
       - right=1cm
@@ -14,6 +15,15 @@ format:
         \usepackage{hyperref}
         \usepackage{setspace}
         \setstretch{1.0}
+
+        % Make entire table captions (legends) bold
+        \usepackage{caption}
+        \captionsetup[table]{
+          labelfont=bf,
+          textfont=bf,
+          justification=raggedright,
+          singlelinecheck=false
+        }
 
         % wrap + shrink code blocks
         \usepackage{fvextra}
@@ -33,11 +43,11 @@ execute:
 \appendix
 ```
 
-# Supplementary Figures 
+# Supplementary figures 
 
-![](A1.png) Figure A1: The temporal trends of the weather variables included in the analysis. Data is derived from the Kimbereley meteorological station (1993 - 2024). Annual values are represented by the grey lines with the green lines representing the fitted linear trend.
+![](A1.png) Figure A1: The temporal trends of the weather variables included in the analysis. Data is derived from the Kimberley meteorological station (1993 - 2024). Annual values are represented by the grey lines with the green lines representing the fitted linear trend.
 
-![](Corr.png) Figure A2: A correlation matrix showing the persons correlation coeficients between all weather variables included in the analyses on the effects of weather on the breeding ecology of African white-backed vultures at Dronfield (1993-2025).  
+![](Corr.png) Figure A2: A correlation matrix showing the persons correlation coefficients between all weather variables included in the analyses on the effects of weather on the breeding ecology of African white-backed vultures at Dronfield (1993-2025).  
 
 ```{=latex}
 \begin{table}[H]
@@ -79,7 +89,7 @@ execute:
 
 ```
 
-# Full Statistical Analyses
+# Full statistical analyses
 
 ```{r}
 #| label: setup
@@ -159,13 +169,13 @@ showtext::showtext_auto(enable = TRUE)
 ```
 
 
-## Load Data
+## Load data
 
 ```{r}
 vultures <- read.csv("data/93_24_cleaned.csv")
 ```
 
-### Clean Breeding Data
+### Clean breeding data
 
 ```{r}
 vultures.clean <- vultures |>
@@ -183,7 +193,7 @@ vultures.clean <- vultures |>
   
 ```
 
-### Explore Data
+### Explore data
 
 ```{r}
 glimpse(vultures.clean)
@@ -191,7 +201,7 @@ summary(vultures.clean)
 colSums(is.na(vultures.clean))
 ```
 
-### Number of Active Nests
+### Number of active nests
 
 ```{r fig.cap="The number of active nests at Dronfield (1993–2024)."}
 active_nests_yearly <- vultures.clean |>
@@ -457,7 +467,7 @@ obj3_year_df <- timing_by_year  |>
 obj3_year_df
 ```
 
-### Annual Weather Summaries
+### Annual weather summaries
 
 ```{r}
 weather_yearly <- WeatherData_clean |>
@@ -498,7 +508,7 @@ summary(lm(mean_wind ~ YEAR, data = weather_yearly))
 summary(lm(max_wind  ~ YEAR, data = weather_yearly))
 ```
 
-### Lagged Weather summaries
+### Lagged weather summaries
 
 ```{r}
 weather_yearly_lag <- weather_yearly |>
@@ -533,7 +543,7 @@ cor_df
 
 ### Trends over time for breeding variables
 
-### Number of Active nests
+### Number of active nests
 
 ```{r}
 summary(lm(active_nests ~ year, data = active_nests_yearly))
@@ -575,7 +585,7 @@ summary(lm(mean_lay_DOY ~ year, data = timing_yearly_clean))
 
 
 
-## Objective 1: Number of Active nests
+## Objective 1: Number of active nests
 
 ### DAGS
 
@@ -948,7 +958,7 @@ summary(best_with_year_model)$adj.r.squared
 summary(best_no_year_model)$adj.r.squared
 ```
 
-### Number of Active nests over time
+### Number of active nests over time
 
 ```{r fig.cap="The number of active nests at Dronfield, over time (1993-2024)"}
 ggplot(effort_weather, aes(x = year, y = active_nests)) +
@@ -1837,7 +1847,7 @@ print(doc, target = "Table_2_Breeding_Success_WITH_PostHoc.docx")
 ```
 
 --------------------------------------------------------------------------------
-## Objective 3: Breeding Timing of Successful Nests
+## Objective 3: Breeding timing of successful nests
 
 ### DAGS 
 
@@ -2170,8 +2180,6 @@ obj3_year_df <- timing_by_year |>
 obj3_year_df
 ```
 
-v
-`
 
 ```{r}
 timing_by_year <- timing_df |>
@@ -2445,7 +2453,7 @@ cat("Saved: Table_Obj3_Timing_OrderedLikeObj2.docx\n")
 ```
 
 
-```{r fig.cap="The relationship between the total annual rainfall in the previous year and breeding timing (media. laying date)"}
+```{r fig.cap="The relationship between the total annual rainfall in the previous year and breeding timing (median laying date)"}
 ggplot(obj3_cc, aes(x = lag_total_rain_annual, y = lay_DOY_median)) +
   geom_point(
     size = 2.4,
