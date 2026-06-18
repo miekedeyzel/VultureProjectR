@@ -168,7 +168,7 @@ The inconsistent capitalisation of ‘southern’ was revised by using lowercase
 
 **7: Sometimes you use ‘African white-backed vulture’ and other times ‘white-backed vulture’. Perhaps after the 1st mention of the full name, say hereafter white-backed vulture.**
 
-Added ‘hereafter white-backed vulture’ after the first mention of ‘African white-backed vulture’ and revised further mention of the full name to white-backed vulture throughout the thesis. Additionally, inconstant capitalisation was addressed in the mention of the white-backed vulture throughout.
+The common name was standardised to ‘white-backed vulture’ throughout the thesis following its initial introduction and the provision of the scientific name (Gyps africanus). Inconsistent capitalisation of the common name was also corrected throughout the document.
 
 --------------------------------------------------------------------------------
 
@@ -258,7 +258,7 @@ Sæther et al. (2004) summarised evidence across many bird populations to show t
 
 ‘it’ was corrected to ‘this’.
 
-Most organisms are adapted to specific temperature and precipitation ranges, and as weather conditions move away from the optimum, this often leads to consequences for the species distribution, growth, reproductive success and survival [@elkins2010weather].
+Most organisms are adapted to specific temperature and precipitation ranges, and as weather conditions move away from the optimum, this often leads to consequences for the species distribution, growth, reproductive success and survival.
 
 **3: P5 2nd para 2nd sentence ‘muration’?**
 
@@ -274,36 +274,36 @@ Although these phenological shifts or behavioural plasticity could help animals 
 
 The sentence was fixed based on the examiner’s suggestion:
 
-Thus, global climate can directly and indirectly affect avian populations through life-history processes [@cockrem2022individual].
+Thus, global climate can directly and indirectly affect avian populations through life-history processes.
 
 **6: P5 3rd para 3rd sentence Try to avoid using ‘adapt’.**
 
 Instead of using ‘adapt’, the sentence was revised to use ‘..cost associated with..’
 
-Additionally, weather conditions affect the metabolic rate of many bird species by typically increasing the energetic cost associated with fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events [@crick2004impact].
+Additionally, weather conditions affect the metabolic rate of many bird species by typically increasing the energetic cost associated with fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events.
 
 **7: Add a recent reference.**
 
-More recent reference (Andreasson *et al.* 2023) was added to:  Additionally, weather conditions affect the metabolic rate of many bird species by typically increasing the energetic cost associated with fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events [@crick2004impact, @andreasson2023measuring].
+More recent reference (Andreasson *et al.* 2023) was added to:  Additionally, weather conditions affect the metabolic rate of many bird species by typically increasing the energetic cost associated with fluctuating conditions and extreme conditions such as intense storms, prolonged heatwaves, droughts and excessive chilling events.
 
 
 **8: P6 2nd para 3rd sentence Change ‘with limited gain’ to ‘with little gain’.**
 
 ‘limited’ corrected to ‘little’.
 
-If the climatic conditions limit resource availability, reproduction increases in energetic cost with little gain, which poses significant challenges to the successful egg laying, incubation and parental care [@andreasson2020avian].
+If the climatic conditions limit resource availability, reproduction increases in energetic cost with little gain, which poses significant challenges to the successful egg laying, incubation and parental care.
 
 **9: P6 2nd para 5th sentence Change ‘has’ to ‘have’.**
 
 ‘has’ corrected to ‘have’.
 
-The effects of temperature on the reproductive output of avian species have largely been the focus point of how weather affects reproduction, however, the effects of varying rainfall patterns are also important [@fogarty2020associations; @sparks2002birds].
+The effects of temperature on the reproductive output of avian species have largely been the focus point of how weather affects reproduction, however, the effects of varying rainfall patterns are also important.
 
 **10: P6 2nd para 6th sentence Add a comma after ‘Similarly’. Delete ‘to’.**
 
 Grammatical errors corrected by adding a comma and deleting ‘to’.
 
-Similarly, the high energetic cost of thermal stress, unpredictable rainfall regimes can directly affect foraging efficiency, food availability and cause prolonged periods of energetic expenditure [@larson2015does].
+Similarly, the high energetic cost of thermal stress, unpredictable rainfall regimes can directly affect foraging efficiency, food availability and cause prolonged periods of energetic expenditure.
 
 **11: P6 3rd para 3rd sentence Correct spelling of ‘servere’.**
 
@@ -325,13 +325,13 @@ Weather conditions during the pre-breeding period, both short- and long-term con
 
 Corrected ‘likelihood to breeding’ to ‘likelihood of breeding’.
 
-At the start of each breeding season, the body condition of the breeding birds may vary depending on the conditions they have experienced throughout the year, which could affect breeding timing or the likelihood of breeding [@blums2005individual].
+At the start of each breeding season, the body condition of the breeding birds may vary depending on the conditions they have experienced throughout the year, which could affect breeding timing or the likelihood of breeding.
 
 **15: P7 1st para 6th sentence Change ‘as’ to ‘whereas’, delete ‘the’ and change ‘reproduction’ to ‘reproductive’.**
 
 Corrected ‘as’ to ‘whereas’, delete ‘the’ and change ‘reproduction’ to ‘reproductive’.
 
-…the ability to delay or skip breeding is predominantly seen in longer-lived birds, whereas birds with lower adult survival are unlikely to skip a breeding season even when conditions are poor because of limited future reproductive opportunities [@verhulst2008timing].
+…the ability to delay or skip breeding is predominantly seen in longer-lived birds, whereas birds with lower adult survival are unlikely to skip a breeding season even when conditions are poor because of limited future reproductive opportunities.
 
 **16: P7 1st para 7th sentence Add a recent reference.**
 
@@ -349,7 +349,7 @@ Corrected ‘effected’ to ‘affected’.
 
 **19: P7 2nd para 1st sentence Change to ‘If adult birds are in poor body condition, they are more likely to delay breeding or not initiate breeding at all during ..’.**
 
-If adult birds are in poor body condition, they are more likely to delay breeding or not initiate breeding at all during the breeding season [@de2022relative].
+If adult birds are in poor body condition, they are more likely to delay breeding or not initiate breeding at all during the breeding season.
 
 **20: P7 2nd para 2nd sentence Change ‘lead to delaying’ to ‘delay’.**
 
@@ -387,7 +387,7 @@ Vultures are considered to play a vital role in maintaining the health of entire
 
 **26: Next sentence Add a recent reference.**
 
-More recent reference was added. Vultures can swiftly locate and consume carrion, and by doing so, they create competition for and control other often problematic scavenger populations such as jackals and rodents [@buechley2016vultures, @carucci2022ecosystem].
+More recent reference was added. Vultures can swiftly locate and consume carrion, and by doing so, they create competition for and control other often problematic scavenger populations such as jackals and rodents.
 
 **27: P8 3rd para 4th sentence Change to ‘ …focusing on long-term survival, growth, and parental investment, and including delayed..’.**
 
@@ -397,7 +397,7 @@ In addition, vultures are also known for their slow life history strategy, focus
 
 **28: P8 3rd para 5th sentence Add a reference.**
 
-Reference added to: These life-history traits make vultures especially vulnerable to reduced reproductive success, which has long-term consequences for future population stability [@gomez2025long].
+Reference added to: These life-history traits make vultures especially vulnerable to reduced reproductive success, which has long-term consequences for future population stability.
 
 **29: P8 last line Change ‘bushfield’ to ‘bushveld’. Add a recent reference.**
 
